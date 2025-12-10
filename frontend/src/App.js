@@ -12,6 +12,7 @@ import WorkerDashboard from "./components/dashboards/WorkerDashboard";
 import VendorDashboard from "./components/dashboards/VendorDashboard";
 import CustomerDashboard from "./components/dashboards/CustomerDashboard";
 import AdminDashboard from "./components/dashboards/AdminDashboard";
+import Home from "./components/Home";
 
 export default function App() {
   return (
@@ -23,6 +24,8 @@ export default function App() {
       </nav>
 
       <Routes>
+        <Route path="/" element={<Home />} />
+
         <Route path="/" element={<h2>Welcome to Civilink</h2>} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
