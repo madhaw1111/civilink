@@ -1,0 +1,36 @@
+.rent-container {
+  padding: 16px;
+  background: #f4f6f8;
+  min-height: 100vh;
+}
+
+.rent-sub {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.rent-options {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rent-card {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+
+.rent-card span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}

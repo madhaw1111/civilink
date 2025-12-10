@@ -1,0 +1,13 @@
+.sell-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sell-container input,
+.sell-container textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+}
