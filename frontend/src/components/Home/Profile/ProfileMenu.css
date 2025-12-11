@@ -1,0 +1,25 @@
+.profile-menu {
+  position: absolute;
+  top: 55px;
+  right: 12px;
+  background: #fff;
+  padding: 12px 0;
+  border-radius: 10px;
+  width: 190px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+  z-index: 20;
+}
+
+.profile-menu button {
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.profile-menu button:hover {
+  background: #f5f5f5;
+}

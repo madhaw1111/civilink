@@ -36,7 +36,7 @@ router.put("/vendors/:id", auth, isAdmin, async (req, res) => {
     const { name, city, address, phone, email, isActive } = req.body;
     const vendor = await Vendor.findByIdAndUpdate(
       req.params.id,
-      { name, city, address, phone, email, isActive },
+      { name, city, address, phone, email,  isActive },
       { new: true }
     );
     res.json(vendor);

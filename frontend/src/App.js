@@ -1,87 +1,74 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Profile from "./components/Profile";
-import Dashboard from "./components/Dashboard";
+// AUTH
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
 
-import EngineerDashboard from "./components/dashboards/EngineerDashboard";
-import WorkerDashboard from "./components/dashboards/WorkerDashboard";
-import VendorDashboard from "./components/dashboards/VendorDashboard";
-import CustomerDashboard from "./components/dashboards/CustomerDashboard";
-import AdminDashboard from "./components/dashboards/AdminDashboard";
+// HOME
+import Home from "./components/Home/Home";
 
-import Home from "./components/Home";
-import BuildHouse from "./components/BuildHouse";
-import BuySellHouse from "./components/BuySellHouse";
-import SellHouse from "./components/SellHouse";
-import BuyHouse from "./components/BuyHouse";
-import RentHouse from "./components/RentHouse";
-import ToLetHouse from "./components/ToLetHouse";
-import RentSearch from "./components/RentSearch";
+// CUSTOMER PAGES
+import BuildHouse from "./components/dashboards/Customer/BuildHouse";
+import BuyHouse from "./components/dashboards/Customer/BuyHouse";
+import BuySellHouse from "./components/dashboards/Customer/BuySellHouse";
+import RentHouse from "./components/dashboards/Customer/RentHouse";
+import RentSearch from "./components/dashboards/Customer/RentSearch";
+import SellHouse from "./components/dashboards/Customer/SellHouse";
+import ToLetHouse from "./components/dashboards/Customer/ToLetHouse";
+
+// VENDOR PAGE
+import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
 
 export default function App() {
-  // ✅ SINGLE FEED STATE (GLOBAL)
-  const [feed, setFeed] = useState([
-    {
-      id: 1,
-      type: "post",
-      user: "Arun (Engineer)",
-      text: "Welcome to Civilink ✅",
-    },
-  ]);
 
-  // ✅ ONE FEED FUNCTION
-  const addToFeed = (item) => {
-    setFeed((prev) => [item, ...prev]);
-  };
+  // MUST BE INSIDE THE COMPONENT
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // FIXED LOGIN CHECK
+  useEffect(() => {
+    const checkLogin = () => {
+      const user = localStorage.getItem("civilink_user");
+      setIsLoggedIn(!!user);
+    };
+
+    checkLogin();
+
+    window.addEventListener("storage", checkLogin);
+    return () => window.removeEventListener("storage", checkLogin);
+  }, []);
 
   return (
     <Router>
-      <nav style={{ padding: 10 }}>
-        <Link to="/" style={{ marginRight: 10 }}>
-          Home
-        </Link>
-        <Link to="/register" style={{ marginRight: 10 }}>
-          Register
-        </Link>
-        <Link to="/login">Login</Link>
-      </nav>
-
       <Routes>
-        {/* ✅ HOME FEED */}
-        <Route path="/" element={<Home feed={feed} />} />
 
-        {/* AUTH */}
+        {/* LOGIN */}
+        <Route
+          path="/"
+          element={isLoggedIn ? <Navigate to="/home" /> : <Login />}
+        />
+
+        {/* REGISTER */}
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
 
-        {/* DASHBOARDS */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/engineer" element={<EngineerDashboard />} />
-        <Route path="/worker" element={<WorkerDashboard />} />
-        <Route path="/vendor" element={<VendorDashboard />} />
-        <Route path="/customer" element={<CustomerDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* HOME */}
+        <Route
+          path="/home"
+          element={isLoggedIn ? <Home /> : <Navigate to="/" />}
+        />
 
-        {/* CUSTOMER FLOWS */}
+        {/* CUSTOMER ROUTES */}
         <Route path="/build-house" element={<BuildHouse />} />
-        <Route path="/buy-sell" element={<BuySellHouse />} />
         <Route path="/buy-house" element={<BuyHouse />} />
+        <Route path="/buy-sell" element={<BuySellHouse />} />
         <Route path="/rent-house" element={<RentHouse />} />
         <Route path="/rent-search" element={<RentSearch />} />
+        <Route path="/sell-house" element={<SellHouse />} />
+        <Route path="/to-let" element={<ToLetHouse />} />
 
-        {/* ✅ FEED CONNECTED PAGES */}
-        <Route
-          path="/sell-house"
-          element={<SellHouse addToFeed={addToFeed} />}
-        />
-        <Route
-          path="/tolet-house"
-          element={<ToLetHouse addToFeed={addToFeed} />}
-        />
+        {/* VENDOR */}
+        <Route path="/vendor" element={<VendorDashboard />} />
+
       </Routes>
     </Router>
   );

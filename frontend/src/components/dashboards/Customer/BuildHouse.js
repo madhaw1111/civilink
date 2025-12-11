@@ -1,5 +1,5 @@
 import React from "react";
-import "./buildHouse.css";
+import "./buildhouse.css";
 
 function BuildHouse() {
   return (

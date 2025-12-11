@@ -1,0 +1,140 @@
+/* ===========================
+   PREMIUM AUTH UI — 2025
+   =========================== */
+
+.auth-page.upg {
+  height: 100vh;
+  background: linear-gradient(135deg, #0b2c5f 0%, #0a66c2 50%, #4ba3ff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeBg 5s ease infinite alternate;
+}
+
+@keyframes fadeBg {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.15); }
+}
+
+.auth-card.upg {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 35px rgba(0, 0, 0, 0.2),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+  animation: cardEnter 0.6s ease forwards;
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+@keyframes cardEnter {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Title */
+.auth-logo.upg {
+  font-size: 38px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.auth-subtitle.upg {
+  color: #e8f1ff;
+  font-size: 14px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+/* Floating inputs */
+.input-floating {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.input-floating input {
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  outline: none;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.input-floating label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #777;
+  transition: 0.3s;
+}
+
+.input-floating input:focus,
+.input-floating input:not(:placeholder-shown) {
+  background: white;
+}
+
+.input-floating input:focus + label,
+.input-floating input:not(:placeholder-shown) + label {
+  top: -6px;
+  font-size: 12px;
+  color: #004aad;
+}
+
+/* Button */
+.auth-btn-primary.upg {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #dfe9ff);
+  color: #0a3d62;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  transition: 0.25s ease;
+}
+
+.auth-btn-primary.upg:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.2);
+}
+
+/* Feedback messages */
+.auth-error.upg {
+  color: #ffb3b3;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.auth-success.upg {
+  color: #c8ffcf;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.auth-footer.upg {
+  margin-top: 18px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.auth-footer.upg a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: underline;
+}

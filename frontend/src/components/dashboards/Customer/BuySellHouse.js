@@ -1,5 +1,5 @@
 import React from "react";
-import "./buySell.css";
+import "./buysell.css";
 
 function BuySellHouse() {
   return (

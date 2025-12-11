@@ -1,5 +1,5 @@
 import React from "react";
-import "./rentHouse.css";
+import "./renthouse.css";
 
 function RentHouse() {
   return (
