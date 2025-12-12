@@ -1,82 +1,66 @@
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Generate Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, "CIVILINK_SECRET_KEY", { expiresIn: "30d" });
-};
-
-// ----------------------
 // REGISTER
-// ----------------------
-exports.registerUser = async (req, res) => {
+exports.register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
 
-    // check existing user
-    const userExists = await User.findOne({ email });
-    if (userExists)
-      return res.status(400).json({ message: "Email already registered" });
+    if (!name || !email || !password)
+      return res.status(400).json({ message: "All fields required" });
 
-    // Create new user (password hashes automatically)
+    const exists = await User.findOne({ email });
+    if (exists)
+      return res.status(409).json({ message: "Email already registered" });
+
+    const hashed = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       name,
       email,
       phone,
-      password,
+      password: hashed,
+      profession: "Member",
+      isProfessional: false
     });
 
-    res.json({
-      success: true,
-      message: "Registered successfully!",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-      },
-      token: generateToken(user._id),
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
 
-  } catch (error) {
+    return res.status(201).json({ 
+      user, 
+      token 
+    });
+
+  } catch (err) {
+    console.log("REGISTER ERROR", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// ----------------------
 // LOGIN
-// ----------------------
-exports.loginUser = async (req, res) => {
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // find user
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(404).json({ message: "User not found" });
 
-    // compare password
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match)
+      return res.status(401).json({ message: "Invalid password" });
 
-    // success login
-    res.json({
-      success: true,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        avatar: user.avatar,
-        bio: user.bio,
-      },
-      token: generateToken(user._id),
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
 
-  } catch (error) {
+    return res.json({ user, token });
+
+  } catch (err) {
+    console.log("LOGIN ERROR", err);
     res.status(500).json({ message: "Server error" });
   }
 };

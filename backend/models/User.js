@@ -1,25 +1,22 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String },
   password: { type: String, required: true },
-  role: { type: String, default: "Member" },   // Engineer, Worker, Customer later
-  avatar: { type: String },
-  bio: { type: String },
-}, { timestamps: true });
+  profession: { type: String, default: "Member" }, // Worker, Engineer, etc
+  skills: { type: [String], default: [] },
+  experienceYears: { type: Number, default: 0 },
+  profilePhoto: { type: String }, // URL or Base64
+  isProfessional: { type: Boolean, default: false }
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+}, { timestamps: true });
+ 
 
 // Compare password for login
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  const bcrypt = require("bcryptjs");
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

@@ -18,15 +18,34 @@ export default function Login() {
       });
 
       const data = await res.json();
-      if (!res.ok) return setError(data.message);
 
-      localStorage.setItem("civilink_user", JSON.stringify(data.user));
+      if (!res.ok) {
+        return setError(data.message || "Invalid login credentials");
+      }
+
+      // ---------------------------------------------------------
+      // ✅ STORE USER IN CIVILINK FORMAT (IMPORTANT)
+      // ---------------------------------------------------------
+      localStorage.setItem(
+        "civilink_user",
+        JSON.stringify({
+          name: data.user.name || "",
+          email: data.user.email,
+          role: data.user.role || "Member",
+          profession: data.user.profession || "", // will allow worker/engineer later
+          notificationsCount: data.user.notificationsCount || 0,
+          avatar: data.user.avatar || "",
+        })
+      );
+
+      // Save token
       localStorage.setItem("civilink_token", data.token);
 
+      // Redirect to Home
       window.location.href = "/home";
 
     } catch (err) {
-      setError("Network error — Try again.");
+      setError("Network error — please try again.");
     }
   };
 
@@ -34,11 +53,16 @@ export default function Login() {
     <div className="auth-page upg">
       <div className="auth-card upg">
 
+        {/* LOGO */}
         <h1 className="auth-logo upg">Civilink</h1>
-        <p className="auth-subtitle upg">Your construction network — re-imagined</p>
+        <p className="auth-subtitle upg">
+          Your construction network — Reimagined
+        </p>
 
+        {/* ERROR */}
         {error && <div className="auth-error upg">{error}</div>}
 
+        {/* FORM */}
         <form onSubmit={handleLogin} className="auth-form upg">
 
           <div className="input-floating">
@@ -64,12 +88,11 @@ export default function Login() {
           <button className="auth-btn-primary upg" type="submit">
             <span>Sign In</span>
           </button>
-
         </form>
 
+        {/* FOOTER */}
         <p className="auth-footer upg">
-          New here?{" "}
-          <a href="/register">Create account</a>
+          New here? <a href="/register">Create account</a>
         </p>
       </div>
     </div>

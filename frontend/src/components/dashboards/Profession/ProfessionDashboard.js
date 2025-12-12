@@ -1,0 +1,115 @@
+import React, { useEffect, useState } from "react";
+import ProfessionCard from "./ProfessionCard";
+import ProfessionCategories from "./ProfessionCategories";
+import ProfessionalSuggestion from "./ProfessionalSuggestion";
+import "./profession.dashboard.css";
+import ProfessionSetupModal from "./ProfessionSetupModal";
+
+
+export default function ProfessionDashboard() {
+  const [user, setUser] = useState(null);
+  const [search, setSearch] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
+
+  const [showSetup, setShowSetup] = useState(false);
+  const [selectedProfession, setSelectedProfession] = useState("");
+
+
+  useEffect(() => {
+    const raw = localStorage.getItem("civilink_user");
+    if (raw) setUser(JSON.parse(raw));
+  }, []);
+
+  const handleSelectProfession = (profession) => {
+  if (!user) return alert("Please login");
+
+  setSelectedProfession(profession);
+  setShowSetup(true); // open form instead of instant redirect
+};
+
+  return (
+    <div className="pro-dashboard-container">
+
+      <button
+  className="pro-menu-btn"
+  onClick={() => setShowMenu(true)}
+>
+  ☰
+</button>
+  
+
+      <h1 className="page-title">Civilink Profession Hub</h1>
+
+      <p className="subtitle">
+        Build your identity — find work, connect with professionals & grow your construction career.
+      </p>
+
+      <div className="pro-search-box">
+  <input
+    type="text"
+    placeholder="Search professionals, skills, locations…"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="pro-search-input"
+  />
+</div>
+
+
+      {/* Category Cards */}
+      <ProfessionCategories onSelect={handleSelectProfession} />
+
+      {/* Suggested professionals */}
+      <ProfessionalSuggestion search={search} />
+
+
+      <div style={{ height: 40 }}></div>
+
+
+      {/* LEFT SLIDE MENU */}
+{showMenu && (
+  <div className="pro-menu-backdrop" onClick={() => setShowMenu(false)}>
+    <div
+      className="pro-slide-menu"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="menu-title">Choose Profession</h3>
+
+      <button className="menu-item" onClick={() => handleSelectProfession("Worker")}>
+        👷 Become Worker
+      </button>
+
+      <button className="menu-item" onClick={() => handleSelectProfession("Engineer")}>
+        🧱 Become Engineer
+      </button>
+
+      <button className="menu-item" onClick={() => handleSelectProfession("Architect")}>
+        🏛 Become Architect
+      </button>
+
+      <button className="menu-item" onClick={() => handleSelectProfession("Contractor")}>
+        📐 Become Contractor
+      </button>
+
+      <button className="menu-item" onClick={() => handleSelectProfession("Real Estate Dealer")}>
+        🏠 Real Estate Dealer
+      </button>
+
+      <button className="menu-close" onClick={() => setShowMenu(false)}>
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+<ProfessionSetupModal
+  open={showSetup}
+  onClose={() => setShowSetup(false)}
+  profession={selectedProfession}
+  user={user}
+  onComplete={() => window.location.href = "/profile"} 
+/>
+
+
+    </div>
+  );
+}

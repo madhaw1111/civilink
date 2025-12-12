@@ -5,6 +5,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
+//PROFILE
+import ProfileWrapper from "./components/Home/Profile/ProfileWrapper";
+
+
 // HOME
 import Home from "./components/Home/Home";
 
@@ -19,6 +23,10 @@ import ToLetHouse from "./components/dashboards/Customer/ToLetHouse";
 
 // VENDOR PAGE
 import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
+
+// PROFESSION PAGE
+import ProfessionDashboard from "./components/dashboards/Profession/ProfessionDashboard";
+
 
 export default function App() {
 
@@ -56,6 +64,8 @@ export default function App() {
           path="/home"
           element={isLoggedIn ? <Home /> : <Navigate to="/" />}
         />
+        <Route path="/profile" element={isLoggedIn ? <ProfileWrapper /> : <Navigate to="/" />} />
+        
 
         {/* CUSTOMER ROUTES */}
         <Route path="/build-house" element={<BuildHouse />} />
@@ -69,6 +79,9 @@ export default function App() {
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />
 
+        {/* PROFESSION*/}
+        <Route path="/profession-dashboard" element={<ProfessionDashboard />} />
+      
       </Routes>
     </Router>
   );
