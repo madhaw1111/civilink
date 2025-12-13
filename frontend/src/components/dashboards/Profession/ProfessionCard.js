@@ -9,7 +9,7 @@ export default function ProfessionCard({ title, icon, color, onClick }) {
     >
       <div className="pro-icon">{icon}</div>
       <h3>{title}</h3>
-      <p className="pro-desc">Create a profile as {title}</p>
+      <p className="pro-desc">search a {title}</p>
     </div>
   );
 }

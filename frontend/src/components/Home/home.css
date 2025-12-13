@@ -384,3 +384,69 @@ body {
   right: 2px;
 }
 
+/* Overlay */
+.customer-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Bottom Sheet */
+.customer-sheet {
+  width: 100%;
+  height: 40vh;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Slide animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Handle bar */
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #ccc;
+  border-radius: 4px;
+  margin: 0 auto 12px;
+}
+
+/* Title */
+.sheet-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Buttons */
+.sheet-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.sheet-btn.primary {
+  background: #0a66c2;
+  color: white;
+  border: none;
+}
+
+.sheet-btn.outline {
+  background: transparent;
+  border: 1px solid #ccc;
+}

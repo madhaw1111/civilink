@@ -14,4 +14,21 @@ router.get("/me", auth, async (req, res) => {
   }
 });
 
+
+// GET user by ID (public profile view)
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+
+    if (!user) {
+      return res.json({ success: false });
+    }
+
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
+
 module.exports = router;

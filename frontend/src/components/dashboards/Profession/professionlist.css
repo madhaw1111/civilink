@@ -1,0 +1,135 @@
+/* Page */
+.profession-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 32px 20px;
+}
+
+/* Header */
+.profession-header {
+  margin-bottom: 24px;
+}
+
+.profession-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.profession-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Status */
+.status-text {
+  text-align: center;
+  margin-top: 80px;
+  color: #6b7280;
+}
+
+.status-text.error {
+  color: #dc2626;
+}
+
+/* Grid */
+.profession-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.profession-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.profession-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Card Header */
+.profession-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.profession-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #0a66c2;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+}
+
+.profession-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.profession-role {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Body */
+.profession-body {
+  flex: 1;
+}
+
+.profession-info {
+  font-size: 13px;
+  color: #374151;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* Skills */
+.profession-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-chip {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 20px;
+}
+
+/* Footer */
+.profession-footer {
+  margin-top: 14px;
+}
+
+.consult-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #0a66c2;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.consult-btn:hover {
+  background: #004182;
+}

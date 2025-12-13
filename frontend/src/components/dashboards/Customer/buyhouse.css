@@ -1,0 +1,67 @@
+.buyhouse-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px;
+}
+
+.buyhouse-header h2 {
+  margin-bottom: 4px;
+}
+
+.buyhouse-header p {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.buyhouse-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.buyhouse-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.buyhouse-info h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.location {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.contact-btn {
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #0a66c2;
+  color: white;
+  cursor: pointer;
+}
+
+.contact-btn:hover {
+  background: #004182;
+}
+
+.buyhouse-loading,
+.buyhouse-empty {
+  text-align: center;
+  margin-top: 80px;
+  color: #6b7280;
+}

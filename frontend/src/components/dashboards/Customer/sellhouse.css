@@ -1,13 +1,122 @@
-.sell-container {
-  padding: 16px;
+/* Page background */
+.sell-page {
+  min-height: 100vh;
+  background: #f9fafb;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
 }
 
-.sell-container input,
-.sell-container textarea {
-  padding: 10px;
-  border-radius: 10px;
+/* Main card */
+.sell-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+/* Title */
+.sell-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Subtitle */
+.sell-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+/* Inputs */
+.form-group input,
+.form-group textarea {
   border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.form-group textarea {
+  resize: none;
+  min-height: 90px;
+}
+
+/* Focus state */
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
+}
+
+/* Button */
+.post-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0a66c2;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.post-btn:hover {
+  background: #004182;
+}
+
+/* Header actions (Back & Close) */
+.sell-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Back button */
+.sell-back-btn {
+  background: transparent;
+  border: none;
+  color: #0a66c2;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+/* Close button */
+.sell-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px 6px;
+}
+
+.sell-close-btn:hover {
+  color: #111827;
 }

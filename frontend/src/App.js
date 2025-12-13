@@ -13,7 +13,7 @@ import ProfileWrapper from "./components/Home/Profile/ProfileWrapper";
 import Home from "./components/Home/Home";
 
 // CUSTOMER PAGES
-import BuildHouse from "./components/dashboards/Customer/BuildHouse";
+
 import BuyHouse from "./components/dashboards/Customer/BuyHouse";
 import BuySellHouse from "./components/dashboards/Customer/BuySellHouse";
 import RentHouse from "./components/dashboards/Customer/RentHouse";
@@ -28,6 +28,9 @@ import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
 import ProfessionDashboard from "./components/dashboards/Profession/ProfessionDashboard";
 import ProfessionList from "./components/dashboards/Profession/ProfessionList";
 
+//Chat page
+import ChatInbox from "./components/chat/ChatInbox";
+import ChatWindow from "./components/chat/ChatWindow";
 
 export default function App() {
 
@@ -69,7 +72,7 @@ export default function App() {
         
 
         {/* CUSTOMER ROUTES */}
-        <Route path="/build-house" element={<BuildHouse />} />
+        
         <Route path="/buy-house" element={<BuyHouse />} />
         <Route path="/buy-sell" element={<BuySellHouse />} />
         <Route path="/rent-house" element={<RentHouse />} />
@@ -83,6 +86,10 @@ export default function App() {
         {/* PROFESSION*/}
         <Route path="/profession-dashboard" element={<ProfessionDashboard />} />
         <Route path="/profession/:type" element={<ProfessionList />} />
+        <Route path="/profession/:category"element={<ProfessionDashboard />}/>
+        <Route path="/messages" element={<ChatInbox />} />
+        <Route path="/messages/:conversationId" element={<ChatWindow />} />
+         <Route path="/profile/:userId" element={<ProfileWrapper />} />
 
       </Routes>
     </Router>

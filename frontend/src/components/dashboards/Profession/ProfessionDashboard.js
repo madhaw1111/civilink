@@ -6,6 +6,7 @@ import "./profession.dashboard.css";
 import ProfessionSetupModal from "./ProfessionSetupModal";
 
 
+
 export default function ProfessionDashboard() {
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState("");
@@ -14,6 +15,8 @@ export default function ProfessionDashboard() {
   const [showSetup, setShowSetup] = useState(false);
   const [selectedProfession, setSelectedProfession] = useState("");
   const [availableProfessions, setAvailableProfessions] = useState([]);
+  
+  
 
 
   useEffect(() => {

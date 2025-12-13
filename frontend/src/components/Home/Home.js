@@ -5,6 +5,7 @@ import ProfileMenu from "./Profile/ProfileMenu";
 import PostModal from "./Modals/PostModal";
 import ProfessionMenuModal from "./Modals/ProfessionMenuModal";
 import ProfessionSuggestionRow from "./Feed/ProfessionSuggestionRow";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
 
@@ -97,6 +98,32 @@ export default function Home() {
     window.location.href = "/";
   };
 
+  const navigate = useNavigate();
+
+  const openChat = async (receiverId, contextType, contextId) => {
+  const user = JSON.parse(localStorage.getItem("civilink_user"));
+  if (!user) return alert("Please login");
+
+  const res = await fetch("http://localhost:5000/api/chat/conversation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      senderId: user._id,
+      receiverId,
+      contextType,
+      contextId
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    navigate(`/messages/${data.conversation._id}`);
+  }
+};
+
+
+
   /* ================= RENDER ================= */
   return (
     <div className="home-container">
@@ -110,9 +137,13 @@ export default function Home() {
           placeholder="Search engineers, houses, vendors…"
         />
 
-        <button className="top-icon" onClick={() => alert("Chat coming soon")}>
-          💬
-        </button>
+        <button
+       className="home-message-btn"
+        onClick={() => navigate("/messages")}
+       >
+       💬 Messages
+      </button>
+
 
         <button className="top-icon" onClick={() => alert("Notifications coming soon")}>
           🔔
@@ -251,47 +282,51 @@ export default function Home() {
         />
       )}
        {/* CUSTOMER MENU MODAL */}
-{showCustomerMenu && (
-  <div className="vendor-modal-overlay" onClick={() => setShowCustomerMenu(false)}>
-    <div className="vendor-modal" onClick={(e) => e.stopPropagation()}>
-      <h3 style={{ textAlign: "center" }}>What do you want to do?</h3>
+       {showCustomerMenu && (
+  <div
+    className="customer-sheet-overlay"
+    onClick={() => setShowCustomerMenu(false)}
+  >
+    <div
+      className="customer-sheet"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="sheet-handle" />
+
+      <h3 className="sheet-title">What do you want to do?</h3>
 
       <button
-        className="btn-primary"
-        style={{ width: "100%", marginBottom: 10 }}
+        className="sheet-btn primary"
         onClick={() => {
           setShowCustomerMenu(false);
-          window.location.href = "/sell-house";
+          window.location.href = "/profession/engineer";
         }}
       >
-        🏠 Sell House
+        🏗 Build a House
       </button>
 
       <button
-        className="btn-primary"
-        style={{ width: "100%", marginBottom: 10 }}
+        className="sheet-btn primary"
         onClick={() => {
           setShowCustomerMenu(false);
-          window.location.href = "/buy-house";
+          window.location.href = "/buy-sell";
         }}
       >
-        🛒 Buy House
+        🏠 Buy / Sell a House
       </button>
 
       <button
-        className="btn-primary"
-        style={{ width: "100%", marginBottom: 10 }}
+        className="sheet-btn primary"
         onClick={() => {
           setShowCustomerMenu(false);
           window.location.href = "/rent-house";
         }}
       >
-        🔑 Rent / To-Let
+        🔑 Rent / To-Let a House
       </button>
 
       <button
-        className="btn-outline"
-        style={{ width: "100%" }}
+        className="sheet-btn outline"
         onClick={() => setShowCustomerMenu(false)}
       >
         Close
