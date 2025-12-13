@@ -26,17 +26,8 @@ export default function Login() {
       // ---------------------------------------------------------
       // ✅ STORE USER IN CIVILINK FORMAT (IMPORTANT)
       // ---------------------------------------------------------
-      localStorage.setItem(
-        "civilink_user",
-        JSON.stringify({
-          name: data.user.name || "",
-          email: data.user.email,
-          role: data.user.role || "Member",
-          profession: data.user.profession || "", // will allow worker/engineer later
-          notificationsCount: data.user.notificationsCount || 0,
-          avatar: data.user.avatar || "",
-        })
-      );
+      localStorage.setItem("civilink_user",JSON.stringify(data.user));
+
 
       // Save token
       localStorage.setItem("civilink_token", data.token);

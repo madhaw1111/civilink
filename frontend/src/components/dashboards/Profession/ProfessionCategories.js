@@ -1,7 +1,7 @@
 import React from "react";
 import ProfessionCard from "./ProfessionCard";
 
-export default function ProfessionCategories({ onSelect }) {
+export default function ProfessionCategories({ onSelect, data = [] }) {
   const roles = [
     { title: "Worker", icon: "🧱", color: "#ff8a65" },
     { title: "Engineer", icon: "🏗", color: "#4fc3f7" },
@@ -12,15 +12,17 @@ export default function ProfessionCategories({ onSelect }) {
 
   return (
     <div className="category-grid">
-      {roles.map((r) => (
-        <ProfessionCard
-          key={r.title}
-          title={r.title}
-          icon={r.icon}
-          color={r.color}
-          onClick={() => onSelect(r.title)}
-        />
-      ))}
+      {roles
+        .filter(r => data.some(p => p._id === r.title))
+        .map((r) => (
+          <ProfessionCard
+            key={r.title}
+            title={r.title}
+            icon={r.icon}
+            color={r.color}
+            onClick={() => onSelect(r.title)}
+          />
+        ))}
     </div>
   );
 }

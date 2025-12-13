@@ -19,6 +19,9 @@ export default function ProfileMenu({
 
   if (!open) return null;
 
+  const safeUser = user && Object.keys(user).length ? user : {};
+
+
  return (
   <div className="profile-drawer-backdrop" onClick={onClose}>
     <div
@@ -31,12 +34,12 @@ export default function ProfileMenu({
       {/* MINI PROFILE AT TOP INSIDE DRAWER */}
       <div className="profile-menu-header">
         <div className="profile-menu-avatar">
-          {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+          {safeUser?.name?.charAt(0)?.toUpperCase() || "U"}
         </div>
 
         <div className="profile-menu-info">
-          <h3>{user.name || "Civilink User"}</h3>
-          <p>{user.profession || "General Member"}</p>
+          <h3>{safeUser?.name || "Civilink User"}</h3>
+          <p>{safeUser?.profession || "General Member"}</p>
         </div>
       </div>
 
@@ -60,8 +63,8 @@ export default function ProfileMenu({
         {/* NOTIFICATION */}
         <button className="drawer-item notif-btn">
           🔔 Notifications
-          {user.notificationsCount > 0 && (
-            <span className="notif-count">{user.notificationsCount}</span>
+          {safeUser.notificationsCount > 0 && (
+            <span className="notif-count">{safeUser.notificationsCount}</span>
           )}
         </button>
 

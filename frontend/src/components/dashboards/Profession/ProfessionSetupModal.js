@@ -16,28 +16,39 @@ export default function ProfessionSetupModal({ open, onClose, profession, user, 
   };
 
   async function submit() {
-    const res = await fetch("http://localhost:5000/api/profession/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: user._id,
-        profession,
-        skills: skills.split(",").map(s => s.trim()),
-        experienceYears,
-        profilePhoto,
-      }),
-    });
+  const userId = user?._id || user?.id;
 
-    const data = await res.json();
-
-    if (data.success) {
-      localStorage.setItem("civilink_user", JSON.stringify(data.user));
-      onClose();
-      onComplete(); 
-    } else {
-      alert("Something went wrong");
-    }
+  if (!userId) {
+    alert("User ID missing. Please login again.");
+    return;
   }
+
+  const res = await fetch("http://localhost:5000/api/profession/update", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("civilink_token")}`,
+    },
+    body: JSON.stringify({
+      userId,
+      profession,
+      skills: skills.split(",").map(s => s.trim()),
+      experienceYears: Number(experienceYears),
+      profilePhoto,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    localStorage.setItem("civilink_user", JSON.stringify(data.user));
+    onClose();
+    onComplete();
+  } else {
+    alert(data.message || "Something went wrong");
+  }
+}
+
 
   return (
     <div className="modal-backdrop" onClick={onClose}>

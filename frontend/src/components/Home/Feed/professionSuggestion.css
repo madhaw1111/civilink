@@ -1,0 +1,62 @@
+.profession-suggest-row {
+  padding: 12px;
+  background: #f8fafc;
+  margin: 12px 0;
+  border-radius: 12px;
+}
+
+.profession-suggest-row h4 {
+  margin-bottom: 8px;
+}
+
+.suggest-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.suggest-card {
+  min-width: 160px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  margin: auto;
+  border-radius: 50%;
+  background: #0a66c2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.info span {
+  display: block;
+  font-size: 13px;
+  color: #666;
+}
+
+.connect-btn {
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  background: #0a66c2;
+  color: white;
+  cursor: pointer;
+}

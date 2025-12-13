@@ -26,6 +26,7 @@ import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
 
 // PROFESSION PAGE
 import ProfessionDashboard from "./components/dashboards/Profession/ProfessionDashboard";
+import ProfessionList from "./components/dashboards/Profession/ProfessionList";
 
 
 export default function App() {
@@ -81,7 +82,8 @@ export default function App() {
 
         {/* PROFESSION*/}
         <Route path="/profession-dashboard" element={<ProfessionDashboard />} />
-      
+        <Route path="/profession/:type" element={<ProfessionList />} />
+
       </Routes>
     </Router>
   );

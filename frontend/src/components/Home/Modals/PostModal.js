@@ -40,9 +40,20 @@ export default function PostModal({ onClose, addToFeed }) {
             Cancel
           </button>
 
-          <button className="btn-primary" onClick={handlePost}>
-            Post
-          </button>
+          <button
+  className="btn-primary"
+  onClick={() => {
+    addToFeed({
+      id: Date.now(),
+      type: "sell",
+      text: "New Sell House Post"
+    });
+    onClose();
+  }}
+>
+  Post
+</button>
+
         </div>
       </div>
     </div>

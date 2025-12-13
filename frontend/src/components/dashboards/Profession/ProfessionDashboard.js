@@ -13,6 +13,7 @@ export default function ProfessionDashboard() {
 
   const [showSetup, setShowSetup] = useState(false);
   const [selectedProfession, setSelectedProfession] = useState("");
+  const [availableProfessions, setAvailableProfessions] = useState([]);
 
 
   useEffect(() => {
@@ -25,7 +26,24 @@ export default function ProfessionDashboard() {
 
   setSelectedProfession(profession);
   setShowSetup(true); // open form instead of instant redirect
-};
+  };
+
+  useEffect(() => {
+  fetch("http://localhost:5000/api/profession/available")
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        setAvailableProfessions(data.professions);
+      }
+    });
+  }, []);
+
+  const handleViewProfession = (profession) => {
+  // navigate to profession list page
+  window.location.href = `/profession/${profession.toLowerCase()}`;
+  };
+
+
 
   return (
     <div className="pro-dashboard-container">
@@ -56,7 +74,10 @@ export default function ProfessionDashboard() {
 
 
       {/* Category Cards */}
-      <ProfessionCategories onSelect={handleSelectProfession} />
+      <ProfessionCategories
+      data={availableProfessions}
+      onSelect={handleViewProfession}
+     />
 
       {/* Suggested professionals */}
       <ProfessionalSuggestion search={search} />

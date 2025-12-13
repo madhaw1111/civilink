@@ -19,16 +19,7 @@ function SellHouse({ addToFeed }) {
       <button
   className="btn-primary"
   onClick={() => {
-    addToFeed({
-      id: Date.now(),
-      type: "sell",
-      title: "House for Sale",
-      location: "Chennai",
-      price: "₹45,00,000",
-      user: "Posted by user",
-      image: "https://images.unsplash.com/house-example"
-    });
-
+   
     navigate("/");   
   }}
 >
