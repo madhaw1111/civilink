@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const houseSchema = new mongoose.Schema(
+const rentHouseSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -10,9 +10,12 @@ const houseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    price: {
+    rent: {
       type: Number,
       required: true
+    },
+    deposit: {
+      type: Number
     },
     description: {
       type: String
@@ -20,15 +23,16 @@ const houseSchema = new mongoose.Schema(
     image: {
       type: String // image URL
     },
+    availableFrom: {
+      type: Date
+    },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("House", houseSchema);
+module.exports = mongoose.model("RentHouse", rentHouseSchema);

@@ -10,7 +10,7 @@ function RentHouse() {
       <div className="rent-options">
         <button
           className="rent-card"
-          onClick={() => (window.location.href = "/tolet-house")}
+          onClick={() => (window.location.href = "/post-rent-house")}
         >
           🏷 To-Let a House
           <span>Post your house for rent</span>
@@ -18,7 +18,7 @@ function RentHouse() {
 
         <button
           className="rent-card"
-          onClick={() => (window.location.href = "/rent-search")}
+          onClick={() => (window.location.href = "/rental-house")}
         >
           🔑 Rent a House
           <span>Find houses available for rent</span>

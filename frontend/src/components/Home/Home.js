@@ -3,7 +3,6 @@ import "./home.css";
 
 import ProfileMenu from "./Profile/ProfileMenu";
 import PostModal from "./Modals/PostModal";
-import ProfessionMenuModal from "./Modals/ProfessionMenuModal";
 import ProfessionSuggestionRow from "./Feed/ProfessionSuggestionRow";
 import { useNavigate } from "react-router-dom";
 
@@ -65,6 +64,31 @@ export default function Home() {
       localStorage.removeItem("civilink_new_post");
     }
   }, []);
+
+
+  /* ================= LOAD HOME FEED ================= */
+useEffect(() => {
+  const loadFeed = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/feed/home");
+      const data = await res.json();
+
+      if (data.success) {
+        // IMPORTANT: use backend _id as id
+        const normalized = data.feed.map(item => ({
+          ...item,
+          id: item._id
+        }));
+        setFeed(normalized);
+      }
+    } catch (err) {
+      console.error("Failed to load feed", err);
+    }
+  };
+
+  loadFeed();
+}, []);
+
 
   /* ================= PROFESSION SELECT ================= */
   const handleProfessionSelect = (profession) => {
@@ -145,10 +169,6 @@ export default function Home() {
       </button>
 
 
-        <button className="top-icon" onClick={() => alert("Notifications coming soon")}>
-          🔔
-        </button>
-
         <button className="top-icon" onClick={() => setShowProfileMenu(true)}>
           👤
         </button>
@@ -168,15 +188,16 @@ export default function Home() {
                 <div className="feed-header">
                   <div className="feed-user-box">
                     <div className="feed-avatar">
-                      {(item.user || "U").charAt(0).toUpperCase()}
+                      {(item.user?.name || "U").charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <div className="feed-user">
-                        {item.user || "Civilink User"}
-                        <span className="feed-role">
-                          {item.role || "Member"}
-                        </span>
-                      </div>
+  {item.user?.name || "Civilink User"}
+  <span className="feed-role">
+    {item.user?.profession || item.role || "Member"}
+  </span>
+</div>
+
                       <div className="feed-meta">
                         {item.location || "Tamil Nadu"} • Just now
                       </div>
@@ -275,12 +296,7 @@ export default function Home() {
         />
       )}
 
-      {showProfessionMenu && (
-        <ProfessionMenuModal
-          onClose={() => setShowProfessionMenu(false)}
-          onSelect={handleProfessionSelect}
-        />
-      )}
+      
        {/* CUSTOMER MENU MODAL */}
        {showCustomerMenu && (
   <div

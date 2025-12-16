@@ -1,0 +1,101 @@
+.rent-page {
+  padding: 20px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+/* FILTER BAR */
+.rent-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.rent-filters input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.rent-apply-btn {
+  background: #111827;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.rent-reset-btn {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* LIST */
+.rent-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.rent-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.rent-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.rent-info h4 {
+  margin: 4px 0;
+}
+
+.rent-location {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.rent-price {
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.rent-deposit,
+.rent-date {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.rent-contact-btn {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* STATES */
+.rent-loading,
+.rent-empty {
+  text-align: center;
+  margin-top: 60px;
+  color: #6b7280;
+}

@@ -17,10 +17,9 @@ import Home from "./components/Home/Home";
 import BuyHouse from "./components/dashboards/Customer/BuyHouse";
 import BuySellHouse from "./components/dashboards/Customer/BuySellHouse";
 import RentHouse from "./components/dashboards/Customer/RentHouse";
-import RentSearch from "./components/dashboards/Customer/RentSearch";
+import PostRentHouse from "./components/dashboards/Customer/Rent/PostRentHouse";
 import SellHouse from "./components/dashboards/Customer/SellHouse";
-import ToLetHouse from "./components/dashboards/Customer/ToLetHouse";
-
+import RentalHouse from "./components/dashboards/Customer/Rent/RentalHouse";
 // VENDOR PAGE
 import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
 
@@ -76,9 +75,9 @@ export default function App() {
         <Route path="/buy-house" element={<BuyHouse />} />
         <Route path="/buy-sell" element={<BuySellHouse />} />
         <Route path="/rent-house" element={<RentHouse />} />
-        <Route path="/rent-search" element={<RentSearch />} />
+       <Route path="/post-rent-house" element={<PostRentHouse />} />
         <Route path="/sell-house" element={<SellHouse />} />
-        <Route path="/to-let" element={<ToLetHouse />} />
+        <Route path="/rental-house" element={<RentalHouse />} />
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />

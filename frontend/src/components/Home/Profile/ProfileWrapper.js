@@ -1,4 +1,3 @@
-// src/components/Home/Profile/ProfileWrapper.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -9,60 +8,80 @@ import ProfileEditModal from "./ProfileEditModal";
 import "./profile.full.css";
 
 export default function ProfileWrapper() {
-  const { userId } = useParams(); // 👈 viewed profile userId
+  const { userId } = useParams(); // optional (other user's profile)
 
-  const [user, setUser] = useState(null);          // viewed user
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // logged-in user (for permissions only)
   const loggedInUser = JSON.parse(
     localStorage.getItem("civilink_user")
   );
 
-  /* ================================
-     FETCH PROFILE USER (KEY FIX)
-  ================================= */
+  /* =====================================
+     FETCH PROFILE (FIXED & SAFE)
+  ===================================== */
   useEffect(() => {
-    setLoading(true);
+    const loadProfile = async () => {
+      setLoading(true);
 
-    // Load posts (existing logic preserved)
-    try {
-      const savedPosts = JSON.parse(
-        localStorage.getItem("civilink_posts") || "[]"
-      );
-      setPosts(Array.isArray(savedPosts) ? savedPosts : []);
-    } catch {
-      setPosts([]);
-    }
+      // load demo posts (existing logic)
+      try {
+        const savedPosts = JSON.parse(
+          localStorage.getItem("civilink_posts") || "[]"
+        );
+        setPosts(Array.isArray(savedPosts) ? savedPosts : []);
+      } catch {
+        setPosts([]);
+      }
 
-    // 🔑 FETCH USER FROM BACKEND USING URL PARAM
-    fetch(`http://localhost:5000/api/users/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setUser(data.user);
-        } else {
+      try {
+        const token = localStorage.getItem("civilink_token");
+
+        // 🔑 decide API endpoint
+        const url = userId
+          ? `http://localhost:5000/api/users/${userId}` // other user
+          : `http://localhost:5000/api/users/me`;       // own profile
+
+        const res = await fetch(url, {
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : {}
+        });
+
+        if (!res.ok) {
           setUser(null);
+          setLoading(false);
+          return;
         }
+
+        const data = await res.json();
+
+        // supports both formats: {user} or direct user
+        setUser(data.user || data);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch {
         setUser(null);
         setLoading(false);
-      });
+      }
+    };
+
+    loadProfile();
   }, [userId]);
 
-  /* ================================
+  /* =====================================
      HELPERS
-  ================================= */
-  const saveUser = (u) => {
-    setUser(u);
+  ===================================== */
+  const saveUser = (updatedUser) => {
+    setUser(updatedUser);
 
-    // update localStorage ONLY if editing own profile
-    if (loggedInUser?._id === u._id) {
-      localStorage.setItem("civilink_user", JSON.stringify(u));
+    // update localStorage only if editing own profile
+    if (loggedInUser?._id === updatedUser._id) {
+      localStorage.setItem(
+        "civilink_user",
+        JSON.stringify(updatedUser)
+      );
     }
   };
 
@@ -72,6 +91,9 @@ export default function ProfileWrapper() {
     localStorage.setItem("civilink_posts", JSON.stringify(next));
   };
 
+  /* =====================================
+     STATES
+  ===================================== */
   if (loading) {
     return <div className="profile-empty">Loading profile…</div>;
   }
@@ -80,17 +102,15 @@ export default function ProfileWrapper() {
     return <div className="profile-empty">User not found</div>;
   }
 
-  // 🔑 CORRECT PROFILE TYPE DECISION
   const isProfessional =
     !!user.profession && user.profession !== "Member";
 
-  // 🔐 OWN PROFILE CHECK
   const isOwnProfile =
     loggedInUser?._id === user._id;
 
-  /* ================================
+  /* =====================================
      RENDER
-  ================================= */
+  ===================================== */
   return (
     <div className="profile-root">
       <div className="profile-toolbar">
@@ -117,7 +137,6 @@ export default function ProfileWrapper() {
         )}
       </div>
 
-      {/* 🔑 PROFESSIONAL vs NORMAL PROFILE */}
       {isProfessional ? (
         <ProfileProfessional
           user={user}
@@ -136,7 +155,6 @@ export default function ProfileWrapper() {
         />
       )}
 
-      {/* 🔐 EDIT ONLY OWN PROFILE */}
       {showEdit && isOwnProfile && (
         <ProfileEditModal
           user={user}

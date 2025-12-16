@@ -26,3 +26,9 @@ app.use("/api/house", require("./routes/houseRoutes"));
 app.use("/api/chat", require("./routes/chatRoutes"));
 
 app.use("/api/users", require("./routes/users"));
+
+app.use("/api/rent", require("./routes/rentRoutes"));
+
+app.use("/api/post", require("./routes/postRoutes"));
+
+app.use("/api/feed", require("./routes/feedRoutes"));

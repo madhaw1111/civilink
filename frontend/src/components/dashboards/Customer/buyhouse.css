@@ -65,3 +65,36 @@
   margin-top: 80px;
   color: #6b7280;
 }
+
+.buyhouse-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  background: #fff;
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.buyhouse-filters input,
+.buyhouse-filters select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.filter-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.reset-btn {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}

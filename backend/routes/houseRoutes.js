@@ -1,47 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const House = require("../models/House");
-const auth = require("../middleware/auth"); 
+const auth = require("../middleware/auth");
+
 /**
- * POST - Sell House
+ * POST - Sell House (SECURED)
+ * This automatically appears in Home Feed via feedRoutes.js
  */
-router.post("/sell", async (req, res) => {
-  try {
-    const { title, location, price, description, image, } = req.body;
-
-    if (!title || !location || !price) {
-      return res.status(400).json({
-        success: false,
-        message: "Required fields missing"
-      });
-    }
-
-    const house = await House.create({
-      title,
-      location,
-      price,
-      description,
-      image,
-      postedBy: req.user.id
-
-    });
-
-    res.json({
-      success: true,
-      house
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-module.exports = router;
-
-
-
 router.post("/sell", auth, async (req, res) => {
   try {
     const { title, location, price, description, image } = req.body;
@@ -49,24 +14,27 @@ router.post("/sell", auth, async (req, res) => {
     if (!title || !location || !price) {
       return res.status(400).json({
         success: false,
-        message: "Required fields missing"
+        message: "Title, location and price are required"
       });
     }
 
     const house = await House.create({
       title,
       location,
-      price,
+      price: Number(price),
       description,
       image,
-      postedBy: req.user.id
+      postedBy: req.user.id // ✅ authenticated user
     });
 
-    res.json({
+    res.status(201).json({
       success: true,
+      message: "House posted successfully",
       house
     });
+
   } catch (error) {
+    console.error("SELL HOUSE ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -74,30 +42,57 @@ router.post("/sell", auth, async (req, res) => {
   }
 });
 
-
-
 /**
- * GET - Buy House (List all houses)
+ * GET - Buy House (List & Filter)
  */
 router.get("/buy", async (req, res) => {
   try {
-    const houses = await House.find()
-      .populate("postedBy", "name profilePhoto profession")
-      .sort({ createdAt: -1 });
+    const { location, minPrice, maxPrice, sort, q } = req.query;
+
+    const filter = {};
+
+    // 🔍 Search
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { location: { $regex: q, $options: "i" } }
+      ];
+    }
+
+    // 📍 Location filter
+    if (location) {
+      filter.location = { $regex: location, $options: "i" };
+    }
+
+    // 💰 Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    // 🔃 Sorting
+    let sortOption = { createdAt: -1 };
+    if (sort === "priceLow") sortOption = { price: 1 };
+    if (sort === "priceHigh") sortOption = { price: -1 };
+
+    const houses = await House.find(filter)
+      .populate("postedBy", "name profession profilePhoto")
+      .sort(sortOption);
 
     res.json({
       success: true,
       houses
     });
+
   } catch (error) {
+    console.error("BUY HOUSE ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: "Server error"
     });
   }
 });
-
-
 
 /**
  * GET - Single House
@@ -105,7 +100,7 @@ router.get("/buy", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const house = await House.findById(req.params.id)
-      .populate("postedBy", "name profilePhoto profession");
+      .populate("postedBy", "name profession profilePhoto");
 
     if (!house) {
       return res.status(404).json({
@@ -118,10 +113,14 @@ router.get("/:id", async (req, res) => {
       success: true,
       house
     });
+
   } catch (error) {
+    console.error("HOUSE DETAILS ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
     });
   }
 });
+
+module.exports = router;
