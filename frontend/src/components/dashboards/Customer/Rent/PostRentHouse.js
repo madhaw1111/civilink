@@ -55,7 +55,7 @@ export default function PostRentHouse() {
 
       if (data.success) {
         alert("Rent house posted successfully");
-        navigate("/rent-house");
+        navigate("/home");
       } else {
         alert(data.message || "Failed to post rent house");
       }

@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const House = require("../models/House");
+const Feed = require("../models/Post");   // ✅ ADD THIS
 const auth = require("../middleware/auth");
 
 /**
  * POST - Sell House (SECURED)
- * This automatically appears in Home Feed via feedRoutes.js
+ * This WILL appear in Home Feed
  */
 router.post("/sell", auth, async (req, res) => {
   try {
@@ -18,19 +19,32 @@ router.post("/sell", auth, async (req, res) => {
       });
     }
 
+    // 1️⃣ Create House
     const house = await House.create({
       title,
       location,
       price: Number(price),
       description,
       image,
-      postedBy: req.user.id // ✅ authenticated user
+      purpose: "sell", 
+      postedBy: req.user.id
     });
 
+   // 2️⃣ CREATE HOME FEED POST (USING Post MODEL CORRECTLY)
+const feedPost = await Feed.create({
+  user: req.user.id,
+  type: "sell",                        // ✅ matches Post.js enum
+  text: `🏠 House for Sale\n${house.title}\n₹${house.price}\n${house.location}\n${house.description || ""}`,
+  image: house.image
+});
+
+    console.log("FEED CREATED 👉", feedPost); // 🔥 ADD THIS
+    
     res.status(201).json({
       success: true,
       message: "House posted successfully",
-      house
+      house,
+      feedPost          // ✅ send feed post to frontend
     });
 
   } catch (error) {
@@ -51,7 +65,6 @@ router.get("/buy", async (req, res) => {
 
     const filter = {};
 
-    // 🔍 Search
     if (q) {
       filter.$or = [
         { title: { $regex: q, $options: "i" } },
@@ -59,19 +72,16 @@ router.get("/buy", async (req, res) => {
       ];
     }
 
-    // 📍 Location filter
     if (location) {
       filter.location = { $regex: location, $options: "i" };
     }
 
-    // 💰 Price filter
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
-    // 🔃 Sorting
     let sortOption = { createdAt: -1 };
     if (sort === "priceLow") sortOption = { price: 1 };
     if (sort === "priceHigh") sortOption = { price: -1 };
@@ -124,3 +134,61 @@ router.get("/:id", async (req, res) => {
 });
 
 module.exports = router;
+
+
+/**
+ * POST - To-Let House
+ */
+router.post("/rent", auth, async (req, res) => {
+  try {
+    const {
+      title,
+      location,
+      price,
+      description,
+      image,
+      rentType // monthly / yearly (optional)
+    } = req.body;
+
+    if (!title || !location || !price) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, location and rent amount are required"
+      });
+    }
+
+    // 1️⃣ Create House (rent)
+    const house = await House.create({
+      title,
+      location,
+      price: Number(price),
+      description,
+      image,
+      purpose: "rent",          // 🔥 KEY DIFFERENCE
+      rentType,
+      postedBy: req.user.id
+    });
+
+    // 2️⃣ Create Feed Post
+   const feedPost = await Feed.create({
+  user: req.user.id,
+  type: "rent",                        // ✅ matches Post.js enum
+  text: `🔑 House for Rent\n${house.title}\n₹${house.price}\n${house.location}\n${house.description || ""}`,
+  image: house.image
+});
+
+    res.status(201).json({
+      success: true,
+      message: "House listed for rent",
+      house,
+      feedPost
+    });
+
+  } catch (error) {
+    console.error("RENT HOUSE ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});

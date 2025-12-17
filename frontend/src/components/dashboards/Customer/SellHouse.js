@@ -47,7 +47,7 @@ function SellHouse() {
 
       if (data.success) {
         alert("House posted successfully");
-        navigate("/buy-house");
+        navigate("/home");
       } else {
         alert(data.message || "Failed to post house");
       }
@@ -139,6 +139,7 @@ function SellHouse() {
       </div>
     </div>
   );
+   
 }
 
 export default SellHouse;

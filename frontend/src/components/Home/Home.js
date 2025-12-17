@@ -186,18 +186,26 @@ useEffect(() => {
               >
                 {/* HEADER */}
                 <div className="feed-header">
-                  <div className="feed-user-box">
-                    <div className="feed-avatar">
-                      {(item.user?.name || "U").charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="feed-user">
-  {item.user?.name || "Civilink User"}
-  <span className="feed-role">
-    {item.user?.profession || item.role || "Member"}
-  </span>
-</div>
+                <div
+  className="feed-user-box"
+  onClick={() => {
+    if (item.user?._id) {
+      navigate(`/profile/${item.user._id}`);
+    }
+  }}
+  style={{ cursor: "pointer" }}
+>
+  <div className="feed-avatar">
+    {(item.user?.name || "U").charAt(0).toUpperCase()}
+  </div>
 
+  <div>
+    <div className="feed-user">
+      {item.user?.name || "Civilink User"}
+      <span className="feed-role">
+        {item.user?.profession || item.role || "Member"}
+      </span>
+    </div>
                       <div className="feed-meta">
                         {item.location || "Tamil Nadu"} • Just now
                       </div>
@@ -222,6 +230,15 @@ useEffect(() => {
 
                 {/* CONTENT */}
                 <div className="feed-content">
+
+                  {/* BADGE */}
+  {item.type === "sell" && (
+    <span className="badge sell">For Sale</span>
+  )}
+  {item.type === "rent" && (
+    <span className="badge rent">To-Let</span>
+  )}
+
                   {item.title && <h4>{item.title}</h4>}
                   {item.text && <p>{item.text}</p>}
                   {item.price && <div className="feed-price">{item.price}</div>}
@@ -277,9 +294,10 @@ useEffect(() => {
               </article>
 
               {/* PROFESSION SUGGESTION */}
-              {index % 3 === 2 && <ProfessionSuggestionRow />}
-
-            </React.Fragment>
+               {index % 10 === 2 && (
+      <ProfessionSuggestionRow key={`suggestion-${item.id}`} />
+    )}
+  </React.Fragment>
           ))
         ) : (
           <div style={{ padding: 20, color: "#666" }}>

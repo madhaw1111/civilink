@@ -6,29 +6,42 @@ const houseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+
+    description: String,
+
     location: {
       type: String,
       required: true
     },
+
     price: {
       type: Number,
+      required: true   // sell price OR monthly rent
+    },
+
+    deposit: {
+      type: Number     // only for rent
+    },
+
+    availableFrom: {
+      type: Date       // only for rent
+    },
+
+    image: String,
+
+    purpose: {
+      type: String,
+      enum: ["sell", "rent"],
       required: true
     },
-    description: {
-      type: String
-    },
-    image: {
-      type: String // image URL
-    },
+
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("House", houseSchema);

@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const RentHouse = require("../models/RentHouse");
+const Post = require("../models/Post");          // ✅ ADD THIS
 const auth = require("../middleware/auth");
 
 /**
  * POST — Rent / To-Let (Owner posts)
+ * ALSO adds entry to Home Feed (Post)
  */
 router.post("/post", auth, async (req, res) => {
   try {
@@ -25,6 +27,7 @@ router.post("/post", auth, async (req, res) => {
       });
     }
 
+    // 1️⃣ Create RentHouse (detail storage)
     const rentHouse = await RentHouse.create({
       title,
       location,
@@ -33,13 +36,27 @@ router.post("/post", auth, async (req, res) => {
       description,
       image,
       availableFrom,
-      postedBy: req.user.id   // 🔑 from auth.js
+      postedBy: req.user.id
+    });
+
+    // 2️⃣ CREATE HOME FEED POST (🔥 THIS WAS MISSING)
+    const feedPost = await Post.create({
+      user: req.user.id,
+      type: "rent",   // ✅ matches Post.js enum
+      text: `🔑 House for Rent / To-Let
+${title}
+₹${rent}
+${location}
+${description || ""}`,
+      image
     });
 
     res.json({
       success: true,
-      rentHouse
+      rentHouse,
+      feedPost
     });
+
   } catch (err) {
     console.error("RENT POST ERROR:", err);
     res.status(500).json({

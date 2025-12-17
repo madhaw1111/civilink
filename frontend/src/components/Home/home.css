@@ -450,3 +450,23 @@ body {
   background: transparent;
   border: 1px solid #ccc;
 }
+
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.badge.sell {
+  background-color: #e6f4ea;
+  color: #1e7f3f;
+}
+
+.badge.rent {
+  background-color: #e6f0ff;
+  color: #1a4fd8;
+}

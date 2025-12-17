@@ -22,6 +22,7 @@ import SellHouse from "./components/dashboards/Customer/SellHouse";
 import RentalHouse from "./components/dashboards/Customer/Rent/RentalHouse";
 // VENDOR PAGE
 import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
+import AdminDashboard from "./components/dashboards/Vendor/AdminDashboard";
 
 // PROFESSION PAGE
 import ProfessionDashboard from "./components/dashboards/Profession/ProfessionDashboard";
@@ -81,7 +82,7 @@ export default function App() {
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />
-
+        <Route path="/admin" element={<AdminDashboard />} />
         {/* PROFESSION*/}
         <Route path="/profession-dashboard" element={<ProfessionDashboard />} />
         <Route path="/profession/:type" element={<ProfessionList />} />
