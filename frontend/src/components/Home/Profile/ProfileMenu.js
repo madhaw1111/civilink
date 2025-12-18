@@ -79,6 +79,17 @@ export default function ProfileMenu({
           📍 Location
         </button>
 
+        {/* SAVED POSTS / HOUSES */}
+<button
+  className="drawer-item"
+  onClick={() => {
+    onClose();
+    navigate("/saved");
+  }}
+>
+  ⭐ Saved
+</button>
+
         <div className="drawer-sep" />
 
         {/* SETTINGS */}

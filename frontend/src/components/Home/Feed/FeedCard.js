@@ -10,36 +10,39 @@ function FeedCard({
   setActivePost,
   setShowComments,
   setSharePost,
-  setShowShare,
-  setConsultUser,
-  setShowConsult
+  setShowShare
 }) {
+  const user = item.postedBy; // 🔑 single source of truth
+
   return (
     <div className="feed-card">
+
       {/* HEADER */}
       <div className="feed-header">
-
-        {/* Avatar + User Info */}
         <div className="feed-user-box">
-          <div className="feed-avatar">{(item.user || "C").charAt(0)}</div>
+          <div className="feed-avatar">
+            {user?.name?.charAt(0) || "C"}
+          </div>
 
           <div>
             <div className="feed-user">
-              {item.user || "Civilink User"}
+              {user?.name || "Civilink User"}
               <span className="feed-role">
-                {item.role || "Member"}
+                {user?.role || "Member"}
               </span>
             </div>
-            <div className="feed-meta">{item.location || "Tamil Nadu"} • Just now</div>
+            <div className="feed-meta">
+              {item.location || "Tamil Nadu"} • Just now
+            </div>
           </div>
         </div>
 
-        {/* ⋮ MENU BUTTON */}
+        {/* ⋮ MENU */}
         <div
           className="feed-menu"
           onClick={(e) => {
             e.stopPropagation();
-            setMenuPost(menuPost?.id === item.id ? null : item);
+            setMenuPost(menuPost?._id === item._id ? null : item);
           }}
         >
           ⋮
@@ -47,7 +50,9 @@ function FeedCard({
       </div>
 
       {/* IMAGE */}
-      {item.image && <img src={item.image} className="feed-image" alt="post" />}
+      {item.image && (
+        <img src={item.image} className="feed-image" alt="post" />
+      )}
 
       {/* CONTENT */}
       <div className="feed-content">
@@ -56,19 +61,17 @@ function FeedCard({
         {item.price && <div className="feed-price">{item.price}</div>}
       </div>
 
-      {/* ACTION BUTTONS */}
+      {/* ACTIONS */}
       <FeedActions
         item={item}
         setActivePost={setActivePost}
         setShowComments={setShowComments}
         setSharePost={setSharePost}
         setShowShare={setShowShare}
-        setConsultUser={setConsultUser}
-        setShowConsult={setShowConsult}
       />
 
       {/* POPUP MENU */}
-      {menuPost?.id === item.id && (
+      {menuPost?._id === item._id && (
         <FeedMenuPopup
           menuRef={menuRef}
           close={() => setMenuPost(null)}

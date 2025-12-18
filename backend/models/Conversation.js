@@ -12,7 +12,7 @@ const conversationSchema = new mongoose.Schema(
 
     contextType: {
       type: String,
-      enum: ["house", "profession", "service", "vendor","rent"],
+      enum: ["feed","house", "profession", "service", "vendor","rent"],
       required: true
     },
 

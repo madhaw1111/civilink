@@ -146,6 +146,39 @@ useEffect(() => {
   }
 };
 
+    /*CONSULT BUTTON REDIRECT TO CHAT*/
+   const openConsultChat = async (receiverUserId, contextType = "feed", contextId = null) => {
+  const user = JSON.parse(localStorage.getItem("civilink_user"));
+
+  if (!user) {
+    alert("Please login to consult");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/chat/conversation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        senderId: user._id,
+        receiverId: receiverUserId,
+        contextType,
+        contextId
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      navigate(`/messages/${data.conversation._id}`);
+    } else {
+      alert("Unable to start chat");
+    }
+  } catch (err) {
+    console.error("Chat error", err);
+    alert("Server error. Try again.");
+  }
+};
 
 
   /* ================= RENDER ================= */
@@ -268,15 +301,32 @@ useEffect(() => {
                     🔗 Share
                   </button>
 
-                  <button
-                    className="feed-action-btn"
-                    onClick={() => {
-                      setConsultUser(item);
-                      setShowConsult(true);
-                    }}
-                  >
-                    📞 Consult
-                  </button>
+                <button
+  className="feed-action-btn"
+  onClick={(e) => {
+    e.stopPropagation();
+
+    const receiverId =
+      typeof item.user === "string"
+        ? item.user
+        : item.user?._id;
+
+    if (!receiverId) {
+      console.error("Invalid user object", item.user);
+      return;
+    }
+
+    openConsultChat(
+      receiverId,   // ✅ FIXED
+      "feed",
+      item._id
+    );
+  }}
+>
+  📞 Consult
+</button>
+
+
                 </div>
 
                 {/* MENU */}

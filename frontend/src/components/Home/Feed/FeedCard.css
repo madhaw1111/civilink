@@ -13,3 +13,19 @@
 .feed-card {
   animation: fadeInPost 0.35s ease forwards;
 }
+
+
+.feed-actions {
+  position: relative;
+  z-index: 100;
+}
+
+.feed-action-btn {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.feed-card {
+  pointer-events: auto;
+}
+

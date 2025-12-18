@@ -9,15 +9,13 @@ function FeedList({
   setActivePost,
   setShowComments,
   setSharePost,
-  setShowShare,
-  setConsultUser,
-  setShowConsult
+  setShowShare
 }) {
   return (
     <main className="home-feed">
-      {feed?.map(item => (
+      {feed?.map((item) => (
         <FeedCard
-          key={item.id}
+          key={item._id}          // 🔑 FIXED
           item={item}
           menuPost={menuPost}
           setMenuPost={setMenuPost}
@@ -26,8 +24,6 @@ function FeedList({
           setShowComments={setShowComments}
           setSharePost={setSharePost}
           setShowShare={setShowShare}
-          setConsultUser={setConsultUser}
-          setShowConsult={setShowConsult}
         />
       ))}
     </main>

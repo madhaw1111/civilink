@@ -131,7 +131,7 @@ export default function ProfileWrapper() {
                 addPost({ image: "", text: "Test post from UI" })
               }
             >
-              Add Demo Post
+              Add Post
             </button>
           </div>
         )}
