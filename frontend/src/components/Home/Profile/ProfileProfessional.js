@@ -1,7 +1,8 @@
 // src/components/Home/Profile/ProfileProfessional.js
 import React from "react";
 
-export default function ProfileProfessional({ user, posts = [], onAddPost }) {
+export default function ProfileProfessional({ user, posts = [], onAddPost, onEditPost,
+  onDeletePost }) {
   const loggedInUser = JSON.parse(localStorage.getItem("civilink_user"));
   const isOwnProfile = loggedInUser?._id === user?._id;
 
@@ -179,27 +180,41 @@ export default function ProfileProfessional({ user, posts = [], onAddPost }) {
           <section className="card">
             <h3>Portfolio</h3>
             <div className="portfolio-grid">
-              {posts.length ? (
-                posts.slice(0, 6).map((p) => (
-                  <div
-                    key={p.id || p._id}
-                    className="port-item"
-                  >
-                    {p.image ? (
-                      <img src={p.image} alt="project" />
-                    ) : (
-                      <div className="placeholder-sm">
-                        {p.text || "Project"}
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="empty-small">
-                  No projects yet
-                </div>
-              )}
-            </div>
+  {posts.length ? (
+    posts.slice(0, 6).map((p) => (
+      <div key={p._id} className="port-item">
+        {p.image ? (
+          <img src={p.image} alt="project" />
+        ) : (
+          <div className="placeholder-sm">
+            {p.text || "Project"}
+          </div>
+        )}
+
+        {/* OWNER ACTIONS */}
+        {isOwnProfile && (
+          <div className="port-actions">
+            <button
+              className="btn xs outline"
+              onClick={() => onEditPost(p)}
+            >
+              Edit
+            </button>
+            <button
+              className="btn xs danger"
+              onClick={() => onDeletePost(p._id)}
+            >
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+    ))
+  ) : (
+    <div className="empty-small">No projects yet</div>
+  )}
+</div>
+
           </section>
 
           {/* CONTACT */}

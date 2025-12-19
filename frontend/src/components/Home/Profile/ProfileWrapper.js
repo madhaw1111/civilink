@@ -1,9 +1,11 @@
+// src/components/Home/Profile/ProfileWrapper.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import ProfileNormal from "./ProfileNormal";
 import ProfileProfessional from "./ProfileProfessional";
 import ProfileEditModal from "./ProfileEditModal";
+import PostModal from "../Modals/PostModal";
 
 import "./profile.full.css";
 
@@ -13,36 +15,31 @@ export default function ProfileWrapper() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
   const loggedInUser = JSON.parse(
     localStorage.getItem("civilink_user")
   );
 
-  /* =====================================
-     FETCH PROFILE (FIXED & SAFE)
-  ===================================== */
-  useEffect(() => {
-    const loadProfile = async () => {
-      setLoading(true);
+  const token = localStorage.getItem("civilink_token");
 
-      // load demo posts (existing logic)
-      try {
-        const savedPosts = JSON.parse(
-          localStorage.getItem("civilink_posts") || "[]"
-        );
-        setPosts(Array.isArray(savedPosts) ? savedPosts : []);
-      } catch {
-        setPosts([]);
-      }
+
+  /* =====================================================
+     EFFECT 1: LOAD USER (runs on route change)
+  ===================================================== */
+  useEffect(() => {
+    const loadUser = async () => {
+      setLoadingUser(true);
+      setUser(null);
 
       try {
         const token = localStorage.getItem("civilink_token");
 
-        // 🔑 decide API endpoint
         const url = userId
-          ? `http://localhost:5000/api/users/${userId}` // other user
-          : `http://localhost:5000/api/users/me`;       // own profile
+          ? `http://localhost:5000/api/users/${userId}`
+          : `http://localhost:5000/api/users/me`;
 
         const res = await fetch(url, {
           headers: token
@@ -52,31 +49,56 @@ export default function ProfileWrapper() {
 
         if (!res.ok) {
           setUser(null);
-          setLoading(false);
+          setLoadingUser(false);
           return;
         }
 
         const data = await res.json();
-
-        // supports both formats: {user} or direct user
         setUser(data.user || data);
-        setLoading(false);
-      } catch {
+        setLoadingUser(false);
+      } catch (err) {
+        console.error("User load failed", err);
         setUser(null);
-        setLoading(false);
+        setLoadingUser(false);
       }
     };
 
-    loadProfile();
+    loadUser();
   }, [userId]);
 
-  /* =====================================
+  /* =====================================================
+     EFFECT 2: LOAD POSTS (runs when user is ready)
+  ===================================================== */
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const loadPosts = async () => {
+      setLoadingPosts(true);
+
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/profile/${user._id}/posts`
+        );
+
+        const data = await res.json();
+        setPosts(data.success ? data.posts : []);
+        setLoadingPosts(false);
+      } catch (err) {
+        console.error("Post load failed", err);
+        setPosts([]);
+        setLoadingPosts(false);
+      }
+    };
+
+    loadPosts();
+  }, [user?._id]);
+
+  /* =====================================================
      HELPERS
-  ===================================== */
+  ===================================================== */
   const saveUser = (updatedUser) => {
     setUser(updatedUser);
 
-    // update localStorage only if editing own profile
     if (loggedInUser?._id === updatedUser._id) {
       localStorage.setItem(
         "civilink_user",
@@ -85,16 +107,74 @@ export default function ProfileWrapper() {
     }
   };
 
-  const addPost = (p) => {
-    const next = [{ id: Date.now(), ...p }, ...posts];
-    setPosts(next);
-    localStorage.setItem("civilink_posts", JSON.stringify(next));
+  const handleNewPost = (newPost) => {
+    // optimistic update for profile portfolio
+    setPosts(prev => [newPost, ...prev]);
   };
 
-  /* =====================================
+  /* DELETE */
+const handleDeletePost = async (postId) => {
+  if (!window.confirm("Delete this post?")) return;
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/post/${postId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (res.ok) {
+      setPosts(prev => prev.filter(p => p._id !== postId));
+    }
+  } catch (err) {
+    console.error("Delete failed", err);
+  }
+};
+
+/* EDIT */
+const handleEditPost = async (post) => {
+  const newText = prompt("Edit post text", post.text);
+  if (newText === null) return;
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/post/${post._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          text: newText,
+          image: post.image
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      setPosts(prev =>
+        prev.map(p =>
+          p._id === post._id ? data.post : p
+        )
+      );
+    }
+  } catch (err) {
+    console.error("Edit failed", err);
+  }
+};
+
+
+  /* =====================================================
      STATES
-  ===================================== */
-  if (loading) {
+  ===================================================== */
+  if (loadingUser) {
     return <div className="profile-empty">Loading profile…</div>;
   }
 
@@ -108,11 +188,12 @@ export default function ProfileWrapper() {
   const isOwnProfile =
     loggedInUser?._id === user._id;
 
-  /* =====================================
+  /* =====================================================
      RENDER
-  ===================================== */
+  ===================================================== */
   return (
     <div className="profile-root">
+      {/* ========== TOP TOOLBAR ========== */}
       <div className="profile-toolbar">
         <div className="logo">Civilink</div>
 
@@ -127,9 +208,7 @@ export default function ProfileWrapper() {
 
             <button
               className="btn primary"
-              onClick={() =>
-                addPost({ image: "", text: "Test post from UI" })
-              }
+              onClick={() => setShowPostModal(true)}
             >
               Add Post
             </button>
@@ -137,24 +216,24 @@ export default function ProfileWrapper() {
         )}
       </div>
 
+      {/* ========== PROFILE BODY ========== */}
       {isProfessional ? (
         <ProfileProfessional
           user={user}
           posts={posts}
-          isOwnProfile={isOwnProfile}
-          onSaveUser={saveUser}
-          onAddPost={addPost}
+          loadingPosts={loadingPosts}
+          onAddPost={() => setShowPostModal(true)}
         />
       ) : (
         <ProfileNormal
           user={user}
           posts={posts}
-          isOwnProfile={isOwnProfile}
-          onSaveUser={saveUser}
-          onAddPost={addPost}
+          loadingPosts={loadingPosts}
+          onAddPost={() => setShowPostModal(true)}
         />
       )}
 
+      {/* ========== EDIT PROFILE MODAL ========== */}
       {showEdit && isOwnProfile && (
         <ProfileEditModal
           user={user}
@@ -165,6 +244,23 @@ export default function ProfileWrapper() {
           }}
         />
       )}
+
+      {/* ========== POST MODAL ========== */}
+      {showPostModal && (
+        <PostModal
+          onClose={() => setShowPostModal(false)}
+          addToFeed={handleNewPost}
+        />
+      )}
+
+      <ProfileProfessional
+  user={user}
+  posts={posts}
+  onAddPost={() => setShowPostModal(true)}
+  onEditPost={handleEditPost}
+  onDeletePost={handleDeletePost}
+/>
+
     </div>
   );
 }

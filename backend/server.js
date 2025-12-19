@@ -32,3 +32,7 @@ app.use("/api/rent", require("./routes/rentRoutes"));
 app.use("/api/post", require("./routes/postRoutes"));
 
 app.use("/api/feed", require("./routes/feedRoutes"));
+
+const profileRoutes = require("./routes/profileRoutes");
+
+app.use("/api/profile", profileRoutes);
