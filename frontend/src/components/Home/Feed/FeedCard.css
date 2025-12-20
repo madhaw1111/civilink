@@ -29,3 +29,7 @@
   pointer-events: auto;
 }
 
+.feed-action-btn.liked {
+  color: #e0245e;
+  font-weight: 600;
+}

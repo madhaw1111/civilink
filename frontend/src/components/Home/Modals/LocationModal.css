@@ -1,0 +1,32 @@
+.location-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.location-modal h3 {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.location-modal input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.divider {
+  text-align: center;
+  margin: 12px 0;
+  color: #888;
+}
+
+.full {
+  width: 100%;
+  margin-bottom: 10px;
+}

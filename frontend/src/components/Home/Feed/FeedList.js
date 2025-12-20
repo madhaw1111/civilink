@@ -24,6 +24,7 @@ function FeedList({
           setShowComments={setShowComments}
           setSharePost={setSharePost}
           setShowShare={setShowShare}
+           onLike={handleLike}  
         />
       ))}
     </main>

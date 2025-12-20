@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import "./ProfileMenu.css";
 import { useNavigate } from "react-router-dom";
+import LocationModal from "../Modals/LocationModal";
 
 export default function ProfileMenu({
   open,
@@ -9,6 +11,18 @@ export default function ProfileMenu({
   onLogout = () => {},
 }) {
   const navigate = useNavigate();
+  const [showLocation, setShowLocation] = React.useState(false);
+
+  const [location, setLocation] = useState(() => {
+  try {
+    return JSON.parse(
+      localStorage.getItem("civilink_location")
+    );
+  } catch {
+    return null;
+  }
+});
+
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
@@ -20,8 +34,8 @@ export default function ProfileMenu({
   if (!open) return null;
 
   const safeUser = user && Object.keys(user).length ? user : {};
-
-
+  
+  
  return (
   <div className="profile-drawer-backdrop" onClick={onClose}>
     <div
@@ -70,14 +84,18 @@ export default function ProfileMenu({
 
         {/* LOCATION */}
         <button
-          className="drawer-item"
-          onClick={() => {
-            const ok = window.confirm("Use current location?");
-            if (ok) alert("Location set (demo)");
-          }}
-        >
-          📍 Location
-        </button>
+  className="drawer-item"
+  onClick={() => setShowLocation(true)}
+>
+  📍 Location
+  <span className="drawer-sub">
+    {location
+      ? `${location.city}${location.state ? ", " + location.state : ""}`
+      : "Set location"}
+  </span>
+</button>
+
+
 
         {/* SAVED POSTS / HOUSES */}
 <button
@@ -110,6 +128,22 @@ export default function ProfileMenu({
 
       </div>
     </div>
+
+     {/* ================= LOCATION MODAL ================= */}
+  {showLocation && (
+    <LocationModal
+      onClose={() => setShowLocation(false)}
+      onSave={(loc) => {
+        localStorage.setItem(
+          "civilink_location",
+          JSON.stringify(loc)
+        );
+        setLocation(loc);
+        setShowLocation(false);
+        alert(`Location set to ${loc.city}`);
+      }}
+    />
+  )}
   </div>
 );
 

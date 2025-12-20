@@ -5,6 +5,8 @@ import ProfileMenu from "./Profile/ProfileMenu";
 import PostModal from "./Modals/PostModal";
 import ProfessionSuggestionRow from "./Feed/ProfessionSuggestionRow";
 import { useNavigate } from "react-router-dom";
+import ShareModal from "./Modals/ShareModal";
+import CommentsModal from "./Modals/CommentsModal";
 
 export default function Home() {
 
@@ -181,6 +183,83 @@ useEffect(() => {
 };
 
 
+const handleLike = async (post) => {
+  const token = localStorage.getItem("civilink_token");
+  const user = JSON.parse(localStorage.getItem("civilink_user"));
+
+  if (!token || !user) {
+    alert("Please login to like");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/feed/${post._id}/like`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    // ✅ UPDATE FEED STATE FROM BACKEND RESPONSE
+    setFeed(prev =>
+      prev.map(p =>
+        p._id === data.postId
+          ? { ...p, likes: data.likes }
+          : p
+      )
+    );
+  } catch (err) {
+    console.error("Like failed", err);
+  }
+};
+
+const handleAddComment = async (text) => {
+  const token = localStorage.getItem("civilink_token");
+  if (!token) return alert("Please login");
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/feed/${activePost._id}/comment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ text })
+      }
+    );
+
+    const data = await res.json();
+    if (!data.success) return;
+
+    setFeed(prev =>
+      prev.map(p =>
+        p._id === activePost._id
+          ? { ...p, comments: data.comments }
+          : p
+      )
+    );
+
+    setActivePost(prev => ({
+      ...prev,
+      comments: data.comments
+    }));
+  } catch (err) {
+    console.error("Comment failed", err);
+  }
+};
+
+
+
+
   /* ================= RENDER ================= */
   return (
     <div className="home-container">
@@ -279,7 +358,22 @@ useEffect(() => {
 
                 {/* ACTIONS */}
                 <div className="feed-actions">
-                  <button className="feed-action-btn">❤️ Like</button>
+  <button
+    className={`feed-action-btn ${
+      item.likes?.includes(
+        JSON.parse(localStorage.getItem("civilink_user"))?._id
+      )
+        ? "liked"
+        : ""
+    }`}
+    onClick={(e) => {
+      e.stopPropagation();   // 🔑 VERY IMPORTANT
+      handleLike(item);
+    }}
+  >
+    ❤️ {item.likes?.length || 0}
+  </button>
+
 
                   <button
                     className="feed-action-btn"
@@ -363,6 +457,28 @@ useEffect(() => {
           addToFeed={addToFeed}
         />
       )}
+
+      {showShare && (
+  <ShareModal
+    post={sharePost}
+    onClose={() => {
+      setShowShare(false);
+      setSharePost(null);
+    }}
+  />
+)}
+
+{showComments && (
+  <CommentsModal
+    post={activePost}
+    onClose={() => {
+      setShowComments(false);
+      setActivePost(null);
+    }}
+    onAddComment={handleAddComment}
+  />
+)}
+
 
       
        {/* CUSTOMER MENU MODAL */}

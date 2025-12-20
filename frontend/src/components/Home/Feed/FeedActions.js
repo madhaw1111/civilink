@@ -6,7 +6,8 @@ function FeedActions({
   setShowComments,
   setActivePost,
   setShowShare,
-  setSharePost
+  setSharePost,
+  onLike
 }) {
   const navigate = useNavigate();
 
@@ -73,12 +74,22 @@ function FeedActions({
     <div className="feed-actions">
 
       {/* ❤️ LIKE */}
-      <button
-        className="feed-action-btn"
-        onClick={() => alert("Like feature coming soon")}
-      >
-        ❤️ <span>Like</span>
-      </button>
+    <button
+  className={`feed-action-btn ${
+    item.likes?.includes(
+      JSON.parse(localStorage.getItem("civilink_user"))?._id
+    )
+      ? "liked"
+      : ""
+  }`}
+  onClick={() => onLike(item)}
+>
+  ❤️ <span>
+    {item.likes?.length || 0}
+  </span>
+</button>
+
+
 
       {/* 💬 COMMENT */}
       <button
