@@ -9,8 +9,17 @@ const userSchema = new mongoose.Schema({
   skills: { type: [String], default: [] },
   experienceYears: { type: Number, default: 0 },
   profilePhoto: { type: String }, // URL or Base64
-  isProfessional: { type: Boolean, default: false }
+  isProfessional: { type: Boolean, default: false },
 
+   /* ================= CONNECTIONS ================= */
+    connections: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ]
+
+  
 }, { timestamps: true });
  
 

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
+const connectionRoutes = require("./routes/connectionRoutes");
 
 dotenv.config();
 connectDB();
@@ -36,3 +37,5 @@ app.use("/api/feed", require("./routes/feedRoutes"));
 const profileRoutes = require("./routes/profileRoutes");
 
 app.use("/api/profile", profileRoutes);
+
+app.use("/api/connections", connectionRoutes);

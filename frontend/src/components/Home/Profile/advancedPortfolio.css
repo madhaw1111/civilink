@@ -1,0 +1,111 @@
+.portfolio-2025 {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portfolio-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.portfolio-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f1f1f1;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: #111;
+  color: #fff;
+}
+
+.portfolio-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.portfolio-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: #ddd;
+}
+
+.portfolio-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portfolio-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  background: linear-gradient(135deg,#ccc,#eee);
+}
+
+.portfolio-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.75),
+    rgba(0,0,0,0.1)
+  );
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+
+.portfolio-card:hover .portfolio-overlay {
+  opacity: 1;
+}
+
+.overlay-content {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  color: white;
+}
+
+.overlay-content h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.overlay-content p {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.overlay-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.portfolio-empty {
+  padding: 30px;
+  text-align: center;
+  opacity: 0.6;
+}

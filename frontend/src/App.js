@@ -32,6 +32,8 @@ import ProfessionList from "./components/dashboards/Profession/ProfessionList";
 import ChatInbox from "./components/chat/ChatInbox";
 import ChatWindow from "./components/chat/ChatWindow";
 
+import ConnectionsPage from "./components/Home/Profile/ConnectionsPage";
+
 export default function App() {
 
   // MUST BE INSIDE THE COMPONENT
@@ -90,6 +92,10 @@ export default function App() {
         <Route path="/messages" element={<ChatInbox />} />
         <Route path="/messages/:conversationId" element={<ChatWindow />} />
          <Route path="/profile/:userId" element={<ProfileWrapper />} />
+        <Route
+  path="/profile/:userId/connections"
+  element={<ConnectionsPage />}
+/>
 
       </Routes>
     </Router>

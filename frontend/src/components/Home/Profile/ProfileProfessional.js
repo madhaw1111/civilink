@@ -1,10 +1,24 @@
 // src/components/Home/Profile/ProfileProfessional.js
 import React from "react";
+import AdvancedPortfolio from "./AdvancedPortfolio";
 
-export default function ProfileProfessional({ user, posts = [], onAddPost, onEditPost,
-  onDeletePost }) {
-  const loggedInUser = JSON.parse(localStorage.getItem("civilink_user"));
-  const isOwnProfile = loggedInUser?._id === user?._id;
+
+export default function ProfileProfessional({
+  user,
+  posts = [],
+  loadingPosts = false,
+  onAddPost = () => {},
+  onEditPost = () => {},
+  onDeletePost = () => {}
+}) {
+  /* ================= OWN PROFILE CHECK ================= */
+  const loggedInUser = JSON.parse(
+    localStorage.getItem("civilink_user")
+  );
+  const isOwnProfile =
+    loggedInUser?._id && user?._id
+      ? loggedInUser._id === user._id
+      : false;
 
   /* ================= SHARE PROFILE ================= */
   const profileUrl = `${window.location.origin}/profile/${user._id}`;
@@ -27,22 +41,35 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
   };
 
   /* ================= CONNECT USER ================= */
-  const connectUser = async () => {
-    try {
-      await fetch(
-        `http://localhost:5000/api/users/${user._id}/connect`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: localStorage.getItem("civilink_token")
-          }
+ const [connected, setConnected] = React.useState(false);
+
+React.useEffect(() => {
+  if (!loggedInUser || !user) return;
+  setConnected(
+    loggedInUser.connections?.includes(user._id)
+  );
+}, [user]);
+
+const connectUser = async () => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/connections/${user._id}/connect`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("civilink_token")}`
         }
-      );
-      alert("Connected");
-    } catch (err) {
-      console.error("Connect failed", err);
+      }
+    );
+
+    if (res.ok) {
+      setConnected(true);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   return (
     <div className="profile-pro">
@@ -52,7 +79,9 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
           <div className="pro-avatar">
             {user.profilePhoto ||
               user.avatar ||
-              (user.name ? user.name.charAt(0).toUpperCase() : "U")}
+              (user.name
+                ? user.name.charAt(0).toUpperCase()
+                : "U")}
           </div>
         </div>
 
@@ -61,48 +90,51 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
 
           {(user.profession || user.role) && (
             <div className="headline">
-              {user.profession} {user.role && `• ${user.role}`}
+              {user.profession}
+              {user.role && ` • ${user.role}`}
             </div>
           )}
 
           {(user.location || user.experienceYears) && (
             <div className="location">
               {user.location}
-              {user.experienceYears && ` • ${user.experienceYears} yrs`}
+              {user.experienceYears &&
+                ` • ${user.experienceYears} yrs`}
             </div>
           )}
 
           {/* ================= ACTION BUTTONS ================= */}
           <div className="pro-actions">
-            {/* OTHER USER → CONSULT & CONNECT */}
             {!isOwnProfile && (
               <>
                 <button className="btn primary">
                   Consult
                 </button>
 
-                <button
-                  className="btn outline"
-                  onClick={connectUser}
-                >
-                  Connect
-                </button>
+                {!isOwnProfile && (
+  <button
+    className={`btn ${connected ? "outline" : "primary"}`}
+    disabled={connected}
+    onClick={connectUser}
+  >
+    {connected ? "Connected" : "Connect"}
+  </button>
+)}
+
               </>
             )}
 
-            {/* OWN PROFILE → CONNECTIONS */}
             {isOwnProfile && (
               <button
                 className="btn outline"
                 onClick={() =>
-                  window.location.href = `/profile/${user._id}/connections`
+                  (window.location.href = `/profile/${user._id}/connections`)
                 }
               >
                 Connections
               </button>
             )}
 
-            {/* SHARE → ALWAYS */}
             <button
               className="btn subtle"
               onClick={shareProfile}
@@ -120,8 +152,12 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
 
           {user.recommendationsCount !== undefined && (
             <div className="stat">
-              <div className="num">{user.recommendationsCount}</div>
-              <div className="lbl">Recommendations</div>
+              <div className="num">
+                {user.recommendationsCount}
+              </div>
+              <div className="lbl">
+                Recommendations
+              </div>
             </div>
           )}
         </div>
@@ -130,7 +166,6 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
       {/* ================= BODY ================= */}
       <div className="pro-body">
         <div className="pro-left-col">
-          {/* ABOUT */}
           {user.bio && (
             <section className="card">
               <h3>About</h3>
@@ -138,86 +173,64 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
             </section>
           )}
 
-          {/* SKILLS */}
-          {Array.isArray(user.skills) && user.skills.length > 0 && (
-            <section className="card">
-              <h3>Skills</h3>
-              <div className="tags">
-                {user.skills.map((s) => (
-                  <span key={s} className="tag">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
+          {Array.isArray(user.skills) &&
+            user.skills.length > 0 && (
+              <section className="card">
+                <h3>Skills</h3>
+                <div className="tags">
+                  {user.skills.map((s) => (
+                    <span
+                      key={s}
+                      className="tag"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {/* EXPERIENCE */}
-          {Array.isArray(user.experience) && user.experience.length > 0 && (
-            <section className="card">
-              <h3>Experience</h3>
-              <div className="exp">
-                {user.experience.map((exp, i) => (
-                  <div key={i} className="exp-item">
-                    <div className="exp-role">{exp.role}</div>
-                    <div className="exp-org">
-                      {exp.company} • {exp.duration}
-                    </div>
-                    {exp.description && (
-                      <div className="exp-desc">
-                        {exp.description}
+          {Array.isArray(user.experience) &&
+            user.experience.length > 0 && (
+              <section className="card">
+                <h3>Experience</h3>
+                {user.experience.map(
+                  (exp, i) => (
+                    <div
+                      key={i}
+                      className="exp-item"
+                    >
+                      <div className="exp-role">
+                        {exp.role}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+                      <div className="exp-org">
+                        {exp.company} •{" "}
+                        {exp.duration}
+                      </div>
+                      {exp.description && (
+                        <div className="exp-desc">
+                          {exp.description}
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
+              </section>
+            )}
         </div>
 
         <div className="pro-right-col">
-          {/* PORTFOLIO */}
           <section className="card">
-            <h3>Portfolio</h3>
-            <div className="portfolio-grid">
-  {posts.length ? (
-    posts.slice(0, 6).map((p) => (
-      <div key={p._id} className="port-item">
-        {p.image ? (
-          <img src={p.image} alt="project" />
-        ) : (
-          <div className="placeholder-sm">
-            {p.text || "Project"}
-          </div>
-        )}
+  <AdvancedPortfolio
+    posts={posts}
+    isOwnProfile={isOwnProfile}
+    onEditPost={onEditPost}
+    onDeletePost={onDeletePost}
+    loading={loadingPosts}
+  />
+</section>
 
-        {/* OWNER ACTIONS */}
-        {isOwnProfile && (
-          <div className="port-actions">
-            <button
-              className="btn xs outline"
-              onClick={() => onEditPost(p)}
-            >
-              Edit
-            </button>
-            <button
-              className="btn xs danger"
-              onClick={() => onDeletePost(p._id)}
-            >
-              Delete
-            </button>
-          </div>
-        )}
-      </div>
-    ))
-  ) : (
-    <div className="empty-small">No projects yet</div>
-  )}
-</div>
 
-          </section>
-
-          {/* CONTACT */}
           {(user.email || user.phone) && (
             <section className="card">
               <h3>Contact</h3>
@@ -240,6 +253,8 @@ export default function ProfileProfessional({ user, posts = [], onAddPost, onEdi
                 )}
               </div>
             </section>
+
+            
           )}
         </div>
       </div>

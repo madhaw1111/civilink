@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 export default function ProfileEditModal({
   user = {},
+  isProfessional = false, // ✅ NEW FLAG
   onClose = () => {},
   onSave = () => {}
 }) {
@@ -14,7 +15,9 @@ export default function ProfileEditModal({
     location: user.location || "",
     experienceYears: user.experienceYears || "",
     profilePhoto: user.profilePhoto || user.avatar || "",
-    skills: Array.isArray(user.skills) ? user.skills.join(", ") : ""
+    skills: Array.isArray(user.skills)
+      ? user.skills.join(", ")
+      : ""
   });
 
   const update = (k, v) =>
@@ -53,27 +56,43 @@ export default function ProfileEditModal({
           onChange={(e) => update("location", e.target.value)}
         />
 
-        <label>Experience (years)</label>
-        <input
-          type="number"
-          min="0"
-          value={form.experienceYears}
-          onChange={(e) => update("experienceYears", e.target.value)}
-        />
+        {/* ================= PROFESSIONAL ONLY ================= */}
+        {isProfessional && (
+          <>
+            <label>Experience (years)</label>
+            <input
+              type="number"
+              min="0"
+              value={form.experienceYears}
+              onChange={(e) =>
+                update("experienceYears", e.target.value)
+              }
+            />
+          </>
+        )}
 
         <label>Profile Photo URL</label>
         <input
           placeholder="https://..."
           value={form.profilePhoto}
-          onChange={(e) => update("profilePhoto", e.target.value)}
+          onChange={(e) =>
+            update("profilePhoto", e.target.value)
+          }
         />
 
-        <label>Skills (comma separated)</label>
-        <input
-          placeholder="AutoCAD, Estimation, Site Management"
-          value={form.skills}
-          onChange={(e) => update("skills", e.target.value)}
-        />
+        {/* ================= PROFESSIONAL ONLY ================= */}
+        {isProfessional && (
+          <>
+            <label>Skills (comma separated)</label>
+            <input
+              placeholder="AutoCAD, Estimation, Site Management"
+              value={form.skills}
+              onChange={(e) =>
+                update("skills", e.target.value)
+              }
+            />
+          </>
+        )}
 
         <label>Bio</label>
         <textarea
@@ -91,10 +110,14 @@ export default function ProfileEditModal({
               const next = {
                 ...user,
                 ...form,
-                experienceYears: Number(form.experienceYears) || 0,
-                skills: form.skills
-                  ? form.skills.split(",").map((s) => s.trim())
-                  : []
+                experienceYears: isProfessional
+                  ? Number(form.experienceYears) || 0
+                  : user.experienceYears || 0,
+                skills: isProfessional
+                  ? form.skills
+                      ?.split(",")
+                      .map((s) => s.trim())
+                  : user.skills || []
               };
               onSave(next);
             }}

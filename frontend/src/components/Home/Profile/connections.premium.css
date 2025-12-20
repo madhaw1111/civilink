@@ -1,0 +1,132 @@
+/* ===============================
+   CONNECTIONS – 2025 PREMIUM UI
+================================ */
+
+.connections-2025 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 18px;
+}
+
+/* HEADER */
+.connections-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.connections-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.connections-header p {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.connections-header input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  min-width: 240px;
+  outline: none;
+}
+
+/* STATES */
+.connections-loading,
+.connections-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: #777;
+  font-size: 15px;
+}
+
+/* GRID */
+.connections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* CARD */
+.connection-card-2025 {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.connection-card-2025:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+/* MAIN CLICK AREA */
+.card-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* AVATAR */
+.avatar-2025 {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #222, #555);
+  color: #fff;
+  font-weight: 600;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar-2025 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* INFO */
+.card-info h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.card-info p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* ACTIONS */
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* MOBILE */
+@media (max-width: 520px) {
+  .connections-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .connections-header input {
+    width: 100%;
+  }
+}
