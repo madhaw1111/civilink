@@ -1,33 +1,160 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 
-// GET logged-in user info
+/* =====================================
+   GET logged-in user info
+===================================== */
 router.get("/me", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
-    res.json(user);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      user
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
+    console.error("Get me error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 });
 
+/* =====================================
+   DELETE own account (SETTINGS)
+===================================== */
+router.delete("/delete", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
 
-// GET user by ID (public profile view)
+    // delete all posts by user
+    await Post.deleteMany({ user: userId });
+
+    // delete user account
+    const deleted = await User.findByIdAndDelete(userId);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Account deleted successfully"
+    });
+  } catch (err) {
+    console.error("Delete account error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete account"
+    });
+  }
+});
+
+/* =====================================
+   UPDATE user theme
+===================================== */
+router.put("/theme", auth, async (req, res) => {
+  try {
+    const { theme } = req.body;
+
+    if (!["light", "dark", "system"].includes(theme)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid theme value"
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { theme },
+      { new: true }
+    ).select("-password");
+
+    res.json({
+      success: true,
+      theme: user.theme
+    });
+  } catch (err) {
+    console.error("Theme update error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update theme"
+    });
+  }
+});
+
+/* =====================================
+   UPDATE user language
+===================================== */
+router.put("/language", auth, async (req, res) => {
+  try {
+    const { language } = req.body;
+
+    if (!["en", "ta", "hi"].includes(language)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid language"
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { language },
+      { new: true }
+    ).select("-password");
+
+    res.json({
+      success: true,
+      language: user.language
+    });
+  } catch (err) {
+    console.error("Language update error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update language"
+    });
+  }
+});
+
+/* =====================================
+   GET user by ID (PUBLIC PROFILE)
+   ⚠️ KEEP THIS AT THE BOTTOM
+===================================== */
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
-      return res.json({ success: false });
+      return res.json({
+        success: false,
+        message: "User not found"
+      });
     }
 
-    res.json({ success: true, user });
+    res.json({
+      success: true,
+      user
+    });
   } catch (err) {
-    console.error(err);
-    res.json({ success: false });
+    console.error("Get user by id error:", err);
+    res.json({
+      success: false,
+      message: "Failed to fetch user"
+    });
   }
 });
 

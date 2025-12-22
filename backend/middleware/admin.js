@@ -1,7 +1,9 @@
-// backend/middleware/admin.js
-module.exports = function (req, res, next) {
+module.exports = function admin(req, res, next) {
   if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ msg: "Admin access only" });
+    return res.status(403).json({
+      success: false,
+      message: "Admin access only"
+    });
   }
   next();
 };

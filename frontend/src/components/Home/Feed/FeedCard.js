@@ -10,7 +10,8 @@ function FeedCard({
   setActivePost,
   setShowComments,
   setSharePost,
-  setShowShare
+  setShowShare,
+  onLike
 }) {
   const user = item.postedBy; // 🔑 single source of truth
 
@@ -68,6 +69,7 @@ function FeedCard({
         setShowComments={setShowComments}
         setSharePost={setSharePost}
         setShowShare={setShowShare}
+        onLike={handleLike}
       />
 
       {/* POPUP MENU */}

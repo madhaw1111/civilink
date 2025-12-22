@@ -34,6 +34,7 @@ import ChatWindow from "./components/chat/ChatWindow";
 
 import ConnectionsPage from "./components/Home/Profile/ConnectionsPage";
 
+import SettingsPage from "./components/Settings/SettingsPage";
 export default function App() {
 
   // MUST BE INSIDE THE COMPONENT
@@ -96,6 +97,7 @@ export default function App() {
   path="/profile/:userId/connections"
   element={<ConnectionsPage />}
 />
+<Route path="/settings" element={<SettingsPage />} />
 
       </Routes>
     </Router>

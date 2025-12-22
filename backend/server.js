@@ -39,3 +39,10 @@ const profileRoutes = require("./routes/profileRoutes");
 app.use("/api/profile", profileRoutes);
 
 app.use("/api/connections", connectionRoutes);
+
+const userRoutes = require("./routes/users");
+app.use("/api/users", userRoutes);
+
+
+const feedbackRoutes = require("./routes/feedback");
+app.use("/api/feedback", feedbackRoutes);
