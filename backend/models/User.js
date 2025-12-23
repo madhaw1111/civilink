@@ -10,6 +10,23 @@ const userSchema = new mongoose.Schema({
   experienceYears: { type: Number, default: 0 },
   profilePhoto: { type: String }, // URL or Base64
   isProfessional: { type: Boolean, default: false },
+  role: {
+  type: String,
+  enum: ["user", "admin"],
+  default: "user"
+},
+
+theme: {
+  type: String,
+  enum: ["light", "dark", "system"],
+  default: "light"
+},
+
+language: {
+  type: String,
+  enum: ["en", "ta", "hi"],
+  default: "en"
+},
 
    /* ================= CONNECTIONS ================= */
     connections: [

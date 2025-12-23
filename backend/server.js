@@ -46,3 +46,7 @@ app.use("/api/users", userRoutes);
 
 const feedbackRoutes = require("./routes/feedback");
 app.use("/api/feedback", feedbackRoutes);
+
+const adminConfigRoutes = require("./routes/adminConfig");
+app.use("/api/config", adminConfigRoutes);
+

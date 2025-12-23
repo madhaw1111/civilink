@@ -5,42 +5,43 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
-//PROFILE
+// PROFILE
 import ProfileWrapper from "./components/Home/Profile/ProfileWrapper";
-
 
 // HOME
 import Home from "./components/Home/Home";
 
-// CUSTOMER PAGES
-
+// CUSTOMER
 import BuyHouse from "./components/dashboards/Customer/BuyHouse";
 import BuySellHouse from "./components/dashboards/Customer/BuySellHouse";
 import RentHouse from "./components/dashboards/Customer/RentHouse";
 import PostRentHouse from "./components/dashboards/Customer/Rent/PostRentHouse";
 import SellHouse from "./components/dashboards/Customer/SellHouse";
 import RentalHouse from "./components/dashboards/Customer/Rent/RentalHouse";
-// VENDOR PAGE
-import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
-import AdminDashboard from "./components/dashboards/Vendor/AdminDashboard";
 
-// PROFESSION PAGE
+// VENDOR
+import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
+
+// ADMIN (GLOBAL ADMIN)
+import AdminDashboard from "./components/dashboards/Vendor/AdminDashboard";
+import AdminRoute from "./routes/AdminRoute";
+
+// PROFESSION
 import ProfessionDashboard from "./components/dashboards/Profession/ProfessionDashboard";
 import ProfessionList from "./components/dashboards/Profession/ProfessionList";
 
-//Chat page
+// CHAT
 import ChatInbox from "./components/chat/ChatInbox";
 import ChatWindow from "./components/chat/ChatWindow";
 
 import ConnectionsPage from "./components/Home/Profile/ConnectionsPage";
-
 import SettingsPage from "./components/Settings/SettingsPage";
-export default function App() {
 
-  // MUST BE INSIDE THE COMPONENT
+import { Toaster } from "react-hot-toast";
+
+export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // FIXED LOGIN CHECK
   useEffect(() => {
     const checkLogin = () => {
       const user = localStorage.getItem("civilink_user");
@@ -48,22 +49,22 @@ export default function App() {
     };
 
     checkLogin();
-
     window.addEventListener("storage", checkLogin);
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
   return (
     <Router>
-      <Routes>
 
-        {/* LOGIN */}
+      {/* ✅ TOASTER MUST BE OUTSIDE ROUTES */}
+      <Toaster position="top-right" />
+
+      <Routes>
+        {/* AUTH */}
         <Route
           path="/"
           element={isLoggedIn ? <Navigate to="/home" /> : <Login />}
         />
-
-        {/* REGISTER */}
         <Route path="/register" element={<Register />} />
 
         {/* HOME */}
@@ -71,34 +72,53 @@ export default function App() {
           path="/home"
           element={isLoggedIn ? <Home /> : <Navigate to="/" />}
         />
-        <Route path="/profile" element={isLoggedIn ? <ProfileWrapper /> : <Navigate to="/" />} />
-        
 
-        {/* CUSTOMER ROUTES */}
-        
+        <Route
+          path="/profile"
+          element={isLoggedIn ? <ProfileWrapper /> : <Navigate to="/" />}
+        />
+
+        <Route path="/profile/:userId" element={<ProfileWrapper />} />
+        <Route
+          path="/profile/:userId/connections"
+          element={<ConnectionsPage />}
+        />
+
+        {/* CUSTOMER */}
         <Route path="/buy-house" element={<BuyHouse />} />
         <Route path="/buy-sell" element={<BuySellHouse />} />
         <Route path="/rent-house" element={<RentHouse />} />
-       <Route path="/post-rent-house" element={<PostRentHouse />} />
+        <Route path="/post-rent-house" element={<PostRentHouse />} />
         <Route path="/sell-house" element={<SellHouse />} />
         <Route path="/rental-house" element={<RentalHouse />} />
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        {/* PROFESSION*/}
+
+        {/* ✅ GLOBAL ADMIN (PROTECTED) */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        {/* PROFESSION */}
         <Route path="/profession-dashboard" element={<ProfessionDashboard />} />
         <Route path="/profession/:type" element={<ProfessionList />} />
-        <Route path="/profession/:category"element={<ProfessionDashboard />}/>
-        <Route path="/messages" element={<ChatInbox />} />
-        <Route path="/messages/:conversationId" element={<ChatWindow />} />
-         <Route path="/profile/:userId" element={<ProfileWrapper />} />
-        <Route
-  path="/profile/:userId/connections"
-  element={<ConnectionsPage />}
-/>
-<Route path="/settings" element={<SettingsPage />} />
+        <Route path="/profession/:category" element={<ProfessionDashboard />} />
 
+        {/* CHAT */}
+        <Route path="/messages" element={<ChatInbox />} />
+        <Route
+          path="/messages/:conversationId"
+          element={<ChatWindow />}
+        />
+
+        {/* SETTINGS */}
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Router>
   );

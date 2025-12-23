@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./admin.css";
+import toast from "react-hot-toast";
+
 
 const CITIES = ["Chennai", "Madurai", "Coimbatore", "Karaikudi"];
 
@@ -17,6 +19,14 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products"); // "vendors" or "products"
   const [vendors, setVendors] = useState([]);
   const [products, setProducts] = useState([]);
+
+  // ===== DASHBOARD SUMMARY COUNTS (UI ONLY) =====
+const totalVendors = vendors.length;
+const totalProducts = products.length;
+const activeProducts = products.filter(p => p.isActive).length;
+const inactiveProducts = totalProducts - activeProducts;
+
+const [logs, setLogs] = useState([]);
 
   const [vendorForm, setVendorForm] = useState({
     _id: null,
@@ -72,7 +82,8 @@ export default function AdminDashboard() {
       alert("Vendor updated");
     } else {
       await api.post("/vendors", vendorForm);
-      alert("Vendor added");
+     toast.success("Vendor added successfully");
+
     }
     setVendorForm({
       _id: null,
@@ -164,6 +175,12 @@ export default function AdminDashboard() {
     loadProducts();
   };
 
+  const loadLogs = async () => {
+  const res = await api.get("/logs");
+  setLogs(res.data);
+};
+
+
   // --------- RENDER ----------
   return (
     <div className="admin-layout">
@@ -186,6 +203,13 @@ export default function AdminDashboard() {
         >
           Vendors
         </div>
+        <div
+  className={"admin-nav-item " + (activeTab === "logs" ? "active" : "")}
+  onClick={() => setActiveTab("logs")}
+>
+  Activity Logs
+</div>
+
       </aside>
 
       {/* Main */}
@@ -434,6 +458,38 @@ export default function AdminDashboard() {
             </section>
           </>
         )}
+        {activeTab === "logs" && (
+  <section className="admin-card">
+    <h3>Admin Activity Logs</h3>
+
+    <table className="admin-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Action</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {logs.length === 0 ? (
+          <tr>
+            <td colSpan="3">No admin activity yet.</td>
+          </tr>
+        ) : (
+          logs.map((log) => (
+            <tr key={log._id}>
+              <td>{new Date(log.createdAt).toLocaleString()}</td>
+              <td>{log.action}</td>
+              <td>{log.description}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </section>
+)}
+
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ const auth = require("../middleware/auth");
 const isAdmin = require("../middleware/admin");
 const Vendor = require("../models/Vendor");
 const Product = require("../models/Product");
+const AdminLog = require("../models/AdminLog");
 
 // ---------------- VENDORS ----------------
 
@@ -12,6 +13,14 @@ router.post("/vendors", auth, isAdmin, async (req, res) => {
   try {
     const { name, city, address, phone, email } = req.body;
     const vendor = await Vendor.create({ name, city, address, phone, email });
+    AdminLog.create({
+  adminId: req.user.id,
+  action: "CREATE",
+  entityType: "Vendor",
+  entityId: vendor._id,
+  description: `Vendor ${vendor.name} created`
+}).catch(err => console.error("Log error", err));
+
     res.status(201).json(vendor);
   } catch (err) {
     console.error(err);
@@ -146,5 +155,18 @@ router.get("/products/all", async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 });
+
+// -------- ADMIN ACTIVITY LOGS --------
+router.get("/logs", auth, isAdmin, async (req, res) => {
+  try {
+    const logs = await AdminLog.find()
+      .sort("-createdAt")
+      .limit(100);
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load logs" });
+  }
+});
+
 
 module.exports = router;

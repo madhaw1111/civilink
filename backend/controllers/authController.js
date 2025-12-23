@@ -22,16 +22,20 @@ exports.register = async (req, res) => {
       phone,
       password: hashed,
       profession: "Member",
-      isProfessional: false
+      isProfessional: false,
+      role: "user" // 🔥 DEFAULT ROLE
     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, // 🔥 INCLUDE ROLE
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    return res.status(201).json({ 
-      user, 
-      token 
+    return res.status(201).json({
+      user,
+      token,
+      role: user.role // 🔥 SEND ROLE
     });
 
   } catch (err) {
@@ -53,11 +57,17 @@ exports.login = async (req, res) => {
     if (!match)
       return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, // 🔥 INCLUDE ROLE
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    return res.json({ user, token });
+    return res.json({
+      user,
+      token,
+      role: user.role // 🔥 SEND ROLE
+    });
 
   } catch (err) {
     console.log("LOGIN ERROR", err);

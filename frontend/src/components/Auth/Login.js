@@ -16,40 +16,45 @@ export default function Login() {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
-      console.log("LOGIN RESPONSE 👉", data); // 🔍 keep for now
+      console.log("LOGIN RESPONSE 👉", data);
 
       if (!res.ok) {
         setLoading(false);
         return setError(data.message || "Login failed");
       }
 
-      // 🔴 HARD SAFETY CHECKS (IMPORTANT)
-      if (!data || !data.user || !data.token) {
+      // 🔒 HARD SAFETY CHECK
+      if (!data || !data.user || !data.token || !data.role) {
         setLoading(false);
-        return setError("Login failed: token missing");
+        return setError("Login failed: missing auth data");
       }
 
-      // ✅ SAVE USER & TOKEN (STANDARD)
+      // ✅ SAVE USER
       localStorage.setItem(
         "civilink_user",
         JSON.stringify(data.user)
       );
 
+      // ✅ SAVE TOKEN (USED BY AdminRoute & APIs)
       localStorage.setItem(
-        "civilink_token",
+        "token",
         data.token
       );
 
-      // 🔍 VERIFY IMMEDIATELY
-      console.log(
-        "SAVED TOKEN 👉",
-        localStorage.getItem("civilink_token")
+      // ✅ SAVE ROLE (CRITICAL FOR ADMIN ACCESS)
+      localStorage.setItem(
+        "role",
+        data.role
       );
+
+      // 🔍 VERIFY (TEMP — REMOVE LATER)
+      console.log("TOKEN 👉", localStorage.getItem("token"));
+      console.log("ROLE 👉", localStorage.getItem("role"));
 
       setLoading(false);
 
@@ -66,7 +71,6 @@ export default function Login() {
   return (
     <div className="auth-page upg">
       <div className="auth-card upg">
-
         <h1 className="auth-logo upg">Civilink</h1>
         <p className="auth-subtitle upg">
           Your construction network — Reimagined
@@ -79,7 +83,6 @@ export default function Login() {
         )}
 
         <form onSubmit={handleLogin} className="auth-form upg">
-
           <div className="input-floating">
             <input
               type="email"

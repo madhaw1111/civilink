@@ -179,13 +179,13 @@ function VendorDashboard() {
       <div className="vendor-modal-body">
         <p>
           <strong>Email:</strong>{" "}
-          <a href="mailto:civilink.admin@gmail.com">
-            civilink.admin@gmail.com
+          <a href="mailto:civilink.official@gmail.com">
+            civilink.official@gmail.com
           </a>
         </p>
         <p>
           <strong>Phone:</strong>{" "}
-          <a href="tel:+919XXXXXXXXX">+91 9XXXXXXXXX</a>
+          <a href="tel:+919384710710">+91 9384710710</a>
         </p>
         <p className="vendor-modal-note">
           Our admin team will guide you with construction materials,
