@@ -8,7 +8,7 @@ export default function ConnectionsPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const loadConnections = async () => {

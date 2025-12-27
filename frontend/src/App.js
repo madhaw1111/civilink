@@ -38,6 +38,7 @@ import ConnectionsPage from "./components/Home/Profile/ConnectionsPage";
 import SettingsPage from "./components/Settings/SettingsPage";
 
 import { Toaster } from "react-hot-toast";
+import AdminFeedback from "./components/Admin/AdminFeedback";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -119,7 +120,18 @@ export default function App() {
 
         {/* SETTINGS */}
         <Route path="/settings" element={<SettingsPage />} />
+         <Route
+  path="/admin/feedback"
+  element={
+    <AdminRoute>
+      <AdminFeedback />
+    </AdminRoute>
+  }
+/>
+
       </Routes>
+     
+
     </Router>
   );
 }

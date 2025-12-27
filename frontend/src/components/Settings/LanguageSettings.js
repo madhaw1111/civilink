@@ -1,5 +1,5 @@
 export default function LanguageSettings() {
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   const changeLanguage = async (lang) => {
     // save locally

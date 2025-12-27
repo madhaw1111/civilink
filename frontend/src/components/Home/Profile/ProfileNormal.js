@@ -14,7 +14,7 @@ export default function ProfileNormal({
     localStorage.getItem("civilink_user")
   );
 
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   const isOwnProfile =
     loggedInUser?._id === user?._id;

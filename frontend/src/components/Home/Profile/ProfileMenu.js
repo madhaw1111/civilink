@@ -68,7 +68,7 @@ export default function ProfileMenu({
           className="drawer-item"
           onClick={() => {
             onClose();
-            navigate("/profile");
+            navigate(`/profile/${safeUser._id}`);
           }}
         >
           👤 View Profile

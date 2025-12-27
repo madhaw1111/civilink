@@ -8,7 +8,7 @@ export default function ProfessionSuggestionRow() {
     localStorage.getItem("civilink_user")
   );
 
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   const [connectedUsers, setConnectedUsers] = useState(
     loggedInUser?.connections || []

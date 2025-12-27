@@ -57,7 +57,7 @@ const connectUser = async () => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("civilink_token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       }
     );

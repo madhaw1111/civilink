@@ -19,6 +19,10 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products"); // "vendors" or "products"
   const [vendors, setVendors] = useState([]);
   const [products, setProducts] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [posts, setPosts] = useState([]);
+
+
 
   // ===== DASHBOARD SUMMARY COUNTS (UI ONLY) =====
 const totalVendors = vendors.length;
@@ -67,11 +71,58 @@ const [logs, setLogs] = useState([]);
     setProducts(res.data);
   };
 
+ const loadFeedbacks = async () => {
+  const res = await axios.get(
+    "http://localhost:5000/api/feedback/admin",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    }
+  );
+  setFeedbacks(res.data);
+};
+
+const loadPosts = async () => {
+  const res = await axios.get(
+    "http://localhost:5000/api/post",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    }
+  );
+  setPosts(res.data);
+};
+
+
+
   useEffect(() => {
     loadVendors();
     loadProducts();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+  if (activeTab === "logs") {
+    loadLogs();
+  }
+}, [activeTab]);
+
+useEffect(() => {
+  if (activeTab === "feedback") {
+    loadFeedbacks();
+  }
+}, [activeTab]);
+
+useEffect(() => {
+  if (activeTab === "posts") {
+    loadPosts();
+  }
+}, [activeTab]);
+
+
+
 
   // --------- VENDOR HANDLERS ----------
   const handleSaveVendor = async () => {
@@ -181,6 +232,51 @@ const [logs, setLogs] = useState([]);
 };
 
 
+const handleDeleteFeedback = async (id) => {
+  if (!window.confirm("Delete this feedback?")) return;
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/feedback/admin/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    setFeedbacks(prev => prev.filter(f => f._id !== id));
+    toast.success("Feedback deleted");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to delete feedback");
+  }
+};
+
+
+const handleDeletePost = async (id) => {
+  if (!window.confirm("Delete this post?")) return;
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/post/admin/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    setPosts(prev => prev.filter(p => p._id !== id));
+    toast.success("Post deleted");
+  } catch (err) {
+    console.error(err.response?.data || err);
+    toast.error("Failed to delete post");
+  }
+};
+
+
+
   // --------- RENDER ----------
   return (
     <div className="admin-layout">
@@ -209,6 +305,21 @@ const [logs, setLogs] = useState([]);
 >
   Activity Logs
 </div>
+<div
+  className={"admin-nav-item " + (activeTab === "feedback" ? "active" : "")}
+  onClick={() => setActiveTab("feedback")}
+>
+  Feedback
+</div>
+
+<div
+  className={"admin-nav-item " + (activeTab === "posts" ? "active" : "")}
+  onClick={() => setActiveTab("posts")}
+>
+  Posts
+</div>
+
+
 
       </aside>
 
@@ -489,6 +600,101 @@ const [logs, setLogs] = useState([]);
     </table>
   </section>
 )}
+{activeTab === "feedback" && (
+  <section className="admin-card">
+    <h3>User Feedback</h3>
+
+    <table className="admin-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>User</th>
+          <th>Message</th>
+          <th>Source</th>
+            <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {feedbacks.length === 0 ? (
+          <tr>
+            <td colSpan="4">No feedback yet</td>
+          </tr>
+        ) : (
+          feedbacks.map((f) => (
+            <tr key={f._id}>
+  <td>{new Date(f.createdAt).toLocaleString()}</td>
+  <td>
+    {f.user
+      ? `${f.user.name} (${f.user.email})`
+      : "Anonymous"}
+  </td>
+  <td style={{ maxWidth: "400px" }}>{f.message}</td>
+  <td>{f.source}</td>
+  <td>
+    <button
+      className="admin-secondary-btn"
+      onClick={() => handleDeleteFeedback(f._id)}
+    >
+      Delete
+    </button>
+  </td>
+</tr>
+
+          ))
+        )}
+      </tbody>
+    </table>
+    
+  </section>
+)}
+
+{activeTab === "posts" && (
+  <section className="admin-card">
+    <h3>All Posts</h3>
+
+    <table className="admin-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>User</th>
+          <th>Type</th>
+          <th>Content</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {posts.length === 0 ? (
+          <tr>
+            <td colSpan="5">No posts yet</td>
+          </tr>
+        ) : (
+          posts.map(p => (
+            <tr key={p._id}>
+              <td>{new Date(p.createdAt).toLocaleString()}</td>
+              <td>{p.user?.name || "Unknown"}</td>
+              <td>{p.postType}</td>
+              <td style={{ maxWidth: "400px" }}>
+                {p.text || p.title || "-"}
+              </td>
+              <td>
+                <button
+                  className="admin-secondary-btn"
+                  onClick={() => handleDeletePost(p._id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </section>
+)}
+
+
 
       </main>
     </div>

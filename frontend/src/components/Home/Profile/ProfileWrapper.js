@@ -23,7 +23,7 @@ export default function ProfileWrapper() {
     localStorage.getItem("civilink_user")
   );
 
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   /* =====================================================
      LOAD USER

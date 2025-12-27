@@ -120,7 +120,7 @@ useEffect(() => {
   /* ================= LOGOUT ================= */
   const handleLogout = () => {
     localStorage.removeItem("civilink_user");
-    localStorage.removeItem("civilink_token");
+    localStorage.removeItem("token");
     window.location.href = "/";
   };
 
@@ -184,7 +184,7 @@ useEffect(() => {
 
 
 const handleLike = async (post) => {
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("civilink_user"));
 
   if (!token || !user) {
@@ -221,7 +221,7 @@ const handleLike = async (post) => {
 };
 
 const handleAddComment = async (text) => {
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
   if (!token) return alert("Please login");
 
   try {

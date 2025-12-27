@@ -1,5 +1,5 @@
 export default function AppearanceSettings() {
-  const token = localStorage.getItem("civilink_token");
+  const token = localStorage.getItem("token");
 
   const applyTheme = (theme) => {
     let finalTheme = theme;

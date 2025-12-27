@@ -1,7 +1,26 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
+
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
+const isAdmin = require("../middleware/admin");
+
+/* =========================
+   OBJECT ID VALIDATOR
+========================= */
+const validateObjectId = (req, res, next) => {
+  const { postId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid post ID"
+    });
+  }
+
+  next();
+};
 
 /* ================================
    CREATE POST
@@ -10,7 +29,7 @@ router.post("/create", auth, async (req, res) => {
   try {
     const { text, image, type } = req.body;
 
-    if (!text) {
+    if (!text || !text.trim()) {
       return res.status(400).json({
         success: false,
         message: "Post text required"
@@ -19,7 +38,7 @@ router.post("/create", auth, async (req, res) => {
 
     const post = await Post.create({
       user: req.user.id,
-      text,
+      text: text.trim(),
       image,
       type: type || "post"
     });
@@ -33,63 +52,123 @@ router.post("/create", auth, async (req, res) => {
       success: true,
       post: populatedPost
     });
-
   } catch (err) {
     console.error("CREATE POST ERROR:", err);
-    res.status(500).json({
-      success: false
-    });
-  }
-});
-
-/* =========================
-   EDIT POST
-========================= */
-router.put("/:postId", auth, async (req, res) => {
-  try {
-    const { text, image } = req.body;
-
-    const post = await Post.findById(req.params.postId);
-    if (!post) {
-      return res.status(404).json({ success: false });
-    }
-
-    // 🔐 only owner can edit
-    if (post.user.toString() !== req.user.id) {
-      return res.status(403).json({ success: false });
-    }
-
-    post.text = text ?? post.text;
-    post.image = image ?? post.image;
-    await post.save();
-
-    res.json({ success: true, post });
-  } catch (err) {
-    console.error(err);
     res.status(500).json({ success: false });
   }
 });
 
 /* =========================
-   DELETE POST
+   EDIT POST (OWNER ONLY)
 ========================= */
-router.delete("/:postId", auth, async (req, res) => {
+router.put(
+  "/:postId",
+  auth,
+  validateObjectId,
+  async (req, res) => {
+    try {
+      const { text, image } = req.body;
+
+      const post = await Post.findById(req.params.postId);
+      if (!post) {
+        return res.status(404).json({ success: false });
+      }
+
+      if (post.user.toString() !== req.user.id) {
+        return res.status(403).json({ success: false });
+      }
+
+      post.text = text ?? post.text;
+      post.image = image ?? post.image;
+
+      await post.save();
+
+      res.json({ success: true, post });
+    } catch (err) {
+      console.error("EDIT POST ERROR:", err);
+      res.status(500).json({ success: false });
+    }
+  }
+);
+
+/* =========================
+   ✅ ADMIN DELETE POST
+   (MUST BE ABOVE USER DELETE)
+========================= */
+router.delete(
+  "/admin/:postId",
+  auth,
+  isAdmin,
+  validateObjectId,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.postId);
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found"
+        });
+      }
+
+      await post.deleteOne();
+
+      res.json({
+        success: true,
+        message: "Post deleted by admin"
+      });
+    } catch (err) {
+      console.error("ADMIN DELETE POST ERROR:", err);
+      res.status(500).json({
+        success: false,
+        message: "Failed to delete post"
+      });
+    }
+  }
+);
+
+/* =========================
+   USER DELETE POST
+   (OWNER ONLY)
+========================= */
+router.delete(
+  "/:postId",
+  auth,
+  validateObjectId,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.postId);
+      if (!post) {
+        return res.status(404).json({ success: false });
+      }
+
+      if (post.user.toString() !== req.user.id) {
+        return res.status(403).json({ success: false });
+      }
+
+      await post.deleteOne();
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error("USER DELETE POST ERROR:", err);
+      res.status(500).json({ success: false });
+    }
+  }
+);
+
+/* =========================
+   GET ALL POSTS
+   (ADMIN / FEED)
+========================= */
+router.get("/", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.postId);
-    if (!post) {
-      return res.status(404).json({ success: false });
-    }
+    const posts = await Post.find()
+      .populate("user", "name email profilePhoto")
+      .sort({ createdAt: -1 });
 
-    // 🔐 only owner can delete
-    if (post.user.toString() !== req.user.id) {
-      return res.status(403).json({ success: false });
-    }
-
-    await post.deleteOne();
-
-    res.json({ success: true });
+    res.json(posts);
   } catch (err) {
-    console.error(err);
+    console.error("GET POSTS ERROR:", err);
     res.status(500).json({ success: false });
   }
 });

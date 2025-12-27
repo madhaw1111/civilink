@@ -15,7 +15,7 @@ export default function PostRentHouse() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem("civilink_token");
+    const token = localStorage.getItem("token");
 
     if (!token) {
       alert("Please login again");

@@ -8,7 +8,7 @@ export default function PostModal({ onClose, addToFeed }) {
 
   const handlePost = async () => {
     const user = JSON.parse(localStorage.getItem("civilink_user"));
-    const token = localStorage.getItem("civilink_token");
+    const token = localStorage.getItem("token");
 
     if (!user) return alert("Please login");
     if (!text.trim()) return alert("Post content required");
