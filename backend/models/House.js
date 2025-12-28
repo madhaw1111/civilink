@@ -27,7 +27,9 @@ const houseSchema = new mongoose.Schema(
       type: Date       // only for rent
     },
 
-    image: String,
+    imageUrl: {
+      type: String     // ✅ S3 image URL
+    },
 
     purpose: {
       type: String,

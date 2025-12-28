@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const isAdmin = require("../middleware/admin");
-
+const uploadToS3 = require("../middleware/upload");
 /* =========================
    OBJECT ID VALIDATOR
 ========================= */
@@ -25,38 +25,46 @@ const validateObjectId = (req, res, next) => {
 /* ================================
    CREATE POST
 ================================ */
-router.post("/create", auth, async (req, res) => {
-  try {
-    const { text, image, type } = req.body;
+router.post(
+  "/create",
+  auth,                                  // ✅ FIRST
+  uploadToS3("posts").single("image"),   // ✅ SECOND
+  async (req, res) => {
+    try {
+      const { text, type } = req.body;
 
-    if (!text || !text.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "Post text required"
+      if (!text || !text.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Post text required"
+        });
+      }
+
+      console.log("REQ FILE:", req.file); // 🔍 TEMP DEBUG
+
+      const post = await Post.create({
+        user: req.user.id,
+        text: text.trim(),
+        type: type || "post",
+        imageUrl: req.file ? req.file.location : ""   // ✅ MUST BE THIS
       });
+
+      const populatedPost = await post.populate(
+        "user",
+        "name profession profilePhoto"
+      );
+
+      res.status(201).json({
+        success: true,
+        post: populatedPost
+      });
+    } catch (err) {
+      console.error("CREATE POST ERROR:", err);
+      res.status(500).json({ success: false });
     }
-
-    const post = await Post.create({
-      user: req.user.id,
-      text: text.trim(),
-      image,
-      type: type || "post"
-    });
-
-    const populatedPost = await post.populate(
-      "user",
-      "name profession profilePhoto"
-    );
-
-    res.json({
-      success: true,
-      post: populatedPost
-    });
-  } catch (err) {
-    console.error("CREATE POST ERROR:", err);
-    res.status(500).json({ success: false });
   }
-});
+);
+
 
 /* =========================
    EDIT POST (OWNER ONLY)
@@ -67,7 +75,7 @@ router.put(
   validateObjectId,
   async (req, res) => {
     try {
-      const { text, image } = req.body;
+      const { text } = req.body;
 
       const post = await Post.findById(req.params.postId);
       if (!post) {
@@ -79,7 +87,7 @@ router.put(
       }
 
       post.text = text ?? post.text;
-      post.image = image ?? post.image;
+    
 
       await post.save();
 

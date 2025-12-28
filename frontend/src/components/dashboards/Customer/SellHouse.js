@@ -9,7 +9,8 @@ function SellHouse() {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -28,20 +29,27 @@ function SellHouse() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/api/house/sell", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` // 🔑 REQUIRED
-        },
-        body: JSON.stringify({
-          title,
-          location,
-          price: Number(price),
-          description,
-          image
-        })
-      });
+      // 🔑 USE FORMDATA
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("location", location);
+      formData.append("price", price);
+      formData.append("description", description);
+
+      if (imageFile) {
+        formData.append("image", imageFile); // 🔑 MUST BE "image"
+      }
+
+      const response = await fetch(
+        "http://localhost:5000/api/house/sell",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}` // ❌ NO Content-Type
+          },
+          body: formData
+        }
+      );
 
       const data = await response.json();
 
@@ -52,6 +60,7 @@ function SellHouse() {
         alert(data.message || "Failed to post house");
       }
     } catch (err) {
+      console.error("SELL HOUSE ERROR:", err);
       alert("Server error. Please try again.");
     } finally {
       setLoading(false);
@@ -61,6 +70,7 @@ function SellHouse() {
   return (
     <div className="sell-page">
       <div className="sell-card">
+
         {/* Header actions */}
         <div className="sell-header-actions">
           <button
@@ -111,14 +121,30 @@ function SellHouse() {
           />
         </div>
 
+        {/* 🔑 FILE INPUT */}
         <div className="form-group">
-          <label>House Image URL</label>
+          <label>House Image</label>
           <input
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="Paste image link"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setImageFile(file);
+              if (file) {
+                setPreview(URL.createObjectURL(file));
+              }
+            }}
           />
         </div>
+
+        {/* IMAGE PREVIEW */}
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="sell-image-preview"
+          />
+        )}
 
         <div className="form-group">
           <label>Description</label>
@@ -139,7 +165,6 @@ function SellHouse() {
       </div>
     </div>
   );
-   
 }
 
 export default SellHouse;

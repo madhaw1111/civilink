@@ -156,9 +156,9 @@ const contactOwner = async (ownerId, rentId) => {
         <div className="rent-list">
           {houses.map((h) => (
             <div key={h._id} className="rent-card">
-              {h.image && (
+              {h.imageUrl && (
                 <img
-                  src={h.image}
+                  src={h.imageUrl}
                   alt="Rent House"
                   className="rent-image"
                 />

@@ -10,7 +10,8 @@ export default function PostRentHouse() {
   const [rent, setRent] = useState("");
   const [deposit, setDeposit] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -31,23 +32,27 @@ export default function PostRentHouse() {
     try {
       setLoading(true);
 
+      // 🔑 USE FORMDATA
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("location", location);
+      formData.append("rent", rent);
+      formData.append("deposit", deposit || 0);
+      formData.append("availableFrom", availableFrom);
+      formData.append("description", description);
+
+      if (imageFile) {
+        formData.append("image", imageFile); // 🔑 MUST BE "image"
+      }
+
       const res = await fetch(
         "http://localhost:5000/api/rent/post",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}` // ❌ NO Content-Type
           },
-          body: JSON.stringify({
-            title,
-            location,
-            rent: Number(rent),
-            deposit: deposit ? Number(deposit) : 0,
-            availableFrom,
-            image,
-            description
-          })
+          body: formData
         }
       );
 
@@ -60,6 +65,7 @@ export default function PostRentHouse() {
         alert(data.message || "Failed to post rent house");
       }
     } catch (err) {
+      console.error("RENT POST ERROR:", err);
       alert("Server error. Please try again.");
     } finally {
       setLoading(false);
@@ -141,14 +147,30 @@ export default function PostRentHouse() {
           />
         </div>
 
+        {/* 🔑 FILE INPUT */}
         <div className="rent-form-group">
-          <label>House Image URL</label>
+          <label>House Image</label>
           <input
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="Paste image link"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setImageFile(file);
+              if (file) {
+                setPreview(URL.createObjectURL(file));
+              }
+            }}
           />
         </div>
+
+        {/* IMAGE PREVIEW */}
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="rent-image-preview"
+          />
+        )}
 
         <div className="rent-form-group">
           <label>Description</label>

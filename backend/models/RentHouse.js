@@ -6,26 +6,37 @@ const rentHouseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+
     location: {
       type: String,
       required: true
     },
+
     rent: {
       type: Number,
       required: true
     },
+
     deposit: {
-      type: Number
+      type: Number,
+      default: 0
     },
+
     description: {
-      type: String
+      type: String,
+      default: ""
     },
-    image: {
-      type: String // image URL
+
+    // 🔑 SINGLE SOURCE OF TRUTH FOR IMAGE
+    imageUrl: {
+      type: String,
+      default: ""
     },
+
     availableFrom: {
       type: Date
     },
+
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

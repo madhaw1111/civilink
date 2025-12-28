@@ -154,9 +154,9 @@ function BuyHouse() {
           {houses.map((h) => (
             <div key={h._id} className="buyhouse-card">
 
-              {h.image && (
+              {h.imageUrl && (
                 <img
-                  src={h.image}
+                  src={h.imageUrl }
                   alt="House"
                   className="buyhouse-image"
                 />

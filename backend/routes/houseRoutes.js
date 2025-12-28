@@ -1,100 +1,158 @@
 const express = require("express");
 const router = express.Router();
+
 const House = require("../models/House");
-const Feed = require("../models/Post");   // ✅ ADD THIS
+const Post = require("../models/Post");
+
 const auth = require("../middleware/auth");
+const uploadToS3 = require("../middleware/upload");
 
-/**
- * POST - Sell House (SECURED)
- * This WILL appear in Home Feed
- */
-router.post("/sell", auth, async (req, res) => {
-  try {
-    const { title, location, price, description, image } = req.body;
+/* ======================================================
+   POST — SELL HOUSE
+   → Creates House
+   → Creates Home Feed Post
+   → Image stored in S3: houses/sell/
+====================================================== */
+router.post(
+  "/sell",
+  auth,
+  uploadToS3("houses/sell").single("image"),
+  async (req, res) => {
+    try {
+      const { title, location, price, description } = req.body;
 
-    if (!title || !location || !price) {
-      return res.status(400).json({
+      if (!title || !location || !price) {
+        return res.status(400).json({
+          success: false,
+          message: "Title, location and price are required"
+        });
+      }
+
+      const imageUrl = req.file ? req.file.location : "";
+
+      // 1️⃣ Create House document
+      const house = await House.create({
+        title,
+        location,
+        price: Number(price),
+        description,
+        imageUrl,
+        purpose: "sell",
+        postedBy: req.user.id
+      });
+
+      // 2️⃣ Create Home Feed Post
+      const feedPost = await Post.create({
+        user: req.user.id,
+        type: "sell",
+        text: `🏠 House for Sale
+${house.title}
+₹${house.price}
+${house.location}
+${house.description || ""}`,
+        imageUrl
+      });
+
+      res.status(201).json({
+        success: true,
+        house,
+        feedPost
+      });
+
+    } catch (error) {
+      console.error("SELL HOUSE ERROR:", error);
+      res.status(500).json({
         success: false,
-        message: "Title, location and price are required"
+        message: "Server error"
       });
     }
-
-    // 1️⃣ Create House
-    const house = await House.create({
-      title,
-      location,
-      price: Number(price),
-      description,
-      image,
-      purpose: "sell", 
-      postedBy: req.user.id
-    });
-
-   // 2️⃣ CREATE HOME FEED POST (USING Post MODEL CORRECTLY)
-const feedPost = await Feed.create({
-  user: req.user.id,
-  type: "sell",                        // ✅ matches Post.js enum
-  text: `🏠 House for Sale\n${house.title}\n₹${house.price}\n${house.location}\n${house.description || ""}`,
-  image: house.image
-});
-
-    console.log("FEED CREATED 👉", feedPost); // 🔥 ADD THIS
-    
-    res.status(201).json({
-      success: true,
-      message: "House posted successfully",
-      house,
-      feedPost          // ✅ send feed post to frontend
-    });
-
-  } catch (error) {
-    console.error("SELL HOUSE ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
   }
-});
+);
 
-/**
- * GET - Buy House (List & Filter)
- */
+/* ======================================================
+   POST — RENT / TO-LET HOUSE
+   → Creates House
+   → Creates Home Feed Post
+   → Image stored in S3: houses/rent/
+====================================================== */
+router.post(
+  "/rent",
+  auth,
+  uploadToS3("houses/rent").single("image"),
+  async (req, res) => {
+    try {
+      const {
+        title,
+        location,
+        price,
+        description,
+        rentType,
+        availableFrom
+      } = req.body;
+
+      if (!title || !location || !price) {
+        return res.status(400).json({
+          success: false,
+          message: "Title, location and rent amount are required"
+        });
+      }
+
+      const imageUrl = req.file ? req.file.location : "";
+
+      // 1️⃣ Create House document
+      const house = await House.create({
+        title,
+        location,
+        price: Number(price),
+        description,
+        imageUrl,
+        purpose: "rent",
+        rentType,
+        availableFrom,
+        postedBy: req.user.id
+      });
+
+      // 2️⃣ Create Home Feed Post
+      const feedPost = await Post.create({
+        user: req.user.id,
+        type: "rent",
+        text: `🔑 House for Rent / To-Let
+${house.title}
+₹${house.price}
+${house.location}
+${house.description || ""}`,
+        imageUrl
+      });
+
+      res.status(201).json({
+        success: true,
+        house,
+        feedPost
+      });
+
+    } catch (error) {
+      console.error("RENT HOUSE ERROR:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error"
+      });
+    }
+  }
+);
+
+/* ======================================================
+   GET — BUY HOUSE (SELL LISTINGS)
+====================================================== */
 router.get("/buy", async (req, res) => {
   try {
-    const { location, minPrice, maxPrice, sort, q } = req.query;
-
-    const filter = {};
-
-    if (q) {
-      filter.$or = [
-        { title: { $regex: q, $options: "i" } },
-        { location: { $regex: q, $options: "i" } }
-      ];
-    }
-
-    if (location) {
-      filter.location = { $regex: location, $options: "i" };
-    }
-
-    if (minPrice || maxPrice) {
-      filter.price = {};
-      if (minPrice) filter.price.$gte = Number(minPrice);
-      if (maxPrice) filter.price.$lte = Number(maxPrice);
-    }
-
-    let sortOption = { createdAt: -1 };
-    if (sort === "priceLow") sortOption = { price: 1 };
-    if (sort === "priceHigh") sortOption = { price: -1 };
-
-    const houses = await House.find(filter)
+    const houses = await House.find({ purpose: "sell" })
       .populate("postedBy", "name profession profilePhoto")
-      .sort(sortOption);
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
       houses
     });
-
   } catch (error) {
     console.error("BUY HOUSE ERROR:", error);
     res.status(500).json({
@@ -104,9 +162,30 @@ router.get("/buy", async (req, res) => {
   }
 });
 
-/**
- * GET - Single House
- */
+/* ======================================================
+   GET — RENT / TO-LET LISTINGS
+====================================================== */
+router.get("/rent-list", async (req, res) => {
+  try {
+    const houses = await House.find({ purpose: "rent" })
+      .populate("postedBy", "name profession profilePhoto")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      houses
+    });
+  } catch (error) {
+    console.error("RENT LIST ERROR:", error);
+    res.status(500).json({
+      success: false
+    });
+  }
+});
+
+/* ======================================================
+   GET — SINGLE HOUSE DETAILS
+====================================================== */
 router.get("/:id", async (req, res) => {
   try {
     const house = await House.findById(req.params.id)
@@ -123,72 +202,13 @@ router.get("/:id", async (req, res) => {
       success: true,
       house
     });
-
   } catch (error) {
     console.error("HOUSE DETAILS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: "Server error"
     });
   }
 });
 
 module.exports = router;
-
-
-/**
- * POST - To-Let House
- */
-router.post("/rent", auth, async (req, res) => {
-  try {
-    const {
-      title,
-      location,
-      price,
-      description,
-      image,
-      rentType // monthly / yearly (optional)
-    } = req.body;
-
-    if (!title || !location || !price) {
-      return res.status(400).json({
-        success: false,
-        message: "Title, location and rent amount are required"
-      });
-    }
-
-    // 1️⃣ Create House (rent)
-    const house = await House.create({
-      title,
-      location,
-      price: Number(price),
-      description,
-      image,
-      purpose: "rent",          // 🔥 KEY DIFFERENCE
-      rentType,
-      postedBy: req.user.id
-    });
-
-    // 2️⃣ Create Feed Post
-   const feedPost = await Feed.create({
-  user: req.user.id,
-  type: "rent",                        // ✅ matches Post.js enum
-  text: `🔑 House for Rent\n${house.title}\n₹${house.price}\n${house.location}\n${house.description || ""}`,
-  image: house.image
-});
-
-    res.status(201).json({
-      success: true,
-      message: "House listed for rent",
-      house,
-      feedPost
-    });
-
-  } catch (error) {
-    console.error("RENT HOUSE ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});

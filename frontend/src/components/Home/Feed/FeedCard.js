@@ -13,7 +13,7 @@ function FeedCard({
   setShowShare,
   onLike
 }) {
-  const user = item.postedBy; // 🔑 single source of truth
+  const user = item.postedBy;
 
   return (
     <div className="feed-card">
@@ -51,8 +51,8 @@ function FeedCard({
       </div>
 
       {/* IMAGE */}
-      {item.image && (
-        <img src={item.image} className="feed-image" alt="post" />
+      {item.imageUrl && (
+        <img src={item.imageUrl} className="feed-image" alt="post" />
       )}
 
       {/* CONTENT */}
@@ -69,7 +69,7 @@ function FeedCard({
         setShowComments={setShowComments}
         setSharePost={setSharePost}
         setShowShare={setShowShare}
-        onLike={handleLike}
+        onLike={onLike}   
       />
 
       {/* POPUP MENU */}

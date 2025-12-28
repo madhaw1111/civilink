@@ -29,8 +29,8 @@ export default function AdvancedPortfolio({
       <div className="portfolio-grid">
         {posts.map((p) => (
           <div key={p._id} className="portfolio-card">
-            {p.image ? (
-              <img src={p.image} alt="project" />
+            {p.imageUrl ? (
+              <img src={p.imageUrl} alt="project" />
             ) : (
               <div className="portfolio-placeholder">
                 {p.text || "Project"}

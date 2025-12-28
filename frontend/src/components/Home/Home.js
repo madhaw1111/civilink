@@ -336,8 +336,8 @@ const handleAddComment = async (text) => {
                 </div>
 
                 {/* IMAGE */}
-                {item.image && (
-                  <img src={item.image} alt="post" className="feed-image" />
+                {item.imageUrl && (
+                  <img src={item.imageUrl} alt="post" className="feed-image" />
                 )}
 
                 {/* CONTENT */}

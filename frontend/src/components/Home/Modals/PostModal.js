@@ -3,36 +3,37 @@ import "./postModal.css";
 
 export default function PostModal({ onClose, addToFeed }) {
   const [text, setText] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handlePost = async () => {
-    const user = JSON.parse(localStorage.getItem("civilink_user"));
     const token = localStorage.getItem("token");
-
-    if (!user) return alert("Please login");
+    if (!token) return alert("Please login");
     if (!text.trim()) return alert("Post content required");
 
     try {
       setLoading(true);
 
+      const formData = new FormData();
+      formData.append("text", text);
+      formData.append("type", "post");
+
+      if (imageFile) {
+        formData.append("image", imageFile); // ✅ MUST BE "image"
+      }
+
       const res = await fetch("http://localhost:5000/api/post/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-          text,
-          image,
-          type: "post"
-        })
+        body: formData
       });
 
       const data = await res.json();
 
       if (data.success) {
-        // add to home feed immediately
         addToFeed(data.post);
         onClose();
       } else {
@@ -59,14 +60,19 @@ export default function PostModal({ onClose, addToFeed }) {
         />
 
         <input
-          type="text"
-          placeholder="Image URL (optional)"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            setImageFile(file);
+            if (file) {
+              setPreview(URL.createObjectURL(file));
+            }
+          }}
         />
 
-        {image && (
-          <img src={image} alt="preview" className="post-preview" />
+        {preview && (
+          <img src={preview} alt="preview" className="post-preview" />
         )}
 
         <div className="post-actions">
