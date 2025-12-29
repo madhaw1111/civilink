@@ -6,6 +6,8 @@ const isAdmin = require("../middleware/admin");
 const Vendor = require("../models/Vendor");
 const Product = require("../models/Product");
 const AdminLog = require("../models/AdminLog");
+const uploadToS3 = require("../middleware/upload");
+
 
 /* ===========================
    VENDORS
@@ -61,6 +63,9 @@ router.put("/vendors/:id", auth, isAdmin, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+
 
 // DELETE vendor
 router.delete("/vendors/:id", auth, isAdmin, async (req, res) => {
@@ -146,6 +151,62 @@ router.put("/products/:id", auth, isAdmin, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+/* ===========================
+   UPLOAD PRODUCT IMAGE (S3)
+=========================== */
+router.post(
+  "/products/:id/image",
+  auth,
+  isAdmin,
+  uploadToS3("products").single("image"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Product image is required"
+        });
+      }
+
+      const imageUrl = req.file.location;
+
+      const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        { imageUrl },
+        { new: true }
+      );
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found"
+        });
+      }
+
+      AdminLog.create({
+        adminId: req.user.id,
+        action: "UPDATE",
+        entityType: "Product",
+        entityId: product._id,
+        description: `Product "${product.name}" image updated`
+      }).catch(() => {});
+
+      res.json({
+        success: true,
+        product
+      });
+    } catch (err) {
+      console.error("PRODUCT IMAGE UPLOAD ERROR:", err);
+      res.status(500).json({
+        success: false,
+        message: "Failed to upload product image"
+      });
+    }
+  }
+);
+
 
 // DELETE product
 router.delete("/products/:id", auth, isAdmin, async (req, res) => {

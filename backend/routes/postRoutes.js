@@ -181,4 +181,28 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// REPORT POST
+router.post("/:id/report", auth, async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        reported: true,
+        reportReason: req.body.reason || "User reported",
+        reportedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!post) {
+      return res.status(404).json({ success: false });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+
 module.exports = router;

@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require("../models/User");
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
+const uploadToS3 = require("../middleware/upload");
+
 
 /* =====================================
    GET logged-in user info
@@ -30,6 +32,45 @@ router.get("/me", auth, async (req, res) => {
     });
   }
 });
+
+/* =====================================
+   UPDATE PROFILE PHOTO (S3)
+===================================== */
+router.post(
+  "/profile-photo",
+  auth,
+  uploadToS3("profiles").single("profilePhoto"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Profile image is required"
+        });
+      }
+
+      const imageUrl = req.file.location;
+
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { profilePhoto: imageUrl },
+        { new: true }
+      ).select("name profession profilePhoto");
+
+      res.json({
+        success: true,
+        user
+      });
+    } catch (err) {
+      console.error("PROFILE PHOTO ERROR:", err);
+      res.status(500).json({
+        success: false,
+        message: "Failed to update profile photo"
+      });
+    }
+  }
+);
+
 
 /* =====================================
    DELETE own account (SETTINGS)

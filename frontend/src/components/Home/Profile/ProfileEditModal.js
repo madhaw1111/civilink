@@ -1,5 +1,6 @@
 // src/components/Home/Profile/ProfileEditModal.js
 import React, { useState } from "react";
+import axios from "axios";
 
 export default function ProfileEditModal({
   user = {},
@@ -20,8 +21,55 @@ export default function ProfileEditModal({
       : ""
   });
 
+  const [uploading, setUploading] = useState(false);
   const update = (k, v) =>
     setForm((prev) => ({ ...prev, [k]: v }));
+
+   /* ================= PROFILE PHOTO UPLOAD ================= */
+  const handleProfilePhotoUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      const data = new FormData();
+      data.append("profilePhoto", file);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/users/profile-photo",
+
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      // 🔑 SET S3 URL INTO FORM (THIS IS THE KEY STEP)
+      update("profilePhoto", res.data.user.profilePhoto);
+      // 🔥 SYNC TO LOCAL STORAGE (GLOBAL APP USES THIS)
+const storedUser = JSON.parse(localStorage.getItem("civilink_user"));
+
+if (storedUser) {
+  const updatedUser = {
+    ...storedUser,
+    profilePhoto: res.data.user.profilePhoto
+  };
+
+  localStorage.setItem(
+    "civilink_user",
+    JSON.stringify(updatedUser)
+  );
+}
+    } catch (err) {
+      console.error("Profile photo upload failed", err);
+      alert("Profile photo upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -71,14 +119,32 @@ export default function ProfileEditModal({
           </>
         )}
 
-        <label>Profile Photo URL</label>
+          {/* ================= PROFILE PHOTO (S3) ================= */}
+        <label>Profile Photo</label>
+
+        {form.profilePhoto && (
+          <img
+            src={form.profilePhoto}
+            alt="profile"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              objectFit: "cover",
+              marginBottom: 8
+            }}
+          />
+        )}
+
         <input
-          placeholder="https://..."
-          value={form.profilePhoto}
+          type="file"
+          accept="image/*"
+          disabled={uploading}
           onChange={(e) =>
-            update("profilePhoto", e.target.value)
+            handleProfilePhotoUpload(e.target.files[0])
           }
         />
+
 
         {/* ================= PROFESSIONAL ONLY ================= */}
         {isProfessional && (

@@ -76,12 +76,27 @@ export default function ProfileNormal({
       <div className="normal-top">
         <div className="normal-left">
           <div className="avatar-large">
-            {user.profilePhoto ||
-              user.avatar ||
-              (user.name
-                ? user.name.charAt(0).toUpperCase()
-                : "U")}
-          </div>
+  {user.profilePhoto ? (
+    <img
+      src={user.profilePhoto}
+      alt={user.name}
+      className="avatar-img"
+    />
+  ) : user.avatar ? (
+    <img
+      src={user.avatar}
+      alt={user.name}
+      className="avatar-img"
+    />
+  ) : (
+    <span className="avatar-text">
+      {user.name
+        ? user.name.charAt(0).toUpperCase()
+        : "U"}
+    </span>
+  )}
+</div>
+
         </div>
 
         <div className="normal-right">

@@ -11,6 +11,11 @@ const vendorSchema = new mongoose.Schema(
     address: String,
     phone: String,
     email: { type: String, required: true }, // 👈 NEW: vendor Gmail/email
+    image: {
+     type: String,
+    default: ""
+  },
+
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }

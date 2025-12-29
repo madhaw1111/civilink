@@ -39,6 +39,7 @@ const [logs, setLogs] = useState([]);
     address: "",
     phone: "",
     email: "",  
+    image: "",
     isActive: true,
   });
 
@@ -94,6 +95,7 @@ const loadPosts = async () => {
   );
   setPosts(res.data);
 };
+
 
 
 
@@ -219,6 +221,34 @@ useEffect(() => {
     });
     setActiveTab("products");
   };
+
+  const uploadProductImage = async (productId, file) => {
+  if (!file || !productId) return;
+
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res = await axios.post(
+      `http://localhost:5000/api/admin/products/${productId}/image`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    );
+    loadProducts();
+
+    return res.data.product.imageUrl;
+  } catch (err) {
+    console.error("Product image upload failed", err);
+    alert("Product image upload failed");
+  }
+};
+
 
   const handleDeleteProduct = async (id) => {
     if (!window.confirm("Delete this product?")) return;
@@ -491,16 +521,50 @@ const handleDeletePost = async (id) => {
                     <option key={c}>{c}</option>
                   ))}
                 </select>
-                <input
-                  placeholder="Image URL"
-                  value={productForm.imageUrl}
-                  onChange={(e) =>
-                    setProductForm({
-                      ...productForm,
-                      imageUrl: e.target.value,
-                    })
-                  }
-                />
+                {/* ================= PRODUCT IMAGE (S3) ================= */}
+<label>Product Image</label>
+
+{productForm.imageUrl && (
+  <img
+    src={productForm.imageUrl}
+    alt="product"
+    style={{
+      width: 120,
+      height: 120,
+      objectFit: "cover",
+      borderRadius: 8,
+      marginBottom: 8
+    }}
+  />
+)}
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!productForm._id) {
+      alert("Save product first");
+      return;
+    }
+
+    const url = await uploadProductImage(
+      productForm._id,
+      file
+    );
+
+    if (url) {
+      setProductForm(prev => ({
+        ...prev,
+        imageUrl: url
+      }));
+    }
+  }}
+/>
+
+                
               </div>
               <button
                 className="admin-primary-btn"
@@ -661,6 +725,8 @@ const handleDeletePost = async (id) => {
           <th>Type</th>
           <th>Content</th>
           <th>Action</th>
+          <th>Status</th>
+
         </tr>
       </thead>
 
@@ -678,6 +744,16 @@ const handleDeletePost = async (id) => {
               <td style={{ maxWidth: "400px" }}>
                 {p.text || p.title || "-"}
               </td>
+              <td>
+  {p.reported ? (
+    <span style={{ color: "red", fontWeight: "600" }}>
+      🚩 Reported
+    </span>
+  ) : (
+    "OK"
+  )}
+</td>
+
               <td>
                 <button
                   className="admin-secondary-btn"

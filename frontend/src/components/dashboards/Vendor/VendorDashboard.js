@@ -228,6 +228,19 @@ function VendorDashboard() {
         ) : (
           filteredProducts.map((p) => (
             <div key={p._id} className="vendor-card">
+              {/* PRODUCT IMAGE */}
+{p.imageUrl ? (
+  <img
+    src={p.imageUrl}
+    alt={p.name}
+    className="vendor-card-image"
+  />
+) : (
+  <div className="vendor-card-image placeholder">
+    No Image
+  </div>
+)}
+
               <div className="vendor-card-header">
                 <div className="vendor-product-name">{p.name}</div>
                 <div className="vendor-product-id">#{p._id}</div>

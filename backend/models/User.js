@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   profession: { type: String, default: "Member" }, // Worker, Engineer, etc
   skills: { type: [String], default: [] },
   experienceYears: { type: Number, default: 0 },
-  profilePhoto: { type: String }, // URL or Base64
+  profilePhoto: { type: String,  default: "" }, // URL or Base64
   isProfessional: { type: Boolean, default: false },
   role: {
   type: String,

@@ -256,6 +256,44 @@ const handleAddComment = async (text) => {
     console.error("Comment failed", err);
   }
 };
+/* ================= REPORT POST ================= */
+const handleReportPost = async (post) => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("civilink_user"));
+
+  if (!token || !user) {
+    alert("Please login to report");
+    return;
+  }
+
+  try {
+    await fetch("http://localhost:5000/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        message: `
+POST REPORT
+
+Post ID: ${post._id}
+Reported User: ${post.user?.name || "Unknown"}
+Post Type: ${post.type || "feed"}
+Content:
+${post.text || post.title || "N/A"}
+        `,
+        source: "post_report"
+      })
+    });
+
+    alert("Post reported successfully");
+  } catch (err) {
+    console.error("Report failed", err);
+    alert("Failed to report post");
+  }
+};
+
 
 
 
@@ -307,9 +345,18 @@ const handleAddComment = async (text) => {
   }}
   style={{ cursor: "pointer" }}
 >
-  <div className="feed-avatar">
-    {(item.user?.name || "U").charAt(0).toUpperCase()}
-  </div>
+<div className="feed-avatar">
+  {item.user?.profilePhoto ? (
+    <img
+      src={item.user.profilePhoto}
+      alt={item.user.name}
+    />
+  ) : (
+    <span>
+      {(item.user?.name || "U").charAt(0).toUpperCase()}
+    </span>
+  )}
+</div>
 
   <div>
     <div className="feed-user">
@@ -432,7 +479,36 @@ const handleAddComment = async (text) => {
                   >
                     <button>⭐ Save post</button>
                     <button>🙈 Hide post</button>
-                    <button>🚩 Report</button>
+                   <button
+  onClick={async () => {
+    if (!localStorage.getItem("token")) {
+      alert("Please login");
+      return;
+    }
+
+    const confirmed = window.confirm("Report this post?");
+    if (!confirmed) return;
+
+    await fetch(
+      `http://localhost:5000/api/post/${item._id}/report`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ reason: "Inappropriate content" })
+      }
+    );
+
+    alert("Post reported to admin");
+    setMenuPost(null);
+  }}
+>
+  🚩 Report
+</button>
+
+
                   </div>
                 )}
               </article>

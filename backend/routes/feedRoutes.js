@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 
 router.get("/home", async (req, res) => {
   try {
-    const feed = await Feed.find()
+    const feed = await Feed.find({reported: { $ne: true }})
       .populate("user", "name profession profilePhoto")
       .sort({ createdAt: -1 })
       .lean();
@@ -109,6 +109,8 @@ router.get("/:id/comments", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+
 
 
 

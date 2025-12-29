@@ -77,12 +77,27 @@ const connectUser = async () => {
       <div className="pro-header">
         <div className="pro-left">
           <div className="pro-avatar">
-            {user.profilePhoto ||
-              user.avatar ||
-              (user.name
-                ? user.name.charAt(0).toUpperCase()
-                : "U")}
-          </div>
+  {user.profilePhoto ? (
+    <img
+      src={user.profilePhoto}
+      alt={user.name}
+      className="pro-avatar-img"
+    />
+  ) : user.avatar ? (
+    <img
+      src={user.avatar}
+      alt={user.name}
+      className="pro-avatar-img"
+    />
+  ) : (
+    <span className="pro-avatar-text">
+      {user.name
+        ? user.name.charAt(0).toUpperCase()
+        : "U"}
+    </span>
+  )}
+</div>
+
         </div>
 
         <div className="pro-center">

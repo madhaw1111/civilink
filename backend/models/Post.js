@@ -47,7 +47,24 @@ const postSchema = new mongoose.Schema(
           default: Date.now
         }
       }
-    ]
+    ],
+   /* =========================
+       REPORT / MODERATION
+    ========================= */
+    reported: {
+      type: Boolean,
+      default: false
+    },
+
+    reportReason: {
+      type: String,
+      default: ""
+    },
+
+    reportedAt: {
+      type: Date
+    }
+
   },
   { timestamps: true }
 );
