@@ -1,88 +1,135 @@
-/* src/components/Home/Profile/profile.full.css */
-/* reset bits */
-.profile-root { max-width: 1100px; margin: 18px auto; padding: 12px; font-family: Inter, system-ui, sans-serif; color:#111; }
-.profile-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.logo { font-weight:700; color:#0a3d62; }
-.toolbar-actions { display:flex; gap:8px; }
+/* =====================
+   DESIGN TOKENS (2025)
+===================== */
+:root {
+  --primary: #0a66c2;
+  --primary-dark: #004182;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-soft: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
 
-/* buttons */
-.btn { padding:8px 12px; border-radius:8px; cursor:pointer; border: 1px solid transparent; }
-.btn.primary { background:#0a66c2; color:#fff; }
-.btn.outline { background:transparent; border-color:#d1d5db; color:#111; }
-.btn.subtle { background:#f1f5f9; color:#111; }
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
 
-/* Normal Instagram-style */
-.profile-normal { background:#fff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(8,20,34,0.06); }
-.normal-top { display:flex; gap:18px; align-items:center; }
-.avatar-large { width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#4a90e2,#50c9ce);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:700; }
-.normal-right { flex:1; }
-.name-row { display:flex; align-items:center; gap:8px; }
-.display-name { margin:0; font-size:22px; }
-.meta-row { display:flex; gap:18px; margin:10px 0; color:#555; }
-.bio-text { color:#333; margin-top:6px; }
-
-/* posts grid */
-.posts-section { padding:12px 0; }
-.grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
-.grid-item { position:relative; overflow:hidden; border-radius:8px; background:#f3f4f6; min-height:110px; display:flex; align-items:center; justify-content:center; }
-.grid-item img { width:100%; height:100%; object-fit:cover; display:block; }
-.grid-item-overlay { position:absolute; bottom:6px; left:6px; display:flex; gap:6px; }
-.icon { background:rgba(0,0,0,0.4); color:white; border:none; padding:6px; border-radius:6px; }
-
-/* Professional LinkedIn-style */
-.profile-pro { display:block; }
-.pro-header { display:flex; gap:18px; padding:14px; background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(8,20,34,0.06); align-items:center; }
-.pro-avatar { width:110px;height:110px;border-radius:10px;background:linear-gradient(135deg,#0a66c2,#004182);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:700; }
-.pro-center { flex:1; }
-.headline { color:#444; margin:6px 0; font-weight:600;}
-.pro-actions { display:flex; gap:8px; margin-top:8px; }
-.pro-right { display:flex; gap:12px; }
-.stat { text-align:center; }
-.stat .num { font-weight:700; font-size:20px; }
-.pro-body { display:flex; gap:16px; margin-top:12px; }
-.pro-left-col { flex:2; }
-.pro-right-col { width:360px; }
-
-/* cards */
-.card { background:#fff; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 6px 18px rgba(8,20,34,0.04); }
-.tags { display:flex; gap:6px; flex-wrap:wrap; }
-.tag { background:#eef2ff; padding:6px 8px; border-radius:6px; color:#0a3d62; }
-
-/* portfolio grid */
-.portfolio-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; }
-.port-item img { width:100%; height:84px; object-fit:cover; border-radius:6px; }
-
-/* simple modal */
-.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; z-index:60; }
-.modal-card { background:#fff; padding:16px; border-radius:10px; width:420px; max-width:95%; box-shadow:0 10px 30px rgba(0,0,0,0.15); }
-.modal-card input, .modal-card textarea { width:100%; padding:8px; border-radius:8px; border:1px solid #e6e9ee; margin-top:6px; }
-
-/* empty placeholders */
-.empty-state, .empty-small { color:#777; padding:16px; text-align:center; }
-
-/* responsive */
-@media (max-width:900px) {
-  .grid { grid-template-columns: repeat(2,1fr); }
-  .pro-body { flex-direction:column; }
-  .pro-right { display:none; }
-  .normal-top { flex-direction:column; align-items:flex-start; gap:12px; }
+  --shadow-soft: 0 6px 18px rgba(8,20,34,0.08);
+  --shadow-hover: 0 12px 36px rgba(8,20,34,0.14);
 }
 
-.profile-avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
+/* =====================
+   GLOBAL RESET
+===================== */
+* {
+  box-sizing: border-box;
 }
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =====================
+   ROOT
+===================== */
+.profile-root {
+  max-width: 1160px;
+  margin: 24px auto;
+  padding: 16px;
+}
+
+/* =====================
+   TOOLBAR
+===================== */
+.profile-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* =====================
+   BUTTONS (2025)
+===================== */
+.btn {
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  transform: translateY(-1px);
+}
+
+.btn.outline {
+  background: transparent;
+  border-color: var(--border-soft);
+  color: var(--text-main);
+}
+
+.btn.outline:hover {
+  background: #f1f5f9;
+}
+
+.btn.subtle {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+.btn.subtle:hover {
+  background: #e5e7eb;
+}
+
+/* =====================
+   PROFESSIONAL HEADER
+===================== */
+.profile-pro {
+  display: block;
+}
+
+.pro-header {
+  display: flex;
+  gap: 20px;
+  padding: 18px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-soft);
+  align-items: center;
+}
+
 .pro-avatar {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: linear-gradient(135deg, var(--primary), #50c9ce);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 8px 20px rgba(10,102,194,0.25);
 }
 
 .pro-avatar-img {
@@ -93,6 +140,333 @@
 
 .pro-avatar-text {
   font-size: 48px;
-  font-weight: bold;
-  color: #555;
+  font-weight: 700;
+  color: #fff;
 }
+
+.pro-center {
+  flex: 1;
+}
+
+.pro-center h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.headline {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 4px;
+}
+
+.location {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.pro-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.pro-right {
+  display: flex;
+  gap: 16px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat .num {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stat .lbl {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* =====================
+   BODY LAYOUT
+===================== */
+.pro-body {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pro-left-col {
+  flex: 2;
+}
+
+.pro-right-col {
+  width: 360px;
+}
+
+/* =====================
+   CARDS
+===================== */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+/* =====================
+   TAGS
+===================== */
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #eef2ff;
+  color: var(--primary-dark);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+/* =====================
+   PORTFOLIO GRID
+===================== */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.portfolio-card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #f3f4f6;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portfolio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.portfolio-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =====================
+   MODAL (EDIT / VIEW)
+===================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  width: 420px;
+  max-width: 94%;
+  box-shadow: var(--shadow-hover);
+  animation: modalPop 0.22s ease;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-card input,
+.modal-card textarea {
+  width: 100%;
+  padding: 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: #f9fafb;
+  margin-top: 6px;
+}
+
+.modal-card input:focus,
+.modal-card textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(10,102,194,0.15);
+}
+
+/* =====================
+   EMPTY STATES
+===================== */
+.empty-state,
+.empty-small {
+  color: var(--text-muted);
+  padding: 20px;
+  text-align: center;
+}
+
+/* =====================
+   MOBILE RESPONSIVE
+===================== */
+@media (max-width: 900px) {
+  .pro-body {
+    flex-direction: column;
+  }
+
+  .pro-right-col {
+    width: 100%;
+  }
+
+  .pro-right {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-root {
+    padding: 10px;
+  }
+
+  .pro-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pro-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .pro-center h1 {
+    font-size: 20px;
+  }
+
+  .portfolio-grid {
+    gap: 8px;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===============================
+   PROFILE EDIT MODAL – FIXED UI
+================================ */
+
+/* Modal card sizing & alignment */
+.modal-card {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Proper form layout */
+.modal-card h3 {
+  margin-bottom: 14px;
+  font-size: 20px;
+}
+
+.modal-card label {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Inputs consistency */
+.modal-card input,
+.modal-card textarea {
+  margin-top: 6px;
+  background: #fff;
+}
+
+/* Grid for city/state */
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Profile photo center */
+.modal-photo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.modal-photo-wrap img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+/* File input clean */
+.modal-photo-wrap input[type="file"] {
+  width: auto;
+}
+
+/* Footer buttons */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ===============================
+   MOBILE FIX
+================================ */
+@media (max-width: 520px) {
+  .modal-card {
+    padding: 14px;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+

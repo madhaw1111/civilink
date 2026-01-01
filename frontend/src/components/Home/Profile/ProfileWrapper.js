@@ -244,14 +244,49 @@ export default function ProfileWrapper() {
       {/* ========== EDIT PROFILE MODAL ========== */}
       {showEdit && isOwnProfile && (
         <ProfileEditModal
-          user={user}
-          isProfessional={isProfessional}
-          onClose={() => setShowEdit(false)}
-          onSave={(u) => {
-            saveUser(u);
-            setShowEdit(false);
-          }}
-        />
+  user={user}
+  isProfessional={isProfessional}
+  onClose={() => setShowEdit(false)}
+  onSave={async (updatedUser) => {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/users/profile",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(updatedUser)
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert("Failed to save profile");
+        return;
+      }
+
+      // ✅ update state
+      setUser(data.user);
+
+      // ✅ update localStorage
+      if (loggedInUser?._id === data.user._id) {
+        localStorage.setItem(
+          "civilink_user",
+          JSON.stringify(data.user)
+        );
+      }
+
+      setShowEdit(false);
+    } catch (err) {
+      console.error("Profile save failed", err);
+      alert("Server error");
+    }
+  }}
+/>
+
       )}
 
       {/* ========== POST MODAL ========== */}

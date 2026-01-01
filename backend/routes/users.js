@@ -194,6 +194,48 @@ router.get("/saved-posts", auth, async (req, res) => {
   }
 });
 
+/* =====================================
+   UPDATE PROFILE DETAILS
+===================================== */
+router.put("/profile", auth, async (req, res) => {
+  try {
+    const {
+      name,
+      phone,
+      bio,
+      location,
+      experienceYears,
+      skills
+    } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        name,
+        phone,
+        bio,
+        location: {
+          city: location?.city || "",
+          state: location?.state || ""
+        },
+        experienceYears,
+        skills
+      },
+      { new: true }
+    ).select("-password");
+
+    res.json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error("PROFILE UPDATE ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+
 
 /* =====================================
    GET user by ID (PUBLIC PROFILE)
@@ -222,6 +264,8 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
+
+// UPDATE PROFILE DETAILS
 
 
 

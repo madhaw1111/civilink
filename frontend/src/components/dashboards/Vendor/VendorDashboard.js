@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./vendor.css";
+import CartModal from "./CartModal";
+import CheckoutModal from "./CheckoutModal";
+
 
 function VendorDashboard() {
   const CATEGORIES = [
@@ -184,8 +187,12 @@ function VendorDashboard() {
           </a>
         </p>
         <p>
-          <strong>Phone:</strong>{" "}
-          <a href="tel:+919384710710">+91 9384710710</a>
+          <strong>whatsApp:</strong>{" "}
+          <a href="https://wa.me/919384710710?text=Hi%20I%20found%20this%20on%20Civilink"
+      target="_blank"
+      rel="noopener noreferrer"
+          
+          >+91 9384710710</a>
         </p>
         <p className="vendor-modal-note">
           Our admin team will guide you with construction materials,
@@ -348,74 +355,8 @@ function VendorDashboard() {
   </div>
 )}  
 
-    <>
-  {showCart && (
-    <div className="vendor-modal">
-      <div className="vendor-modal-overlay" onClick={() => setShowCart(false)} />
+ 
 
-      <div className="vendor-modal-content">
-        <h3>Your Cart</h3>
-
-        <div className="vendor-modal-body">
-          {cart.length === 0 ? (
-            <p>Your cart is empty.</p>
-          ) : (
-            cart.map((item) => (
-              <div
-                key={item._id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <div>
-                  <div>{item.name}</div>
-                  <div style={{ fontSize: "12px" }}>
-                    ₹{item.price} × {item.quantity}
-                  </div>
-                </div>
-
-                <div>
-                  <button
-                    onClick={() =>
-                      setCart((prev) =>
-                        prev
-                          .map((p) =>
-                            p._id === item._id
-                              ? { ...p, quantity: p.quantity - 1 }
-                              : p
-                          )
-                          .filter((p) => p.quantity > 0)
-                      )
-                    }
-                  >
-                    -
-                  </button>
-
-                  <span style={{ margin: "0 8px" }}>{item.quantity}</span>
-
-                  <button
-                    onClick={() =>
-                      setCart((prev) =>
-                        prev.map((p) =>
-                          p._id === item._id
-                            ? { ...p, quantity: p.quantity + 1 }
-                            : p
-                        )
-                      )
-                    }
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  )}
   
   
   {showAddedMsg && (
@@ -423,172 +364,33 @@ function VendorDashboard() {
       ✅ Item added to cart
     </div>
   )}
-</>
-<div className="vendor-modal-body">
-{cart.length === 0 ? (
-  <p>Your cart is empty.</p>
-) : (
-  cart.map((item) => (
-    <div
-      key={item._id}
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "10px",
-      }}
-    >
-      <div>
-        <div>{item.name}</div>
-        <div style={{ fontSize: "12px", color: "#555" }}>
-          ₹{item.price} × {item.quantity} = ₹
-          {item.price * item.quantity}
-        </div>
-      </div>
 
-      <div style={{ display: "flex", gap: "6px" }}>
-        <button
-          onClick={() =>
-            setCart((prev) =>
-              prev
-                .map((p) =>
-                  p._id === item._id
-                    ? { ...p, quantity: p.quantity - 1 }
-                    : p
-                )
-                .filter((p) => p.quantity > 0)
-            )
-          }
-        >
-          {"-"}
-        </button>
-
-        <span>{item.quantity}</span>
-
-        <button
-          onClick={() =>
-            setCart((prev) =>
-              prev.map((p) =>
-                p._id === item._id
-                  ? { ...p, quantity: p.quantity + 1 }
-                  : p
-              )
-            )
-          }
-        >
-          {"+"}
-        </button>
-      </div>
-    </div>
-  ))
+{showCart && (
+  <CartModal
+    cart={cart}
+    setCart={setCart}
+    onClose={() => setShowCart(false)}
+    onCheckout={() => {
+      setShowCart(false);
+      setShowCheckout(true);
+    }}
+  />
 )}
- 
-  {/* ✅ BILL SUMMARY */}
-  {cart.length > 0 && (
-    <div
-      className="cart-summary"
-      style={{
-        marginTop: "10px",
-        fontWeight: "600",
-        textAlign: "right",
-      }}
-    >
-      Total: ₹
-      {cart.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      )}
-    </div>
-  )}
-
-  {/* ✅ CHECKOUT BUTTON */}
-  {cart.length > 0 && (
-  <button
-  className="btn-primary"
-  onClick={() => {
-    setShowCart(false);      // ✅ close cart
-    setShowCheckout(true);  // ✅ open checkout
-  }}
->
-  Proceed to Checkout
-</button>
-
-  )}
-</div>
-
-
- 
 
 {showCheckout && (
-  <div className="vendor-modal-overlay">
-    <div className="vendor-modal checkout-modal">
-      <h3>Checkout Details</h3>
-
-      <input
-        placeholder="Customer Name"
-        value={checkoutData.name}
-        onChange={(e) =>
-          setCheckoutData({ ...checkoutData, name: e.target.value })
-        }
-      />
-
-      <input
-        placeholder="Phone Number"
-        value={checkoutData.phone}
-        onChange={(e) =>
-          setCheckoutData({ ...checkoutData, phone: e.target.value })
-        }
-      />
-
-      <input
-        placeholder="Email (optional)"
-        value={checkoutData.email}
-        onChange={(e) =>
-          setCheckoutData({ ...checkoutData, email: e.target.value })
-        }
-      />
-
-      <textarea
-        placeholder="Delivery Address"
-        value={checkoutData.address}
-        onChange={(e) =>
-          setCheckoutData({ ...checkoutData, address: e.target.value })
-        }
-      />
-
-       {/* ✅ TOTAL AMOUNT */}
-  <div className="cart-summary">
-    Total Amount: ₹
-    {cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    )}
-  </div>
-
-  {/* ✅ BUTTONS — PUT THIS AFTER TOTAL */}
-  <div className="modal-actions">
-    <button
-      className="btn-outline"
-      onClick={() => setShowCheckout(false)}
-    >
-      Back
-    </button>
-
-    <button
-      className="btn-primary"
-      onClick={() => alert("Order submitted")}
-    >
-      Submit Order
-    </button>
-  </div>
-</div>
-  </div>
+  <CheckoutModal
+    cart={cart}
+    checkoutData={checkoutData}
+    setCheckoutData={setCheckoutData}
+    onBack={() => setShowCheckout(false)}
+    onSubmit={() => alert("Order submitted")}
+  />
 )}
 
-
-
+ 
     </div>
   );
 }
+
 
 export default VendorDashboard;

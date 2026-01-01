@@ -1,7 +1,5 @@
-// src/components/Home/Profile/ProfileProfessional.js
 import React from "react";
 import AdvancedPortfolio from "./AdvancedPortfolio";
-
 
 export default function ProfileProfessional({
   user,
@@ -15,6 +13,7 @@ export default function ProfileProfessional({
   const loggedInUser = JSON.parse(
     localStorage.getItem("civilink_user")
   );
+
   const isOwnProfile =
     loggedInUser?._id && user?._id
       ? loggedInUser._id === user._id
@@ -41,63 +40,56 @@ export default function ProfileProfessional({
   };
 
   /* ================= CONNECT USER ================= */
- const [connected, setConnected] = React.useState(false);
+  const [connected, setConnected] = React.useState(false);
 
-React.useEffect(() => {
-  if (!loggedInUser || !user) return;
-  setConnected(
-    loggedInUser.connections?.includes(user._id)
-  );
-}, [user]);
-
-const connectUser = async () => {
-  try {
-    const res = await fetch(
-      `http://localhost:5000/api/connections/${user._id}/connect`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      }
+  React.useEffect(() => {
+    if (!loggedInUser || !user) return;
+    setConnected(
+      loggedInUser.connections?.includes(user._id)
     );
+  }, [user, loggedInUser]);
 
-    if (res.ok) {
-      setConnected(true);
+  const connectUser = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/connections/${user._id}/connect`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      if (res.ok) {
+        setConnected(true);
+      }
+    } catch (err) {
+      console.error(err);
     }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
+  };
 
   return (
     <div className="profile-pro">
+
       {/* ================= HEADER ================= */}
       <div className="pro-header">
         <div className="pro-left">
           <div className="pro-avatar">
-  {user.profilePhoto ? (
-    <img
-      src={user.profilePhoto}
-      alt={user.name}
-      className="pro-avatar-img"
-    />
-  ) : user.avatar ? (
-    <img
-      src={user.avatar}
-      alt={user.name}
-      className="pro-avatar-img"
-    />
-  ) : (
-    <span className="pro-avatar-text">
-      {user.name
-        ? user.name.charAt(0).toUpperCase()
-        : "U"}
-    </span>
-  )}
-</div>
-
+            {user.profilePhoto ? (
+              <img
+                src={user.profilePhoto}
+                alt={user.name}
+                className="pro-avatar-img"
+              />
+            ) : (
+              <span className="pro-avatar-text">
+                {user.name
+                  ? user.name.charAt(0).toUpperCase()
+                  : "U"}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="pro-center">
@@ -110,11 +102,15 @@ const connectUser = async () => {
             </div>
           )}
 
-          {(user.location || user.experienceYears) && (
+          {(user.location?.city || user.experienceYears) && (
             <div className="location">
-              {user.location}
-              {user.experienceYears &&
-                ` • ${user.experienceYears} yrs`}
+              {user.location?.city}
+              {user.location?.state
+                ? `, ${user.location.state}`
+                : ""}
+              {user.experienceYears
+                ? ` • ${user.experienceYears} yrs`
+                : ""}
             </div>
           )}
 
@@ -126,16 +122,15 @@ const connectUser = async () => {
                   Consult
                 </button>
 
-                {!isOwnProfile && (
-  <button
-    className={`btn ${connected ? "outline" : "primary"}`}
-    disabled={connected}
-    onClick={connectUser}
-  >
-    {connected ? "Connected" : "Connect"}
-  </button>
-)}
-
+                <button
+                  className={`btn ${
+                    connected ? "outline" : "primary"
+                  }`}
+                  disabled={connected}
+                  onClick={connectUser}
+                >
+                  {connected ? "Connected" : "Connect"}
+                </button>
               </>
             )}
 
@@ -180,6 +175,8 @@ const connectUser = async () => {
 
       {/* ================= BODY ================= */}
       <div className="pro-body">
+
+        {/* LEFT COLUMN */}
         <div className="pro-left-col">
           {user.bio && (
             <section className="card">
@@ -194,58 +191,19 @@ const connectUser = async () => {
                 <h3>Skills</h3>
                 <div className="tags">
                   {user.skills.map((s) => (
-                    <span
-                      key={s}
-                      className="tag"
-                    >
+                    <span key={s} className="tag">
                       {s}
                     </span>
                   ))}
                 </div>
               </section>
             )}
-
-          {Array.isArray(user.experience) &&
-            user.experience.length > 0 && (
-              <section className="card">
-                <h3>Experience</h3>
-                {user.experience.map(
-                  (exp, i) => (
-                    <div
-                      key={i}
-                      className="exp-item"
-                    >
-                      <div className="exp-role">
-                        {exp.role}
-                      </div>
-                      <div className="exp-org">
-                        {exp.company} •{" "}
-                        {exp.duration}
-                      </div>
-                      {exp.description && (
-                        <div className="exp-desc">
-                          {exp.description}
-                        </div>
-                      )}
-                    </div>
-                  )
-                )}
-              </section>
-            )}
         </div>
 
+        {/* RIGHT COLUMN */}
         <div className="pro-right-col">
-          <section className="card">
-  <AdvancedPortfolio
-    posts={posts}
-    isOwnProfile={isOwnProfile}
-    onEditPost={onEditPost}
-    onDeletePost={onDeletePost}
-    loading={loadingPosts}
-  />
-</section>
 
-
+          {/* CONTACT FIRST */}
           {(user.email || user.phone) && (
             <section className="card">
               <h3>Contact</h3>
@@ -268,9 +226,19 @@ const connectUser = async () => {
                 )}
               </div>
             </section>
-
-            
           )}
+
+          {/* PORTFOLIO AT BOTTOM */}
+          <section className="card">
+            <AdvancedPortfolio
+              posts={posts}
+              isOwnProfile={isOwnProfile}
+              onEditPost={onEditPost}
+              onDeletePost={onDeletePost}
+              loading={loadingPosts}
+            />
+          </section>
+
         </div>
       </div>
     </div>

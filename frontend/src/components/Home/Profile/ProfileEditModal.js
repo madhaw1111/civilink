@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function ProfileEditModal({
   user = {},
-  isProfessional = false, // ✅ NEW FLAG
+  isProfessional = false,
   onClose = () => {},
   onSave = () => {}
 }) {
@@ -13,7 +13,8 @@ export default function ProfileEditModal({
     email: user.email || "",
     phone: user.phone || "",
     bio: user.bio || "",
-    location: user.location || "",
+    city: user.city || "",
+    state: user.state || "",
     experienceYears: user.experienceYears || "",
     profilePhoto: user.profilePhoto || user.avatar || "",
     skills: Array.isArray(user.skills)
@@ -22,10 +23,11 @@ export default function ProfileEditModal({
   });
 
   const [uploading, setUploading] = useState(false);
+
   const update = (k, v) =>
     setForm((prev) => ({ ...prev, [k]: v }));
 
-   /* ================= PROFILE PHOTO UPLOAD ================= */
+  /* ================= PROFILE PHOTO UPLOAD ================= */
   const handleProfilePhotoUpload = async (file) => {
     if (!file) return;
 
@@ -37,7 +39,6 @@ export default function ProfileEditModal({
 
       const res = await axios.post(
         "http://localhost:5000/api/users/profile-photo",
-
         data,
         {
           headers: {
@@ -47,22 +48,21 @@ export default function ProfileEditModal({
         }
       );
 
-      // 🔑 SET S3 URL INTO FORM (THIS IS THE KEY STEP)
       update("profilePhoto", res.data.user.profilePhoto);
-      // 🔥 SYNC TO LOCAL STORAGE (GLOBAL APP USES THIS)
-const storedUser = JSON.parse(localStorage.getItem("civilink_user"));
 
-if (storedUser) {
-  const updatedUser = {
-    ...storedUser,
-    profilePhoto: res.data.user.profilePhoto
-  };
+      const storedUser = JSON.parse(
+        localStorage.getItem("civilink_user")
+      );
 
-  localStorage.setItem(
-    "civilink_user",
-    JSON.stringify(updatedUser)
-  );
-}
+      if (storedUser) {
+        localStorage.setItem(
+          "civilink_user",
+          JSON.stringify({
+            ...storedUser,
+            profilePhoto: res.data.user.profilePhoto
+          })
+        );
+      }
     } catch (err) {
       console.error("Profile photo upload failed", err);
       alert("Profile photo upload failed");
@@ -97,14 +97,20 @@ if (storedUser) {
           onChange={(e) => update("phone", e.target.value)}
         />
 
-        <label>Location</label>
+        <label>City</label>
         <input
-          placeholder="City, State"
-          value={form.location}
-          onChange={(e) => update("location", e.target.value)}
+          placeholder="City"
+          value={form.city}
+          onChange={(e) => update("city", e.target.value)}
         />
 
-        {/* ================= PROFESSIONAL ONLY ================= */}
+        <label>State</label>
+        <input
+          placeholder="State"
+          value={form.state}
+          onChange={(e) => update("state", e.target.value)}
+        />
+
         {isProfessional && (
           <>
             <label>Experience (years)</label>
@@ -119,7 +125,6 @@ if (storedUser) {
           </>
         )}
 
-          {/* ================= PROFILE PHOTO (S3) ================= */}
         <label>Profile Photo</label>
 
         {form.profilePhoto && (
@@ -145,8 +150,6 @@ if (storedUser) {
           }
         />
 
-
-        {/* ================= PROFESSIONAL ONLY ================= */}
         {isProfessional && (
           <>
             <label>Skills (comma separated)</label>

@@ -284,29 +284,7 @@
 }
 
 
-/* Modal box */
-.vendor-modal {
-  background: #ffffff;
-  width: 320px;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  animation: popupFade 0.2s ease;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-}
 
-@keyframes popupFade {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
 .vendor-modal-header {
   display: flex;

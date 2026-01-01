@@ -126,7 +126,8 @@ router.post(
         text: `🔑 House for Rent / To-Let
 ${house.title}
 ₹${house.price}
-${house.location}
+${house.location.city}${house.location.state ? ", " + house.location.state : ""}
+
 ${house.description || ""}`,
         imageUrl
       });

@@ -1,52 +1,21 @@
+/* ===== GRID ===== */
 .portfolio-2025 {
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(14px);
-  border-radius: 18px;
-  padding: 20px;
-}
-
-.portfolio-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.portfolio-header h3 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.portfolio-filters {
-  display: flex;
-  gap: 8px;
-}
-
-.chip {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: #f1f1f1;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.chip.active {
-  background: #111;
-  color: #fff;
+  width: 100%;
 }
 
 .portfolio-grid {
-  margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
 }
 
 .portfolio-card {
   position: relative;
+  aspect-ratio: 1 / 1;
   border-radius: 14px;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
-  background: #ddd;
+  cursor: pointer;
+  background: #f3f4f6;
 }
 
 .portfolio-card img {
@@ -60,52 +29,177 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #6b7280;
   font-weight: 500;
-  background: linear-gradient(135deg,#ccc,#eee);
+  padding: 10px;
+  text-align: center;
 }
 
-.portfolio-overlay {
+.portfolio-hover {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0,0,0,0.75),
-    rgba(0,0,0,0.1)
+    rgba(0, 0, 0, 0.55),
+    transparent
   );
   opacity: 0;
-  transition: all 0.25s ease;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
 }
 
-.portfolio-card:hover .portfolio-overlay {
+.portfolio-hover h4 {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.portfolio-card:hover .portfolio-hover {
   opacity: 1;
 }
 
-.overlay-content {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-  color: white;
-}
-
-.overlay-content h4 {
-  margin: 0;
-  font-size: 15px;
-}
-
-.overlay-content p {
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-.overlay-actions {
-  margin-top: 8px;
-  display: flex;
-  gap: 6px;
-}
-
+/* ===== EMPTY ===== */
 .portfolio-empty {
   padding: 30px;
   text-align: center;
-  opacity: 0.6;
+  color: #6b7280;
+}
+
+/* ===== FULLSCREEN VIEWER ===== */
+.portfolio-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viewer-content img {
+  max-width: 100%;
+  max-height: 65vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.viewer-meta {
+  margin-top: 14px;
+  color: #fff;
+  text-align: center;
+  max-width: 600px;
+}
+
+.viewer-meta h3 {
+  margin-bottom: 6px;
+}
+
+.viewer-meta p {
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.viewer-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ===== NAV ===== */
+.viewer-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 22px;
+  background: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 40px;
+  background: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.viewer-nav.left {
+  left: 10px;
+}
+
+.viewer-nav.right {
+  right: 10px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .viewer-nav {
+    font-size: 32px;
+  }
+
+  .viewer-content img {
+    max-height: 55vh;
+  }
+}
+
+/* ===== ACTION BAR (2025) ===== */
+.viewer-actions-2025 {
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ICON BUTTONS */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* EDIT */
+.icon-btn.edit {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.icon-btn.edit:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.05);
+}
+
+/* DELETE */
+.icon-btn.delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
+}
+
+.icon-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+  transform: scale(1.05);
 }

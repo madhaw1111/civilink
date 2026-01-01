@@ -12,7 +12,7 @@ router.get("/:userId/posts", async (req, res) => {
       user: req.params.userId
     })
       .sort({ createdAt: -1 })
-      .populate("user", "name avatar profession");
+      .populate("user", "name profession profession");
 
     res.json({
       success: true,
