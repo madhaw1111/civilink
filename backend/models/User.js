@@ -16,6 +16,13 @@ const userSchema = new mongoose.Schema({
   default: "user"
 },
 
+location: {
+  city: { type: String, default: "" },
+  state: { type: String, default: "" },
+  lat: { type: Number },
+  lng: { type: Number }
+},
+
 theme: {
   type: String,
   enum: ["light", "dark", "system"],
@@ -34,7 +41,24 @@ language: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
       }
-    ]
+    ],
+
+/* ================= SAVED POSTS ================= */
+savedPosts: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post"
+  }
+],
+/* ================= HIDDEN POSTS ================= */
+hiddenPosts: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post"
+  }
+]
+
+
 
   
 }, { timestamps: true });

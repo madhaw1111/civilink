@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./home.css";
 
+
+
 import ProfileMenu from "./Profile/ProfileMenu";
 import PostModal from "./Modals/PostModal";
 import ProfessionSuggestionRow from "./Feed/ProfessionSuggestionRow";
 import { useNavigate } from "react-router-dom";
 import ShareModal from "./Modals/ShareModal";
 import CommentsModal from "./Modals/CommentsModal";
+import FeedMenuPopup from "./Feed/FeedMenuPopup";
+import logo from "../../assets/logo.png";
+
 
 export default function Home() {
 
@@ -47,6 +52,62 @@ export default function Home() {
   /* ================= POST MENU ================= */
   const [menuPost, setMenuPost] = useState(null);
   const menuRef = useRef(null);
+
+  /* ================= SAVED POSTS ================= */
+const [savedPosts, setSavedPosts] = useState([]);
+const [hiddenPosts, setHiddenPosts] = useState([]);
+
+
+useEffect(() => {
+  const loadHiddenPosts = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch(
+      "http://localhost:5000/api/users/me",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+    if (data.success) {
+      setHiddenPosts(data.user.hiddenPosts || []);
+    }
+  };
+
+  loadHiddenPosts();
+}, []);
+
+useEffect(() => {
+  const loadSavedPosts = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/users/saved-posts",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const data = await res.json();
+      if (data.success) {
+        setSavedPosts(data.posts.map(p => p._id));
+      }
+    } catch (err) {
+      console.error("Failed to load saved posts", err);
+    }
+  };
+
+  loadSavedPosts();
+}, []);
+
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -294,6 +355,79 @@ ${post.text || post.title || "N/A"}
   }
 };
 
+/* ================= SAVE POST ================= */
+const handleSavePost = async (postId) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login to save posts");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/post/save/${postId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+    if (!data.success) return;
+
+    setSavedPosts(prev =>
+      prev.includes(postId)
+        ? prev.filter(id => id !== postId)
+        : [...prev, postId]
+    );
+  } catch (err) {
+    console.error("Save post failed", err);
+  }
+};
+
+const handleHidePost = async (post) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login");
+    return;
+  }
+
+  try {
+    await fetch(
+      `http://localhost:5000/api/post/hide/${post._id}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setHiddenPosts(prev =>
+      prev.includes(post._id)
+        ? prev
+        : [...prev, post._id]
+    );
+  } catch (err) {
+    console.error("Hide post failed", err);
+  }
+};
+
+const formatTime = (date) => {
+  const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+
+  if (diff < 60) return "Just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)} day ago`;
+
+  return new Date(date).toLocaleDateString();
+};
+
+
+
 
 
 
@@ -304,7 +438,10 @@ ${post.text || post.title || "N/A"}
 
       {/* ================= TOP BAR ================= */}
       <header className="home-header">
-        <div className="home-logo">Civilink</div>
+       <div className="home-logo">
+  <img src={logo} alt="Civilink Logo" />
+</div>
+
 
         <input
           className="home-search"
@@ -319,16 +456,46 @@ ${post.text || post.title || "N/A"}
       </button>
 
 
-        <button className="top-icon" onClick={() => setShowProfileMenu(true)}>
-          👤
-        </button>
+       <div
+  className="top-profile"
+  onClick={() => setShowProfileMenu(true)}
+>
+  {user?.profilePhoto ? (
+    <img
+      src={user.profilePhoto}
+      alt={user.name}
+      className="top-profile-img"
+    />
+  ) : (
+    <span className="top-profile-text">
+      {(user?.name || "U").charAt(0).toUpperCase()}
+    </span>
+  )}
+</div>
+
       </header>
 
       {/* ================= FEED ================= */}
       <main className="home-feed">
         {feed.length ? (
-          feed.map((item, index) => (
-            <React.Fragment key={item.id}>
+          feed.filter(item => !hiddenPosts.includes(item._id))
+              .map((item, index) => {
+
+   const city =
+  item.location && item.location.city
+    ? item.location.city
+    : item.user && item.user.location
+    ? item.user.location.city
+    : "";
+
+const state =
+  item.location && item.location.state
+    ? item.location.state
+    : "";
+
+    return (
+      <React.Fragment key={item.id}>
+           
 
               <article
                 className="feed-card"
@@ -366,8 +533,9 @@ ${post.text || post.title || "N/A"}
       </span>
     </div>
                       <div className="feed-meta">
-                        {item.location || "Tamil Nadu"} • Just now
-                      </div>
+  📍 {city}{state ? `, ${state}` : ""} • {formatTime(item.createdAt)}
+</div>
+
                     </div>
                   </div>
 
@@ -399,8 +567,16 @@ ${post.text || post.title || "N/A"}
   )}
 
                   {item.title && <h4>{item.title}</h4>}
-                  {item.text && <p>{item.text}</p>}
-                  {item.price && <div className="feed-price">{item.price}</div>}
+                  {typeof item.text === "string" && <p>{item.text}</p>}
+
+                 {item.price && (
+  <div className="feed-price">
+    {typeof item.price === "object"
+      ? `${item.price.amount ?? item.price.price ?? ""}`
+      : item.price}
+  </div>
+)}
+
                 </div>
 
                 {/* ACTIONS */}
@@ -477,8 +653,44 @@ ${post.text || post.title || "N/A"}
                     ref={menuRef}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button>⭐ Save post</button>
-                    <button>🙈 Hide post</button>
+                    <button
+  onClick={() => {
+    handleSavePost(item._id);
+    setMenuPost(null);
+  }}
+>
+  {savedPosts.includes(item._id)
+    ? "⭐ Unsave post"
+    : "⭐ Save post"}
+</button>
+
+                    <button
+  onClick={async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Please login");
+
+    await fetch(
+      `http://localhost:5000/api/post/hide/${item._id}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setHiddenPosts(prev =>
+  prev.includes(item._id)
+    ? prev
+    : [...prev, item._id]
+);
+
+    setMenuPost(null);
+  }}
+>
+  🙈 Hide post
+</button>
+
                    <button
   onClick={async () => {
     if (!localStorage.getItem("token")) {
@@ -518,7 +730,8 @@ ${post.text || post.title || "N/A"}
       <ProfessionSuggestionRow key={`suggestion-${item.id}`} />
     )}
   </React.Fragment>
-          ))
+          );
+        })
         ) : (
           <div style={{ padding: 20, color: "#666" }}>
             No feed items yet.

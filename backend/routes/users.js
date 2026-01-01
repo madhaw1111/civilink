@@ -170,6 +170,30 @@ router.put("/language", auth, async (req, res) => {
     });
   }
 });
+/* =====================================
+   SAVED POSTS (STATIC) — MUST BE ABOVE :id
+===================================== */
+router.get("/saved-posts", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .populate({
+        path: "savedPosts",
+        populate: {
+          path: "user",
+          select: "name profilePhoto profession"
+        }
+      });
+
+    res.json({
+      success: true,
+      posts: user.savedPosts || []
+    });
+  } catch (err) {
+    console.error("Saved posts fetch error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
 
 /* =====================================
    GET user by ID (PUBLIC PROFILE)
@@ -198,5 +222,8 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
+
+
+
 
 module.exports = router;

@@ -2,19 +2,29 @@ const express = require("express");
 const router = express.Router();
 const Feed = require("../models/Post");
 const auth = require("../middleware/auth");
+const Notification = require("../models/Notification");
+
 
 
 router.get("/home", async (req, res) => {
   try {
     const feed = await Feed.find({reported: { $ne: true }})
-      .populate("user", "name profession profilePhoto")
+      .populate("user", "name profession profilePhoto location")
       .sort({ createdAt: -1 })
       .lean();
 
-    res.status(200).json({
-      success: true,
-      feed
-    });
+      const normalizedFeed = feed.map(post => ({
+  ...post,
+  location: post.location || {
+    city: post.user?.location?.city || "",
+    state: post.user?.location?.state || ""
+  }
+}));
+
+   res.status(200).json({
+  success: true,
+  feed: normalizedFeed
+});
 
   } catch (error) {
     console.error("HOME FEED ERROR:", error);
@@ -46,6 +56,17 @@ router.post("/:id/like", auth, async (req, res) => {
     }
 
     await post.save();
+    // 🔔 CREATE NOTIFICATION (LIKE)
+if (post.user.toString() !== userId) {
+  await Notification.create({
+    user: post.user,              // post owner
+    type: "like",
+    message: "Someone liked your post",
+    post: post._id,
+    fromUser: userId
+  });
+}
+
 
     res.json({
       success: true,
@@ -78,6 +99,18 @@ router.post("/:id/comment", auth, async (req, res) => {
 
     post.comments.push(comment);
     await post.save();
+
+    // 🔔 CREATE NOTIFICATION (COMMENT)
+if (post.user.toString() !== req.user.id) {
+  await Notification.create({
+    user: post.user,              // post owner
+    type: "comment",
+    message: "Someone commented on your post",
+    post: post._id,
+    fromUser: req.user.id
+  });
+}
+
 
     await post.populate("comments.user", "name");
 

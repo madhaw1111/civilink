@@ -24,6 +24,17 @@ const postSchema = new mongoose.Schema(
       default: ""   // ✅ NEW FIELD
     },
 
+     location: {
+      city: {
+        type: String,
+        default: ""
+      },
+      state: {
+        type: String,
+        default: ""
+      }
+    },
+
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -63,7 +74,13 @@ const postSchema = new mongoose.Schema(
 
     reportedAt: {
       type: Date
-    }
+    },
+
+    reportCount: {
+  type: Number,
+  default: 0
+}
+
 
   },
   { timestamps: true }

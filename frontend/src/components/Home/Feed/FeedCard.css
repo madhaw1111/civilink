@@ -1,66 +1,73 @@
-/* Fade-in animation */
-@keyframes fadeInPost {
+/* =========================================
+   FEED CARD – ADVANCED 2025 UI
+========================================= */
+
+/* -----------------------------
+   Animation
+----------------------------- */
+@keyframes feedFadeUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* -----------------------------
+   Card Wrapper
+----------------------------- */
 .feed-card {
-  animation: fadeInPost 0.35s ease forwards;
-}
-
-
-.feed-actions {
   position: relative;
-  z-index: 100;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.04),
+    0 14px 30px rgba(0,0,0,0.06);
+
+  animation: feedFadeUp 0.35s ease forwards;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
 }
 
-.feed-action-btn {
-  pointer-events: auto !important;
+.feed-card:hover {
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.08),
+    0 22px 42px rgba(0,0,0,0.10);
+}
+
+/* -----------------------------
+   Header
+----------------------------- */
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.feed-user-box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
   cursor: pointer;
 }
 
-.feed-card {
-  pointer-events: auto;
-}
-
-.feed-action-btn.liked {
-  color: #e0245e;
-  font-weight: 600;
-}
+/* -----------------------------
+   Avatar
+----------------------------- */
 .feed-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
-  background: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-}
 
-.feed-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.feed-avatar-text {
-  font-size: 18px;
-  font-weight: bold;
-  color: #555;
-}
-.feed-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  overflow: hidden;
+  background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,4 +78,208 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.feed-avatar span {
+  font-size: 18px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* -----------------------------
+   User Name & Role
+----------------------------- */
+.feed-user {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.feed-role {
+  margin-left: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* -----------------------------
+   Meta (Location & Time)
+----------------------------- */
+.feed-meta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* -----------------------------
+   Menu Button
+----------------------------- */
+.feed-menu {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+}
+
+.feed-menu:hover {
+  background: #f3f4f6;
+}
+
+/* -----------------------------
+   Menu Popup
+----------------------------- */
+.feed-menu-popup {
+  position: absolute;
+  top: 42px;
+  right: 12px;
+  background: #ffffff;
+  border-radius: 14px;
+  min-width: 180px;
+
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  overflow: hidden;
+  z-index: 50;
+}
+
+.feed-menu-popup button {
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.feed-menu-popup button:hover {
+  background: #f9fafb;
+}
+
+/* -----------------------------
+   Feed Image
+----------------------------- */
+.feed-image {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 14px;
+  object-fit: cover;
+  max-height: 420px;
+}
+
+/* -----------------------------
+   Content
+----------------------------- */
+.feed-content {
+  margin-top: 12px;
+}
+
+.feed-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.feed-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* -----------------------------
+   Price
+----------------------------- */
+.feed-price {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+/* -----------------------------
+   Badges
+----------------------------- */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.badge.sell {
+  background: #e6f4ea;
+  color: #166534;
+}
+
+.badge.rent {
+  background: #e0ecff;
+  color: #1d4ed8;
+}
+
+/* -----------------------------
+   Actions
+----------------------------- */
+.feed-actions {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+}
+
+.feed-action-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 14px;
+  color: #6b7280;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.feed-action-btn:hover {
+  background: #f3f4f6;
+}
+
+.feed-action-btn:active {
+  transform: scale(0.92);
+}
+
+.feed-action-btn.liked {
+  color: #e11d48;
+  font-weight: 600;
+}
+
+/* -----------------------------
+   Mobile Tweaks
+----------------------------- */
+@media (max-width: 640px) {
+  .feed-card {
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .feed-image {
+    max-height: 320px;
+  }
 }

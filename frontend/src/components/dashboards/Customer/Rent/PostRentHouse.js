@@ -6,7 +6,9 @@ export default function PostRentHouse() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
+  const [city, setCity] = useState("");
+const [state, setState] = useState("");
+
   const [rent, setRent] = useState("");
   const [deposit, setDeposit] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
@@ -24,7 +26,7 @@ export default function PostRentHouse() {
       return;
     }
 
-    if (!title || !location || !rent) {
+    if (!title || !city || !rent) {
       alert("Title, location and rent are required");
       return;
     }
@@ -35,7 +37,9 @@ export default function PostRentHouse() {
       // 🔑 USE FORMDATA
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("location", location);
+      formData.append("location[city]", city);
+formData.append("location[state]", state);
+
       formData.append("rent", rent);
       formData.append("deposit", deposit || 0);
       formData.append("availableFrom", availableFrom);
@@ -110,10 +114,17 @@ export default function PostRentHouse() {
         <div className="rent-form-group">
           <label>Location</label>
           <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City / Area"
-          />
+  value={city}
+  onChange={(e) => setCity(e.target.value)}
+  placeholder="City"
+/>
+
+<input
+  value={state}
+  onChange={(e) => setState(e.target.value)}
+  placeholder="State (optional)"
+/>
+
         </div>
 
         <div className="rent-grid">

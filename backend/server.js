@@ -27,6 +27,8 @@ app.use("/api/profile", require("./routes/profileRoutes"));
 app.use("/api/connections", require("./routes/connectionRoutes"));
 app.use("/api/feedback", require("./routes/feedback"));
 app.use("/api/config", require("./routes/adminConfig"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
+
 
 // ===== START SERVER (LAST LINE) =====
 const PORT = process.env.PORT || 5000;

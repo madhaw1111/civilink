@@ -1,14 +1,14 @@
 import React from "react";
 
-function FeedMenuPopup({ post, onReport, onHide, onSave, close, menuRef }) {
+function FeedMenuPopup({ post, onReport, onHide, onSave, close, menuRef,isSaved = false }) {
   return (
     <div
       className="feed-menu-popup"
       ref={menuRef}
       onClick={(e) => e.stopPropagation()}
     >
-      <button onClick={() => onSave(post)}>
-        ⭐ Save Post
+       <button onClick={() => onSave(post._id)}>
+        {isSaved ? "⭐ Unsave Post" : "⭐ Save Post"}
       </button>
 
       <button onClick={() => onHide(post)}>

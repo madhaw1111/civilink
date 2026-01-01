@@ -39,6 +39,10 @@ import SettingsPage from "./components/Settings/SettingsPage";
 
 import { Toaster } from "react-hot-toast";
 import AdminFeedback from "./components/Admin/AdminFeedback";
+import SavedPosts from "./components/Home/Profile/SavedPosts";
+import NotificationsPage from "./components/Notifications/NotificationsPage";
+
+
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -128,6 +132,10 @@ export default function App() {
     </AdminRoute>
   }
 />
+<Route path="/saved" element={<SavedPosts />} />
+<Route path="/notifications" element={<NotificationsPage />} />
+
+
 
       </Routes>
      

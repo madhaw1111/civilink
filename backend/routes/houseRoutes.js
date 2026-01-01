@@ -19,9 +19,10 @@ router.post(
   uploadToS3("houses/sell").single("image"),
   async (req, res) => {
     try {
-      const { title, location, price, description } = req.body;
+      const { title, city,state, price, description } = req.body;
+       const location = { city, state };
 
-      if (!title || !location || !price) {
+      if (!title || !city || !price) {
         return res.status(400).json({
           success: false,
           message: "Title, location and price are required"
@@ -48,9 +49,15 @@ router.post(
         text: `🏠 House for Sale
 ${house.title}
 ₹${house.price}
-${house.location}
+${house.location.city}${house.location.state ? ", " + house.location.state : ""}
+
+
 ${house.description || ""}`,
-        imageUrl
+        imageUrl,
+        location: {
+    city: house.location.city,
+    state: house.location.state
+  }
       });
 
       res.status(201).json({

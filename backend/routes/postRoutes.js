@@ -6,6 +6,8 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const isAdmin = require("../middleware/admin");
 const uploadToS3 = require("../middleware/upload");
+const User = require("../models/User");
+
 /* =========================
    OBJECT ID VALIDATOR
 ========================= */
@@ -31,6 +33,8 @@ router.post(
   uploadToS3("posts").single("image"),   // ✅ SECOND
   async (req, res) => {
     try {
+      const user = await User.findById(req.user.id).select("location");
+
       const { text, type } = req.body;
 
       if (!text || !text.trim()) {
@@ -43,11 +47,16 @@ router.post(
       console.log("REQ FILE:", req.file); // 🔍 TEMP DEBUG
 
       const post = await Post.create({
-        user: req.user.id,
-        text: text.trim(),
-        type: type || "post",
-        imageUrl: req.file ? req.file.location : ""   // ✅ MUST BE THIS
-      });
+  user: req.user.id,
+  text: text.trim(),
+  type: type || "post",
+  imageUrl: req.file ? req.file.location : "",
+  location: {
+    city: user?.location?.city || "",
+    state: user?.location?.state || ""
+  }
+});
+
 
       const populatedPost = await post.populate(
         "user",
@@ -99,6 +108,78 @@ router.put(
   }
 );
 
+/**
+ * TOGGLE SAVE POST
+ * 🔥 MUST BE ABOVE "/:postId"
+ */
+router.put("/save/:postId", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const postId = req.params.postId;
+
+    if (!user) {
+      return res.status(404).json({ success: false });
+    }
+
+    const alreadySaved = user.savedPosts.includes(postId);
+
+    if (alreadySaved) {
+      user.savedPosts = user.savedPosts.filter(
+        (id) => id.toString() !== postId
+      );
+    } else {
+      user.savedPosts.push(postId);
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      saved: !alreadySaved
+    });
+  } catch (err) {
+    console.error("Save post error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+/* =========================
+   HIDE / UNHIDE POST
+========================= */
+router.put("/hide/:postId", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const postId = req.params.postId;
+
+    if (!user) {
+      return res.status(404).json({ success: false });
+    }
+
+    const alreadyHidden = user.hiddenPosts.includes(postId);
+
+    if (alreadyHidden) {
+      user.hiddenPosts = user.hiddenPosts.filter(
+        id => id.toString() !== postId
+      );
+    } else {
+      user.hiddenPosts.push(postId);
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      hidden: !alreadyHidden
+    });
+  } catch (err) {
+    console.error("Hide post error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+
+
 /* =========================
    ✅ ADMIN DELETE POST
    (MUST BE ABOVE USER DELETE)
@@ -134,6 +215,21 @@ router.delete(
     }
   }
 );
+
+// PUT /api/users/location
+router.put("/location", auth, async (req, res) => {
+  const { city, state, lat, lng } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      location: { city, state, lat, lng }
+    },
+    { new: true }
+  );
+
+  res.json({ success: true, location: user.location });
+});
 
 /* =========================
    USER DELETE POST
@@ -203,6 +299,7 @@ router.post("/:id/report", auth, async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
 
 
 module.exports = router;

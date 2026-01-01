@@ -52,9 +52,11 @@ router.post(
         text: `🔑 House for Rent / To-Let
 ${title}
 ₹${rent}
-${location}
+${location.city}${location.state ? ", " + location.state : ""}
+
 ${description || ""}`,
-        imageUrl                  // ✅ FIXED
+        imageUrl,
+        location : house.location               // ✅ FIXED
       });
 
       res.status(201).json({

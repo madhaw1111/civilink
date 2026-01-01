@@ -6,7 +6,9 @@ function SellHouse() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
+  const [city, setCity] = useState("");
+const [state, setState] = useState("");
+
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -21,8 +23,8 @@ function SellHouse() {
       return;
     }
 
-    if (!title || !location || !price) {
-      alert("Title, location and price are required");
+    if (!title || !city || !price) {
+      alert("Title, city and price are required");
       return;
     }
 
@@ -32,7 +34,9 @@ function SellHouse() {
       // 🔑 USE FORMDATA
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("location", location);
+      formData.append("city", city);
+formData.append("state", state);
+
       formData.append("price", price);
       formData.append("description", description);
 
@@ -102,14 +106,24 @@ function SellHouse() {
           />
         </div>
 
-        <div className="form-group">
-          <label>Location</label>
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City / Area"
-          />
-        </div>
+       <div className="form-group">
+  <label>City</label>
+  <input
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    placeholder="City"
+  />
+</div>
+
+<div className="form-group">
+  <label>State</label>
+  <input
+    value={state}
+    onChange={(e) => setState(e.target.value)}
+    placeholder="State"
+  />
+</div>
+
 
         <div className="form-group">
           <label>Price</label>

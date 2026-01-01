@@ -8,9 +8,14 @@ const rentHouseSchema = new mongoose.Schema(
     },
 
     location: {
-      type: String,
-      required: true
-    },
+  city: {
+    type: String,
+    required: true
+  },
+  state: {
+    type: String
+  }
+},
 
     rent: {
       type: Number,

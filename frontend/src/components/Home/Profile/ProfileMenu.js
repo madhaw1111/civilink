@@ -75,12 +75,16 @@ export default function ProfileMenu({
         </button>
 
         {/* NOTIFICATION */}
-        <button className="drawer-item notif-btn">
-          🔔 Notifications
-          {safeUser.notificationsCount > 0 && (
-            <span className="notif-count">{safeUser.notificationsCount}</span>
-          )}
-        </button>
+        <button
+  className="drawer-item"
+  onClick={() => {
+    onClose();
+    navigate("/notifications");
+  }}
+>
+  🔔 Notifications
+</button>
+
 
         {/* LOCATION */}
         <button

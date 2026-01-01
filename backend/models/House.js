@@ -9,10 +9,16 @@ const houseSchema = new mongoose.Schema(
 
     description: String,
 
-    location: {
-      type: String,
-      required: true
-    },
+   location: {
+  city: {
+    type: String,
+    required: true
+  },
+  state: {
+    type: String
+  }
+},
+
 
     price: {
       type: Number,

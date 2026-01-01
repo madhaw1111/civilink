@@ -1,6 +1,7 @@
 import React from "react";
 import FeedActions from "./FeedActions";
 import FeedMenuPopup from "./FeedMenuPopup";
+import "./FeedCard.css";
 
 function FeedCard({
   item,
@@ -50,7 +51,9 @@ const user =
               </span>
             </div>
             <div className="feed-meta">
-              {item.location || "Tamil Nadu"} • Just now
+              {item.location?.city}
+{item.location?.state ? `, ${item.location.state}` : ""}
+ • Just now
             </div>
           </div>
         </div>
