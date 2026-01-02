@@ -118,7 +118,7 @@ router.post("/products", auth, isAdmin, async (req, res) => {
 // LIST products
 router.get("/products", auth, isAdmin, async (req, res) => {
   const products = await Product.find()
-    .populate("vendor", "name city")
+    .populate("vendor", "name city email phone")
     .sort("-createdAt");
 
   res.json(products);
@@ -237,7 +237,7 @@ router.delete("/products/:id", auth, isAdmin, async (req, res) => {
 router.get("/products/all", async (req, res) => {
   const products = await Product.find({ isActive: true }).populate(
     "vendor",
-    "name city"
+    "name city email phone"
   );
   res.json(products);
 });

@@ -21,6 +21,8 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [orders, setOrders] = useState([]);
+
 
 
 
@@ -96,6 +98,18 @@ const loadPosts = async () => {
   setPosts(res.data);
 };
 
+const loadOrders = async () => {
+  const res = await axios.get(
+    "http://localhost:5000/api/admin/orders",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    }
+  );
+  setOrders(res.data);
+};
+
 
 
 
@@ -120,6 +134,12 @@ useEffect(() => {
 useEffect(() => {
   if (activeTab === "posts") {
     loadPosts();
+  }
+}, [activeTab]);
+
+useEffect(() => {
+  if (activeTab === "orders") {
+    loadOrders();
   }
 }, [activeTab]);
 
@@ -347,6 +367,13 @@ const handleDeletePost = async (id) => {
   onClick={() => setActiveTab("posts")}
 >
   Posts
+</div>
+
+<div
+  className={"admin-nav-item " + (activeTab === "orders" ? "active" : "")}
+  onClick={() => setActiveTab("orders")}
+>
+  Orders
 </div>
 
 
@@ -769,6 +796,70 @@ const handleDeletePost = async (id) => {
     </table>
   </section>
 )}
+
+{activeTab === "orders" && (
+  <section className="admin-card">
+    <h3>All Orders</h3>
+
+    <table className="admin-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Vendor</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Invoice</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {orders.length === 0 ? (
+          <tr>
+            <td colSpan="6">No orders yet</td>
+          </tr>
+        ) : (
+          orders.map(order => (
+            <tr key={order._id}>
+              <td>
+                {new Date(order.createdAt).toLocaleString()}
+              </td>
+
+              <td>
+                <strong>{order.customer.name}</strong><br />
+                {order.customer.phone}
+              </td>
+
+              <td>
+                {order.vendor.name}<br />
+                {order.vendor.phone}
+              </td>
+
+              <td>₹{order.total}</td>
+
+              <td>
+                <span style={{ fontWeight: 600 }}>
+                  {order.status}
+                </span>
+              </td>
+
+              <td>
+                <a
+                  href={order.invoiceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download
+                </a>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </section>
+)}
+
 
 
 

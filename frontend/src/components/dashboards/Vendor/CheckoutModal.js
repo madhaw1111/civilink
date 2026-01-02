@@ -1,21 +1,30 @@
+// frontend/src/components/dashboards/CheckoutModal.js
 import React from "react";
 
 export default function CheckoutModal({
-  cart,
+  cart = [],
   checkoutData,
   setCheckoutData,
   onBack,
   onSubmit
 }) {
+  const totalAmount = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
   return (
-    <div className="vendor-modal-overlay" onClick={onBack}>
+    <div className="vendor-modal-overlay">
+      {/* MODAL CONTENT */}
       <div
         className="vendor-modal-content checkout-modal"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()} // ✅ prevent overlay conflict
       >
         <h3>Checkout Details</h3>
 
+        {/* CUSTOMER NAME */}
         <input
+          type="text"
           placeholder="Customer Name"
           value={checkoutData.name}
           onChange={(e) =>
@@ -26,7 +35,9 @@ export default function CheckoutModal({
           }
         />
 
+        {/* PHONE */}
         <input
+          type="tel"
           placeholder="Phone Number"
           value={checkoutData.phone}
           onChange={(e) =>
@@ -37,7 +48,9 @@ export default function CheckoutModal({
           }
         />
 
+        {/* EMAIL */}
         <input
+          type="email"
           placeholder="Email (optional)"
           value={checkoutData.email}
           onChange={(e) =>
@@ -48,6 +61,7 @@ export default function CheckoutModal({
           }
         />
 
+        {/* ADDRESS */}
         <textarea
           placeholder="Delivery Address"
           value={checkoutData.address}
@@ -59,21 +73,27 @@ export default function CheckoutModal({
           }
         />
 
+        {/* TOTAL */}
         <div className="cart-summary">
-          Total Amount: ₹
-          {cart.reduce(
-            (sum, item) =>
-              sum + item.price * item.quantity,
-            0
-          )}
+          Total Amount: ₹{totalAmount}
         </div>
 
+        {/* ACTION BUTTONS */}
         <div className="modal-actions">
-          <button className="btn-outline" onClick={onBack}>
+          <button
+            className="btn-outline"
+            type="button"
+            onClick={onBack} // ✅ Back now works correctly
+          >
             Back
           </button>
 
-          <button className="btn-primary" onClick={onSubmit}>
+          <button
+            className="btn-primary"
+            type="button"
+            onClick={onSubmit}
+            disabled={!checkoutData.name || !checkoutData.phone}
+          >
             Submit Order
           </button>
         </div>

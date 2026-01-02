@@ -35,6 +35,10 @@ function VendorDashboard() {
   email: "",
   address: "",
   });
+ // My Orders (Customer)
+const [showMyOrders, setShowMyOrders] = useState(false);
+const [customerOrders, setCustomerOrders] = useState([]);
+
 
 
 
@@ -74,6 +78,90 @@ function VendorDashboard() {
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+
+  const submitOrder = async () => {
+  try {
+    if (!checkoutData.name || !checkoutData.phone || !checkoutData.address) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+
+    // 🔑 assume all items belong to same vendor
+    const vendor = cart[0]?.vendor;
+
+    if (!vendor?.email || !vendor?.phone) {
+     
+
+      alert("Vendor contact details missing");
+      return;
+    }
+
+    const total = cart.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const res = await axios.post(
+      "http://localhost:5000/api/order",
+      {
+        customer: checkoutData,
+        cart,
+        total,
+        vendor: {
+          name: vendor.name,
+          email: vendor.email,
+          phone: vendor.phone
+        }
+      }
+    );
+
+    if (!res.data.success) {
+      alert("Order failed. Try again.");
+      return;
+    }
+
+    // ✅ Open WhatsApp if backend sent link
+    if (res.data.whatsappLink) {
+      window.open(res.data.whatsappLink, "_blank");
+    }
+
+    alert("Order placed successfully");
+
+    // ✅ Cleanup
+    setCart([]);
+    localStorage.removeItem("vendorCart");
+    setShowCheckout(false);
+
+  } catch (err) {
+    console.error("Order submit error:", err);
+    alert("Server error while placing order");
+  }
+};
+
+const loadMyOrders = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/customer/orders/my",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    setCustomerOrders(res.data.orders);
+  } catch (err) {
+    console.error("Load my orders failed", err);
+  }
+};
+
+
 
   return (
     <div className="vendor-page">
@@ -146,6 +234,19 @@ function VendorDashboard() {
     >
      Contact
     </button>
+
+    <button
+  className="vendor-menu-item"
+  onClick={() => {
+    setShowMyOrders(true);
+    loadMyOrders();
+    setShowMenu(false);
+  }}
+>
+  My Orders
+</button>
+
+
 
   </div>
 )}
@@ -377,15 +478,84 @@ function VendorDashboard() {
   />
 )}
 
+{/* ✅ CHECKOUT MODAL */}
 {showCheckout && (
   <CheckoutModal
     cart={cart}
     checkoutData={checkoutData}
     setCheckoutData={setCheckoutData}
-    onBack={() => setShowCheckout(false)}
-    onSubmit={() => alert("Order submitted")}
+    onBack={() => {
+      setShowCheckout(false);
+      setShowCart(true); // ✅ go back to cart
+    }}
+    onSubmit={submitOrder}  
   />
+
+  )}
+
+ {showMyOrders && (
+  <section className="vendor-orders">
+    <h3>My Orders</h3>
+
+    {customerOrders.length === 0 ? (
+      <p>No orders yet.</p>
+    ) : (
+      <table className="vendor-orders-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Invoice</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {customerOrders.map(order => (
+            <tr key={order._id}>
+              <td>
+                {new Date(order.createdAt).toLocaleString()}
+              </td>
+
+              <td>
+                <strong>{order.customer.name}</strong>
+              </td>
+
+              <td>
+                {order.items.map((i, idx) => (
+                  <div key={idx}>
+                    {i.name} × {i.quantity}
+                  </div>
+                ))}
+              </td>
+
+              <td>₹{order.total}</td>
+
+              <td>{order.status || "Placed"}</td>
+
+              <td>
+                {order.invoiceUrl ? (
+                  <a
+                    href={order.invoiceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </section>
 )}
+
 
  
     </div>
