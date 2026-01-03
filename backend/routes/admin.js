@@ -135,24 +135,95 @@ router.delete("/vendors/:id", auth, isAdmin, async (req, res) => {
 // ADD product
 router.post("/products", auth, isAdmin, async (req, res) => {
   try {
-    const product = await Product.create({
-      ...req.body,
-      vendor: req.body.vendorId,
+    const {
+      name,
+      category,
+      productType,
+      variants,
+      price,
+      unit,
+      city,
+      vendorId,
+      imageUrl,
+      isActive
+    } = req.body;
+
+    // 1️⃣ Get vendor
+    const vendor = await Vendor.findById(vendorId);
+    if (!vendor) {
+      return res.status(400).json({ message: "Vendor not found" });
+    }
+
+    // 2️⃣ Generate GLOBAL productCode
+    let existingProduct = await Product.findOne({
+      name: new RegExp(`^${name}$`, "i")
     });
 
+    let productCode;
+    if (existingProduct) {
+      productCode = existingProduct.productCode;
+    } else {
+      const count = await Product.countDocuments({
+        productCode: { $exists: true }
+      });
+      productCode = `P-${String(count + 1).padStart(4, "0")}`;
+    }
+
+    // 3️⃣ Generate vendorProductCode
+    const vendorProductCode = `${vendor.vendorCode}-${productCode}`;
+
+    // 4️⃣ Prevent duplicate vendor-product
+    const duplicate = await Product.findOne({
+      vendor: vendorId,
+      productCode
+    });
+
+    if (duplicate) {
+      return res.status(400).json({
+        message: "This vendor already sells this product"
+      });
+    }
+
+    // 5️⃣ RENTAL validation
+    if (productType === "RENTAL" && (!Array.isArray(variants) || variants.length === 0)) {
+      return res.status(400).json({
+        message: "Rental products must have size variants"
+      });
+    }
+
+    // 6️⃣ Create product
+    const product = await Product.create({
+      name,
+      category,
+      productType,
+      variants: productType === "RENTAL" ? variants : [],
+      price: productType === "SALE" ? price : undefined,
+      unit: productType === "SALE" ? unit : undefined,
+      city,
+      vendor: vendorId,
+      productCode,
+      vendorProductCode,
+      imageUrl,
+      isActive: isActive ?? true
+    });
+
+    // 7️⃣ Admin log
     AdminLog.create({
       adminId: req.user.id,
       action: "CREATE",
       entityType: "Product",
       entityId: product._id,
-      description: `Product "${product.name}" created`,
+      description: `Product "${product.name}" created (${vendorProductCode})`
     }).catch(() => {});
 
     res.status(201).json(product);
   } catch (err) {
+    console.error("ADD PRODUCT ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 // LIST products
 router.get("/products", auth, isAdmin, async (req, res) => {
@@ -166,30 +237,82 @@ router.get("/products", auth, isAdmin, async (req, res) => {
 // UPDATE product
 router.put("/products/:id", auth, isAdmin, async (req, res) => {
   try {
+    const {
+      name,
+      category,
+      productType,
+      price,
+      unit,
+      vendorId,
+      city,
+      imageUrl,
+      variants,
+      isActive
+    } = req.body;
+
+    // 1️⃣ Get existing product
+    const existingProduct = await Product.findById(req.params.id);
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // 2️⃣ Rental validation
+    if (
+      productType === "RENTAL" &&
+      (!variants || variants.length === 0)
+    ) {
+      return res.status(400).json({
+        message: "Rental products must have size variants"
+      });
+    }
+
+    // 3️⃣ Prevent duplicate (ignore same product)
+    const duplicate = await Product.findOne({
+      vendor: vendorId,
+      productCode: existingProduct.productCode,
+      _id: { $ne: req.params.id }
+    });
+
+    if (duplicate) {
+      return res.status(400).json({
+        message: "This vendor already sells this product"
+      });
+    }
+
+    // 4️⃣ Update safely
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       {
-        ...req.body,
-        vendor: req.body.vendorId,
+        name,
+        category,
+        productType,
+        price: productType === "SALE" ? price : undefined,
+        unit: productType === "SALE" ? unit : undefined,
+        variants: productType === "RENTAL" ? variants : [],
+        city,
+        imageUrl,
+        vendor: vendorId,
+        isActive
       },
       { new: true }
     );
 
-    if (product) {
-      AdminLog.create({
-        adminId: req.user.id,
-        action: "UPDATE",
-        entityType: "Product",
-        entityId: product._id,
-        description: `Product "${product.name}" updated`,
-      }).catch(() => {});
-    }
+    // 5️⃣ Log
+    AdminLog.create({
+      adminId: req.user.id,
+      action: "UPDATE",
+      entityType: "Product",
+      entityId: product._id,
+      description: `Product "${product.name}" updated`
+    }).catch(() => {});
 
     res.json(product);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 /* ===========================

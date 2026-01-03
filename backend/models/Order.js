@@ -10,16 +10,41 @@ const orderSchema = new mongoose.Schema(
     },
 
     vendor: {
+      vendorId: mongoose.Schema.Types.ObjectId,
+      vendorCode: String,
       name: String,
-      email: String,
-      phone: String
+      phone: String,
+      email: String
     },
 
     items: [
       {
+        // 🔗 Product identity
+        productId: mongoose.Schema.Types.ObjectId,
+        productCode: String,          // P-0001
+        vendorProductCode: String,    // VND-CHN-0001-P-0001
+
         name: String,
-        price: Number,
-        quantity: Number
+        productType: {
+          type: String,
+          enum: ["SALE", "RENTAL"],
+          required: true
+        },
+
+        // 📦 SALE fields
+        price: Number,                // unit price
+        quantity: Number,
+
+        // 🏗️ RENTAL fields
+        size: String,                 // "5 ft"
+        dailyPrice: Number,
+        rental: {
+          startDate: Date,
+          endDate: Date,
+          days: Number
+        },
+
+        itemTotal: Number             // final calculated total
       }
     ],
 
@@ -33,7 +58,11 @@ const orderSchema = new mongoose.Schema(
       required: true
     },
 
-   
+    status: {
+      type: String,
+      enum: ["PLACED", "CONFIRMED", "DELIVERED", "RETURNED", "CANCELLED"],
+      default: "PLACED"
+    }
   },
   { timestamps: true }
 );

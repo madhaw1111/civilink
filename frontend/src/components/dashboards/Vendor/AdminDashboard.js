@@ -72,11 +72,13 @@ const [logs, setLogs] = useState([]);
     _id: null,
     name: "",
     category: "raw",
+    productType: "SALE",
     price: "",
     unit: "",
     vendorId: "",
     city: "Chennai",
     imageUrl: "",
+     variants: [],
     isActive: true,
   });
 
@@ -233,47 +235,92 @@ if (isDuplicate) {
     return alert("Product name & vendor are required");
   }
 
-  await saveProduct(vendorApi, productForm);
+  if (
+    productForm.productType === "RENTAL" &&
+    (!productForm.variants || productForm.variants.length === 0)
+  ) {
+    return alert("Rental products must have at least one size variant");
+  }
 
+  // ✅ BUILD CLEAN PAYLOAD (CRITICAL)
+  const payload = {
+    name: productForm.name,
+    category: productForm.category,
+    productType: productForm.productType,
+    vendorId: productForm.vendorId,
+    city: productForm.city,
+    imageUrl: productForm.imageUrl,
+    isActive: true,
+
+   variants:
+  productForm.productType === "RENTAL"
+    ? productForm.variants.map(v => ({
+        size: v.size,
+        quantity: Number(v.quantity),
+        dailyPrice: Number(v.dailyPrice)
+      }))
+    : [],
+
+    price:
+      productForm.productType === "SALE"
+        ? Number(productForm.price)
+        : undefined,
+
+    unit:
+      productForm.productType === "SALE"
+        ? productForm.unit
+        : undefined
+  };
+
+ await saveProduct(vendorApi, { ...payload, _id: productForm._id });
+
+  loadProducts(vendorApi, setProducts);
+
+  // reset form
   setProductForm({
     _id: null,
     name: "",
     category: "raw",
+    productType: "SALE",
     price: "",
     unit: "",
     vendorId: "",
     city: "Chennai",
     imageUrl: "",
+    variants: [],
     isActive: true
   });
-
-  loadProducts(vendorApi, setProducts);
 };
-
-
-  const handleEditProduct = (p) => {
+ const handleEditProduct = (p) => {
     setProductForm({
       _id: p._id,
       name: p.name,
       category: p.category,
-      price: p.price,
-      unit: p.unit,
+      productType: p.productType,
+      price: p.price || "",
+      unit: p.unit || "",
       vendorId: p.vendor?._id || "",
       city: p.city,
       imageUrl: p.imageUrl || "",
-      isActive: p.isActive ?? true,
+      variants: p.variants || [],
+      isActive: p.isActive ?? true
     });
     setActiveTab("products");
   };
 
-  const uploadProductImage = async (productId, file) => {
-  if (!file || !productId) return;
 
-  const token = localStorage.getItem("token");
-  const formData = new FormData();
-  formData.append("image", file);
+  const handleDeleteProduct = async (id) => {
+  if (!window.confirm("Delete this product?")) return;
+  await deleteProduct(vendorApi, id);
+  loadProducts(vendorApi, setProducts);
+};
 
-  try {
+const uploadProductImage = async (productId, file) => {
+    if (!file || !productId) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
     const res = await axios.post(
       `http://localhost:5000/api/admin/products/${productId}/image`,
       formData,
@@ -284,21 +331,15 @@ if (isDuplicate) {
         }
       }
     );
-    loadProducts();
 
+    setProductForm(prev => ({
+    ...prev,
+    imageUrl: res.data.product.imageUrl
+  }));
+
+    loadProducts(vendorApi, setProducts);
     return res.data.product.imageUrl;
-  } catch (err) {
-    console.error("Product image upload failed", err);
-    alert("Product image upload failed");
-  }
-};
-
-
-  const handleDeleteProduct = async (id) => {
-  if (!window.confirm("Delete this product?")) return;
-  await deleteProduct(vendorApi, id);
-  loadProducts(vendorApi, setProducts);
-};
+  };
 
 
   const loadLogs = async () => {

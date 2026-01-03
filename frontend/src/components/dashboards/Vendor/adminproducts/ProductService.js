@@ -1,24 +1,18 @@
 // src/components/dashboards/Vendor/adminproducts/ProductService.js
+
 export const loadProducts = async (api, setProducts) => {
   const res = await api.get("/products");
   setProducts(res.data);
 };
 
-export const saveProduct = async (api, productForm) => {
-  const payload = {
-    name: productForm.name,
-    category: productForm.category,
-    price: Number(productForm.price),
-    unit: productForm.unit,
-    vendorId: productForm.vendorId,
-    city: productForm.city,
-    imageUrl: productForm.imageUrl,
-    isActive: productForm.isActive
-  };
+export const saveProduct = async (api, payload) => {
+  // ✅ Do NOT rebuild payload here
+  // ✅ Backend handles productCode & vendorProductCode
 
-  if (productForm._id) {
-    return api.put(`/products/${productForm._id}`, payload);
+  if (payload._id) {
+    return api.put(`/products/${payload._id}`, payload);
   }
+
   return api.post("/products", payload);
 };
 
