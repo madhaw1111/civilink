@@ -11,10 +11,20 @@ const vendorSchema = new mongoose.Schema(
     address: String,
     phone: String,
     email: { type: String, required: true }, // 👈 NEW: vendor Gmail/email
+    gstNumber: {
+  type: String,
+  trim: true
+},
+
     image: {
      type: String,
     default: ""
   },
+  vendorCode: {
+  type: String,
+  unique: true,
+  required: true
+},
 
     isActive: { type: Boolean, default: true },
   },

@@ -12,22 +12,61 @@ const uploadToS3 = require("../middleware/upload");
 /* ===========================
    VENDORS
 =========================== */
+const CITY_CODE = {
+  Chennai: "CHN",
+  Madurai: "MDU",
+  Coimbatore: "CBE",
+  Karaikudi: "KKD"
+};
 
 // ADD vendor
 router.post("/vendors", auth, isAdmin, async (req, res) => {
   try {
-    const vendor = await Vendor.create(req.body);
+    const { name, city, address, phone, email, gstNumber } = req.body;
 
+    // 1️⃣ Duplicate protection (DB level)
+    const exists = await Vendor.findOne({
+      name: new RegExp(`^${name}$`, "i"),
+      city
+    });
+
+    if (exists) {
+      return res.status(400).json({
+        message: "Vendor already exists in this city"
+      });
+    }
+
+    // 2️⃣ Generate vendor code
+    const count = await Vendor.countDocuments();
+    const sequence = String(count + 1).padStart(4, "0");
+    const cityCode = CITY_CODE[city] || "GEN";
+
+    const vendorCode = `VND-${cityCode}-${sequence}`;
+
+    // 3️⃣ Save vendor WITH vendorCode
+    const vendor = await Vendor.create({
+      name,
+      city,
+      address,
+      phone,
+      email,
+      gstNumber,
+      vendorCode,
+      isActive: true
+    });
+
+    // 4️⃣ Admin log
     AdminLog.create({
       adminId: req.user.id,
       action: "CREATE",
       entityType: "Vendor",
       entityId: vendor._id,
-      description: `Vendor "${vendor.name}" created`,
+      description: `Vendor "${vendor.name}" created (${vendor.vendorCode})`
     }).catch(() => {});
 
     res.status(201).json(vendor);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -1,7 +1,28 @@
+// src/components/dashboards/Vendor/AdminDashboard.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./admin.css";
 import toast from "react-hot-toast";
+import ProductForm from "./adminproducts/ProductForm";
+import ProductList from "./adminproducts/ProductList";
+
+import VendorForm from "./adminvendors/VendorForm";
+import VendorList from "./adminvendors/VendorList";
+
+import {
+  createVendorApi,
+  loadVendors,
+  saveVendor,
+  deleteVendor
+} from "./adminvendors/VendorService";
+
+import {
+  loadProducts,
+  saveProduct,
+  deleteProduct
+} from "./adminproducts/ProductService";
+
+
 
 
 const CITIES = ["Chennai", "Madurai", "Coimbatore", "Karaikudi"];
@@ -26,6 +47,7 @@ export default function AdminDashboard() {
 
 
 
+
   // ===== DASHBOARD SUMMARY COUNTS (UI ONLY) =====
 const totalVendors = vendors.length;
 const totalProducts = products.length;
@@ -42,6 +64,7 @@ const [logs, setLogs] = useState([]);
     phone: "",
     email: "",  
     image: "",
+    gstNumber: "",
     isActive: true,
   });
 
@@ -58,21 +81,13 @@ const [logs, setLogs] = useState([]);
   });
 
   const token = localStorage.getItem("token");
-
+  const vendorApi = createVendorApi(token);
+ 
   const api = axios.create({
-    baseURL: "http://localhost:5000/api/admin",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  baseURL: "http://localhost:5000/api/admin",
+  headers: { Authorization: `Bearer ${token}` }
+});
 
-  const loadVendors = async () => {
-    const res = await api.get("/vendors");
-    setVendors(res.data);
-  };
-
-  const loadProducts = async () => {
-    const res = await api.get("/products");
-    setProducts(res.data);
-  };
 
  const loadFeedbacks = async () => {
   const res = await axios.get(
@@ -112,10 +127,9 @@ const loadOrders = async () => {
 
 
 
-
   useEffect(() => {
-    loadVendors();
-    loadProducts();
+    loadVendors(vendorApi, setVendors);
+    loadProducts(vendorApi, setProducts);
     // eslint-disable-next-line
   }, []);
 
@@ -148,26 +162,50 @@ useEffect(() => {
 
   // --------- VENDOR HANDLERS ----------
   const handleSaveVendor = async () => {
-    if (!vendorForm.name) return alert("Vendor name required");
+    
 
-    if (vendorForm._id) {
-      await api.put(`/vendors/${vendorForm._id}`, vendorForm);
-      alert("Vendor updated");
-    } else {
-      await api.post("/vendors", vendorForm);
-     toast.success("Vendor added successfully");
+// GST validation (optional but recommended)
+if (vendorForm.gstNumber) {
+  const gstRegex =
+    /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
-    }
-    setVendorForm({
-      _id: null,
-      name: "",
-      city: "Chennai",
-      address: "",
-      phone: "",
-      isActive: true,
-    });
-    loadVendors();
-  };
+  if (!gstRegex.test(vendorForm.gstNumber)) {
+    return alert("Invalid GST number");
+  }
+}
+
+const isDuplicate = vendors.some(v => {
+  if (!v?.name || !vendorForm?.name) return false;
+
+  return (
+    v.name.trim().toLowerCase() ===
+      vendorForm.name.trim().toLowerCase() &&
+    v.city === vendorForm.city &&
+    v._id !== vendorForm._id
+  );
+});
+
+if (isDuplicate) {
+  return alert("Vendor already exists in this city");
+}
+
+  if (!vendorForm.name) return alert("Vendor name required");
+
+  await saveVendor(vendorApi, vendorForm);
+
+  setVendorForm({
+    _id: null,
+    name: "",
+    city: "Chennai",
+    address: "",
+    phone: "",
+    email: "",
+    isActive: true
+  });
+
+  loadVendors(vendorApi, setVendors);
+};
+
 
   const handleEditVendor = (v) => {
     setVendorForm({
@@ -183,49 +221,35 @@ useEffect(() => {
   };
 
   const handleDeleteVendor = async (id) => {
-    if (!window.confirm("Delete this vendor?")) return;
-    await api.delete(`/vendors/${id}`);
-    loadVendors();
-  };
+  if (!window.confirm("Delete this vendor?")) return;
+  await deleteVendor(vendorApi, id);
+  loadVendors(vendorApi, setVendors);
+};
+
 
   // --------- PRODUCT HANDLERS ----------
-  const handleSaveProduct = async () => {
-    if (!productForm.name || !productForm.vendorId) {
-      return alert("Product name & vendor are required");
-    }
+ const handleSaveProduct = async () => {
+  if (!productForm.name || !productForm.vendorId) {
+    return alert("Product name & vendor are required");
+  }
 
-    const payload = {
-      name: productForm.name,
-      category: productForm.category,
-      price: Number(productForm.price),
-      unit: productForm.unit,
-      vendorId: productForm.vendorId,
-      city: productForm.city,
-      imageUrl: productForm.imageUrl,
-      isActive: productForm.isActive,
-    };
+  await saveProduct(vendorApi, productForm);
 
-    if (productForm._id) {
-      await api.put(`/products/${productForm._id}`, payload);
-      alert("Product updated");
-    } else {
-      await api.post("/products", payload);
-      alert("Product added");
-    }
+  setProductForm({
+    _id: null,
+    name: "",
+    category: "raw",
+    price: "",
+    unit: "",
+    vendorId: "",
+    city: "Chennai",
+    imageUrl: "",
+    isActive: true
+  });
 
-    setProductForm({
-      _id: null,
-      name: "",
-      category: "raw",
-      price: "",
-      unit: "",
-      vendorId: "",
-      city: "Chennai",
-      imageUrl: "",
-      isActive: true,
-    });
-    loadProducts();
-  };
+  loadProducts(vendorApi, setProducts);
+};
+
 
   const handleEditProduct = (p) => {
     setProductForm({
@@ -271,10 +295,11 @@ useEffect(() => {
 
 
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
-    await api.delete(`/products/${id}`);
-    loadProducts();
-  };
+  if (!window.confirm("Delete this product?")) return;
+  await deleteProduct(vendorApi, id);
+  loadProducts(vendorApi, setProducts);
+};
+
 
   const loadLogs = async () => {
   const res = await api.get("/logs");
@@ -390,276 +415,41 @@ const handleDeletePost = async (id) => {
         </div>
 
         {activeTab === "vendors" && (
-          <>
-            <section className="admin-card">
-              <h3>{vendorForm._id ? "Edit Vendor" : "Add Vendor"}</h3>
-              <div className="admin-form">
-                <input
-                  placeholder="Vendor name"
-                  value={vendorForm.name}
-                  onChange={(e) =>
-                    setVendorForm({ ...vendorForm, name: e.target.value })
-                  }
-                />
-                <select
-                  value={vendorForm.city}
-                  onChange={(e) =>
-                    setVendorForm({ ...vendorForm, city: e.target.value })
-                  }
-                >
-                  {CITIES.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-                <input
-                  placeholder="Address"
-                  value={vendorForm.address}
-                  onChange={(e) =>
-                    setVendorForm({ ...vendorForm, address: e.target.value })
-                  }
-                />
-                <input
-                  placeholder="Phone"
-                  value={vendorForm.phone}
-                  onChange={(e) =>
-                    setVendorForm({ ...vendorForm, phone: e.target.value })
-                  }
-                />
-                <input
-                  placeholder="Email (Gmail)"
-                  value={vendorForm.email}
-                  onChange={(e) =>
-                   setVendorForm({ ...vendorForm, email: e.target.value })
-                  }
-                />
+  <>
+    <VendorForm
+      vendorForm={vendorForm}
+      setVendorForm={setVendorForm}
+      CITIES={CITIES}
+      onSave={handleSaveVendor}
+    />
 
-              </div>
-              <button className="admin-primary-btn" onClick={handleSaveVendor}>
-                {vendorForm._id ? "Update Vendor" : "Add Vendor"}
-              </button>
-            </section>
-
-            <section className="admin-card">
-              <h3>Vendors</h3>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>City</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vendors.map((v) => (
-                    <tr key={v._id}>
-                      <td>{v.name}</td>
-                      <td>{v.city}</td>
-                      <td>{v.phone}</td>
-                      <td>{v.email}</td>
-
-                      <td>
-                        <button
-                          className="admin-secondary-btn"
-                          onClick={() => handleEditVendor(v)}
-                        >
-                          Edit
-                        </button>{" "}
-                        <button
-                          className="admin-secondary-btn"
-                          onClick={() => handleDeleteVendor(v._id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {vendors.length === 0 && (
-                    <tr>
-                      <td colSpan="4">No vendors yet.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </section>
-          </>
-        )}
-
-        {activeTab === "products" && (
-          <>
-            <section className="admin-card">
-              <h3>{productForm._id ? "Edit Product" : "Add Product"}</h3>
-              <div className="admin-form">
-                <input
-                  placeholder="Product name"
-                  value={productForm.name}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, name: e.target.value })
-                  }
-                />
-                <select
-                  value={productForm.category}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, category: e.target.value })
-                  }
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  placeholder="Price"
-                  type="number"
-                  value={productForm.price}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, price: e.target.value })
-                  }
-                />
-                <input
-                  placeholder="Unit (e.g., per bag)"
-                  value={productForm.unit}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, unit: e.target.value })
-                  }
-                />
-                <select
-                  value={productForm.vendorId}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, vendorId: e.target.value })
-                  }
-                >
-                  <option value="">Select vendor</option>
-                  {vendors.map((v) => (
-                    <option key={v._id} value={v._id}>
-                      {v.name} - {v.city}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={productForm.city}
-                  onChange={(e) =>
-                    setProductForm({ ...productForm, city: e.target.value })
-                  }
-                >
-                  {CITIES.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-                {/* ================= PRODUCT IMAGE (S3) ================= */}
-<label>Product Image</label>
-
-{productForm.imageUrl && (
-  <img
-    src={productForm.imageUrl}
-    alt="product"
-    style={{
-      width: 120,
-      height: 120,
-      objectFit: "cover",
-      borderRadius: 8,
-      marginBottom: 8
-    }}
-  />
+    <VendorList
+      vendors={vendors}
+      onEdit={handleEditVendor}
+      onDelete={handleDeleteVendor}
+    />
+  </>
 )}
 
-<input
-  type="file"
-  accept="image/*"
-  onChange={async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+       {activeTab === "products" && (
+  <>
+    <ProductForm
+      productForm={productForm}
+      setProductForm={setProductForm}
+      vendors={vendors}
+      onSave={handleSaveProduct}
+      onUploadImage={uploadProductImage}
+    />
 
-    if (!productForm._id) {
-      alert("Save product first");
-      return;
-    }
+    <ProductList
+      products={products}
+      onEdit={handleEditProduct}
+      onDelete={handleDeleteProduct}
+    />
+  </>
+)}
 
-    const url = await uploadProductImage(
-      productForm._id,
-      file
-    );
-
-    if (url) {
-      setProductForm(prev => ({
-        ...prev,
-        imageUrl: url
-      }));
-    }
-  }}
-/>
-
-                
-              </div>
-              <button
-                className="admin-primary-btn"
-                onClick={handleSaveProduct}
-              >
-                {productForm._id ? "Update Product" : "Add Product"}
-              </button>
-            </section>
-
-            <section className="admin-card">
-              <h3>Products</h3>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Vendor</th>
-                    <th>City</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((p) => (
-                    <tr key={p._id}>
-                      <td>
-                        {p.imageUrl ? (
-                          <img
-                            src={p.imageUrl}
-                            alt={p.name}
-                            className="admin-product-image"
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td>{p.name}</td>
-                      <td>{p.vendor?.name}</td>
-                      <td>{p.city}</td>
-                      <td>{p.category}</td>
-                      <td>₹{p.price}</td>
-                      <td>
-                        <button
-                          className="admin-secondary-btn"
-                          onClick={() => handleEditProduct(p)}
-                        >
-                          Edit
-                        </button>{" "}
-                        <button
-                          className="admin-secondary-btn"
-                          onClick={() => handleDeleteProduct(p._id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {products.length === 0 && (
-                    <tr>
-                      <td colSpan="7">No products yet.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </section>
-          </>
-        )}
+       
         {activeTab === "logs" && (
   <section className="admin-card">
     <h3>Admin Activity Logs</h3>
