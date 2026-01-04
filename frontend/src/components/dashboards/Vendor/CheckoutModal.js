@@ -1,4 +1,3 @@
-// frontend/src/components/dashboards/CheckoutModal.js
 import React from "react";
 
 export default function CheckoutModal({
@@ -8,17 +7,29 @@ export default function CheckoutModal({
   onBack,
   onSubmit
 }) {
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // ✅ SAFE total calculation (SALE + RENTAL)
+  const totalAmount = cart.reduce((sum, item) => {
+    if (item.productType === "SALE") {
+      const price = Number(item.price) || 0;
+      const qty = Number(item.quantity) || 1;
+      return sum + price * qty;
+    }
+
+    if (item.productType === "RENTAL") {
+      const daily = Number(item.dailyPrice) || 0;
+      const qty = Number(item.quantity) || 1;
+      const days = Number(item.days) || 1; // 🔥 fallback
+      return sum + daily * qty * days;
+    }
+
+    return sum;
+  }, 0);
 
   return (
     <div className="vendor-modal-overlay">
-      {/* MODAL CONTENT */}
       <div
         className="vendor-modal-content checkout-modal"
-        onClick={(e) => e.stopPropagation()} // ✅ prevent overlay conflict
+        onClick={(e) => e.stopPropagation()}
       >
         <h3>Checkout Details</h3>
 
@@ -73,6 +84,48 @@ export default function CheckoutModal({
           }
         />
 
+        {/* ORDER ITEMS SUMMARY */}
+        <div style={{ marginBottom: 16 }}>
+          <h4 style={{ marginBottom: 8 }}>Order Items</h4>
+
+          {cart.map((item) => (
+            <div
+              key={item._id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: 14,
+                marginBottom: 6
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 600 }}>{item.name}</div>
+                <div style={{ fontSize: 12, color: "#6b7280" }}>
+                  {item.vendorProductCode}
+                </div>
+              </div>
+
+              <div style={{ textAlign: "right" }}>
+                {item.productType === "SALE" && (
+                  <>
+                    ₹{item.price} × {item.quantity}
+                    {item.unit && ` ${item.unit}`}
+                    {item.size && ` (${item.size})`}
+                  </>
+                )}
+
+                {item.productType === "RENTAL" && (
+                  <>
+                    ₹{item.dailyPrice} × {item.quantity} ×{" "}
+                    {item.days || 1} days
+                    {item.size && ` (${item.size})`}
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* TOTAL */}
         <div className="cart-summary">
           Total Amount: ₹{totalAmount}
@@ -83,7 +136,7 @@ export default function CheckoutModal({
           <button
             className="btn-outline"
             type="button"
-            onClick={onBack} // ✅ Back now works correctly
+            onClick={onBack}
           >
             Back
           </button>

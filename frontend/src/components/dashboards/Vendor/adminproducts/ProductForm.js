@@ -1,3 +1,4 @@
+// src/components/dashboards/Vendor/adminproducts/ProductForm.js
 import React from "react";
 
 const CITIES = ["Chennai", "Madurai", "Coimbatore", "Karaikudi"];
@@ -10,6 +11,16 @@ const CATEGORIES = [
   { id: "concrete", label: "Ready-Mix Concrete" },
   { id: "rental", label: "Rental Equipment" }
 ];
+
+const SALE_UNITS = [
+  "per bag",
+  "per kg",
+  "per ton",
+  "per cubic feet",
+  "per piece"
+];
+
+const RENTAL_UNITS = ["per day"];
 
 export default function ProductForm({
   productForm,
@@ -25,7 +36,9 @@ export default function ProductForm({
       ...prev,
       variants: [
         ...(prev.variants || []),
-        { size: "", quantity: "", dailyPrice: "" }
+        prev.productType === "RENTAL"
+          ? { size: "", dailyPrice: "" }
+          : { size: "", price: "" }
       ]
     }));
   };
@@ -68,7 +81,7 @@ export default function ProductForm({
               ...productForm,
               category,
               productType: category === "rental" ? "RENTAL" : "SALE",
-              variants: category === "rental" ? productForm.variants || [] : []
+              variants: productForm.variants || []
             });
           }}
         >
@@ -86,10 +99,7 @@ export default function ProductForm({
             setProductForm({
               ...productForm,
               productType: e.target.value,
-              variants:
-                e.target.value === "RENTAL"
-                  ? productForm.variants || []
-                  : []
+              variants: productForm.variants || []
             })
           }
         >
@@ -97,26 +107,43 @@ export default function ProductForm({
           <option value="RENTAL">Rental (per day)</option>
         </select>
 
-        {/* SALE PRICE */}
-        {productForm.productType === "SALE" && (
-          <input
-            type="number"
-            placeholder="Price"
-            value={productForm.price}
-            onChange={(e) =>
-              setProductForm({ ...productForm, price: e.target.value })
-            }
-          />
-        )}
+        {/* SALE PRICE (simple products) */}
+        {productForm.productType === "SALE" &&
+          (!productForm.variants || productForm.variants.length === 0) && (
+            <input
+              type="number"
+              placeholder="Price"
+              value={productForm.price}
+              onChange={(e) =>
+                setProductForm({ ...productForm, price: e.target.value })
+              }
+            />
+          )}
 
-        {/* UNIT */}
-        <input
-          placeholder="Unit (e.g., per bag)"
-          value={productForm.unit}
-          onChange={(e) =>
-            setProductForm({ ...productForm, unit: e.target.value })
-          }
-        />
+        {/* UNIT (CONTROLLED) */}
+<select
+  value={productForm.unit}
+  onChange={(e) =>
+    setProductForm({ ...productForm, unit: e.target.value })
+  }
+>
+  <option value="">Select unit</option>
+
+  {productForm.productType === "SALE" &&
+    SALE_UNITS.map((u) => (
+      <option key={u} value={u}>
+        {u}
+      </option>
+    ))}
+
+  {productForm.productType === "RENTAL" &&
+    RENTAL_UNITS.map((u) => (
+      <option key={u} value={u}>
+        {u}
+      </option>
+    ))}
+</select>
+
 
         {/* VENDOR */}
         <select
@@ -159,46 +186,54 @@ export default function ProductForm({
           />
         )}
 
-        {/* RENTAL VARIANTS */}
-        {productForm.productType === "RENTAL" && (
+        {/* VARIANTS (SALE + RENTAL) */}
+        {["SALE", "RENTAL"].includes(productForm.productType) && (
           <div style={{ gridColumn: "1 / -1", marginTop: 16 }}>
-            <h4>Rental Variants</h4>
+            <h4>
+              {productForm.productType === "RENTAL"
+                ? "Rental Variants (Size / Daily Price)"
+                : "Sale Variants (Size / Price)"}
+            </h4>
 
             {(productForm.variants || []).map((v, index) => (
               <div
                 key={index}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "2fr 1fr 1fr auto",
+                  gridTemplateColumns: "2fr 1fr auto",
                   gap: 8,
                   marginBottom: 8
                 }}
               >
                 <input
-                  placeholder="Size (e.g. 5 ft)"
+                  placeholder="Size (e.g. 20mm / 5 ft)"
                   value={v.size}
                   onChange={(e) =>
                     updateVariant(index, "size", e.target.value)
                   }
                 />
 
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  value={v.quantity}
-                  onChange={(e) =>
-                    updateVariant(index, "quantity", e.target.value)
-                  }
-                />
+                {productForm.productType === "SALE" && (
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={v.price || ""}
+                    onChange={(e) =>
+                      updateVariant(index, "price", e.target.value)
+                    }
+                  />
+                )}
 
-                <input
-                  type="number"
-                  placeholder="Daily Price"
-                  value={v.dailyPrice}
-                  onChange={(e) =>
-                    updateVariant(index, "dailyPrice", e.target.value)
-                  }
-                />
+                {productForm.productType === "RENTAL" && (
+                  <input
+                    type="number"
+                    placeholder="Daily Price"
+                    value={v.dailyPrice || ""}
+                    onChange={(e) =>
+                      updateVariant(index, "dailyPrice", e.target.value)
+                    }
+                  />
+                )}
 
                 <button
                   type="button"
@@ -219,7 +254,7 @@ export default function ProductForm({
           </div>
         )}
 
-        {/* IMAGE UPLOAD (ONLY AFTER SAVE) */}
+        {/* IMAGE UPLOAD — ONLY AFTER SAVE */}
         {productForm._id && (
           <div style={{ gridColumn: "1 / -1", marginTop: 16 }}>
             <label

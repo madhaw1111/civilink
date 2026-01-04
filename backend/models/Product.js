@@ -16,17 +16,24 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
+    // ✅ Used ONLY when SALE has NO variants
     price: {
       type: Number,
       required: function () {
-        return this.productType === "SALE";
+        return (
+          this.productType === "SALE" &&
+          (!this.variants || this.variants.length === 0)
+        );
       }
     },
 
     unit: {
       type: String,
       required: function () {
-        return this.productType === "SALE";
+        return (
+          this.productType === "SALE" &&
+          (!this.variants || this.variants.length === 0)
+        );
       }
     },
 
@@ -57,12 +64,27 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
-    // ✅ RENTAL VARIANTS
+    // ✅ UNIVERSAL VARIANTS (SALE + RENTAL)
     variants: [
       {
-        size: { type: String, required: true },
-        quantity: { type: Number, required: true },
-        dailyPrice: { type: Number, required: true }
+        size: {
+          type: String,
+          required: true // "20 mm", "40 mm", "5 ft"
+        },
+
+        price: {
+          type: Number,
+          required: function () {
+            return this.parent().productType === "SALE";
+          }
+        },
+
+        dailyPrice: {
+          type: Number,
+          required: function () {
+            return this.parent().productType === "RENTAL";
+          }
+        }
       }
     ]
   },

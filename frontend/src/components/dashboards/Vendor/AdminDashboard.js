@@ -242,35 +242,49 @@ if (isDuplicate) {
     return alert("Rental products must have at least one size variant");
   }
 
-  // ✅ BUILD CLEAN PAYLOAD (CRITICAL)
-  const payload = {
-    name: productForm.name,
-    category: productForm.category,
-    productType: productForm.productType,
-    vendorId: productForm.vendorId,
-    city: productForm.city,
-    imageUrl: productForm.imageUrl,
-    isActive: true,
+  if (!productForm.unit) {
+  return alert("Unit is required");
+}
 
-   variants:
-  productForm.productType === "RENTAL"
+
+  // ✅ BUILD CLEAN PAYLOAD (CRITICAL)
+ const payload = {
+  name: productForm.name,
+  category: productForm.category,
+  productType: productForm.productType,
+  vendorId: productForm.vendorId,
+  city: productForm.city,
+  imageUrl: productForm.imageUrl,
+  isActive: true,
+
+  // ✅ VARIANTS FOR BOTH SALE & RENTAL (NO QUANTITY)
+  variants: Array.isArray(productForm.variants)
     ? productForm.variants.map(v => ({
         size: v.size,
-        quantity: Number(v.quantity),
-        dailyPrice: Number(v.dailyPrice)
+        price:
+          productForm.productType === "SALE"
+            ? Number(v.price)
+            : undefined,
+        dailyPrice:
+          productForm.productType === "RENTAL"
+            ? Number(v.dailyPrice)
+            : undefined
       }))
     : [],
 
-    price:
-      productForm.productType === "SALE"
-        ? Number(productForm.price)
-        : undefined,
+  // ✅ FALLBACK PRICE (only if SALE without variants)
+  price:
+    productForm.productType === "SALE" &&
+    (!productForm.variants || productForm.variants.length === 0)
+      ? Number(productForm.price)
+      : undefined,
 
-    unit:
-      productForm.productType === "SALE"
-        ? productForm.unit
-        : undefined
-  };
+  unit:
+    productForm.productType === "SALE"
+      ? productForm.unit
+      : undefined
+};
+
 
  await saveProduct(vendorApi, { ...payload, _id: productForm._id });
 

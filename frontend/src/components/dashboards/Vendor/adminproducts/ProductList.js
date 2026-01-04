@@ -76,7 +76,32 @@ export default function ProductList({
     : `₹${p.price}`}
 </td>
 
-                <td>₹{p.price}</td>
+             <td>
+  {p.productType === "SALE" && p.variants?.length === 0 && (
+    <>₹{p.price}</>
+  )}
+
+  {p.productType === "SALE" && p.variants?.length > 0 && (
+    <>
+      ₹{Math.min(...p.variants.map(v => v.price))}
+      {p.variants.length > 1 && " – "}
+      {p.variants.length > 1 &&
+        Math.max(...p.variants.map(v => v.price))}
+    </>
+  )}
+
+  {p.productType === "RENTAL" && (
+    <>
+      ₹{Math.min(...p.variants.map(v => v.dailyPrice))}
+      {p.variants.length > 1 && " – "}
+      {p.variants.length > 1 &&
+        Math.max(...p.variants.map(v => v.dailyPrice))}
+      {" / day"}
+    </>
+  )}
+</td>
+
+
                 <td>
                   <button
                     className="admin-secondary-btn"

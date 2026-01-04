@@ -2,7 +2,9 @@ import { calculateRentalDays } from "./utils/rental";
 
 const days = calculateRentalDays(startDate, endDate);
 
-const total =
-  selectedVariant.dailyPrice *
-  selectedQuantity *
-  days;
+// ✅ Safe fallbacks
+const price = Number(selectedVariant?.dailyPrice) || 0;
+const quantity = Number(selectedQuantity) || 1;
+const rentalDays = Number(days) || 1;
+
+const total = price * quantity * rentalDays;

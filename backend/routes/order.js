@@ -36,23 +36,42 @@ router.post("/", async (req, res) => {
     const invoiceUrl = await uploadInvoiceToS3(invoiceBuffer);
 
     /* ======================
-       3️⃣ SAVE ORDER
+       3️⃣ SAVE ORDER  ✅ FIXED
     ====================== */
     const order = await Order.create({
       customer,
+
       vendor: {
         name: vendor.name,
         email: vendor.email,
         phone: vendor.phone
       },
+
       items: cart.map(item => ({
+        // REQUIRED FIELDS
         name: item.name,
-        price: item.price,
-        quantity: item.quantity
+        productType: item.productType,   // 🔥 THIS FIXES YOUR ERROR
+        quantity: item.quantity,
+
+        // PRICE LOGIC
+        price:
+          item.productType === "SALE"
+            ? item.price
+            : item.dailyPrice,
+
+        // RENTAL-ONLY
+        days:
+          item.productType === "RENTAL"
+            ? item.days
+            : undefined,
+
+        unit: item.unit,
+        size: item.size
       })),
+
       total,
       invoiceUrl,
-      status: "NEW"
+      status: "PLACED"
     });
 
     /* ======================
@@ -69,12 +88,12 @@ router.post("/", async (req, res) => {
     await transporter.verify();
 
     const itemsText = cart
-      .map(
-        i =>
-          `${i.name} | ₹${i.price} × ${i.quantity} = ₹${
-            i.price * i.quantity
-          }`
-      )
+      .map(i => {
+        if (i.productType === "SALE") {
+          return `${i.name} | ₹${i.price} × ${i.quantity}`;
+        }
+        return `${i.name} | ₹${i.dailyPrice} × ${i.quantity} × ${i.days} days`;
+      })
       .join("\n");
 
     const message = `

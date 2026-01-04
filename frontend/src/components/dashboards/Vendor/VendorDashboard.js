@@ -102,16 +102,36 @@ const [customerOrders, setCustomerOrders] = useState([]);
       return;
     }
 
-    const total = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+   const total = cart.reduce((sum, item) => {
+  if (item.productType === "RENTAL") {
+    const daily = Number(item.dailyPrice) || 0;
+    const qty = Number(item.quantity) || 1;
+    const days = Number(item.days) || 1;
+    return sum + daily * qty * days;
+  }
+
+  const price = Number(item.price) || 0;
+  const qty = Number(item.quantity) || 1;
+  return sum + price * qty;
+}, 0);
+
 
     const res = await axios.post(
       "http://localhost:5000/api/order",
       {
         customer: checkoutData,
-        cart,
+        cart: cart.map(item => ({
+  productId: item._id,                 // internal
+  productCode: item.vendorProductCode, // business ID
+  name: item.name,
+  productType: item.productType,
+  price: item.price,
+  quantity: item.quantity,
+  days:
+    item.productType === "RENTAL"
+      ? item.days
+      : undefined
+})),
         total,
         vendor: {
           name: vendor.name,
@@ -351,13 +371,44 @@ const loadMyOrders = async () => {
 
               <div className="vendor-card-header">
                 <div className="vendor-product-name">{p.name}</div>
-                <div className="vendor-product-id">#{p._id}</div>
-              </div>
+                <div className="vendor-product-id">
+  {p.vendorProductCode}
+</div>
 
-              <div className="vendor-price">
-                ₹{p.price}{" "}
-                <span className="vendor-unit">{p.unit}</span>
               </div>
+              <div className="vendor-price">
+  {/* SALE PRODUCTS */}
+  {p.productType === "SALE" && (
+    <>
+      {p.variants && p.variants.length > 0 ? (
+        <>
+          ₹{Math.min(...p.variants.map(v => v.price))}{" "}
+          <span className="vendor-unit">
+            / {p.unit || "unit"} (from)
+          </span>
+        </>
+      ) : (
+        <>
+          ₹{p.price}{" "}
+          <span className="vendor-unit">
+            {p.unit}
+          </span>
+        </>
+      )}
+    </>
+  )}
+
+  {/* RENTAL PRODUCTS */}
+  {p.productType === "RENTAL" && (
+    <>
+      ₹{Math.min(...p.variants.map(v => v.dailyPrice))}{" "}
+      <span className="vendor-unit">
+        / day (from)
+      </span>
+    </>
+  )}
+</div>
+
 
               <div className="vendor-meta">
                 <div className="vendor-vendor-name">{p.vendor?.name}</div>
@@ -382,8 +433,42 @@ const loadMyOrders = async () => {
         : item
     );
   } else {
-    return [...prev, { ...p, quantity: 1 }];
+  const basePrice =
+    p.productType === "SALE"
+      ? p.variants && p.variants.length > 0
+        ? Math.min(...p.variants.map(v => v.price))
+        : p.price
+      : Math.min(...p.variants.map(v => v.dailyPrice));
+
+  return [
+  ...prev,
+  {
+    _id: p._id,
+    name: p.name,
+    vendorProductCode: p.vendorProductCode,
+    vendor: p.vendor,
+
+    productType: p.productType,
+
+    // 🔥 IMPORTANT FIX
+    price: p.productType === "SALE"
+      ? basePrice
+      : undefined,
+
+    dailyPrice: p.productType === "RENTAL"
+      ? basePrice
+      : undefined,
+
+    quantity: 1,
+    days: p.productType === "RENTAL" ? 1 : undefined,
+
+    unit: p.unit,
+    size: p.size
   }
+];
+
+}
+
 });
 
               setShowAddedMsg(true);
@@ -430,9 +515,18 @@ const loadMyOrders = async () => {
         )}
 
         <p>
-          <strong>Price:</strong> ₹{selectedProduct.price}{" "}
-          <span className="vendor-unit">{selectedProduct.unit}</span>
-        </p>
+  <strong>Price:</strong>{" "}
+  {selectedProduct.productType === "SALE" ? (
+    selectedProduct.variants?.length ? (
+      <>From ₹{Math.min(...selectedProduct.variants.map(v => v.price))}</>
+    ) : (
+      <>₹{selectedProduct.price}</>
+    )
+  ) : (
+    <>From ₹{Math.min(...selectedProduct.variants.map(v => v.dailyPrice))} / day</>
+  )}
+</p>
+
 
         <p>
           <strong>Category:</strong>{" "}
