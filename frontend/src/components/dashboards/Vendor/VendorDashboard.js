@@ -34,6 +34,7 @@ function VendorDashboard() {
   phone: "",
   email: "",
   address: "",
+  state: ""
   });
  // My Orders (Customer)
 const [showMyOrders, setShowMyOrders] = useState(false);
@@ -93,14 +94,12 @@ const [customerOrders, setCustomerOrders] = useState([]);
     }
 
     // 🔑 assume all items belong to same vendor
-    const vendor = cart[0]?.vendor;
+    const vendorId = cart[0]?.vendorId;
 
-    if (!vendor?.email || !vendor?.phone) {
-     
-
-      alert("Vendor contact details missing");
-      return;
-    }
+    if (!vendorId) {
+  alert("Vendor ID missing. Please refresh and try again.");
+  return;
+}
 
    const total = cart.reduce((sum, item) => {
   if (item.productType === "RENTAL") {
@@ -122,10 +121,12 @@ const [customerOrders, setCustomerOrders] = useState([]);
         customer: checkoutData,
         cart: cart.map(item => ({
   productId: item._id,                 // internal
-  productCode: item.vendorProductCode, // business ID
+  vendorProductCode: item.vendorProductCode, // business ID
   name: item.name,
   productType: item.productType,
-  price: item.price,
+  price: item.productType === "SALE" ? item.price : undefined,
+dailyPrice: item.productType === "RENTAL" ? item.dailyPrice : undefined,
+
   quantity: item.quantity,
   days:
     item.productType === "RENTAL"
@@ -133,11 +134,10 @@ const [customerOrders, setCustomerOrders] = useState([]);
       : undefined
 })),
         total,
-        vendor: {
-          name: vendor.name,
-          email: vendor.email,
-          phone: vendor.phone
-        }
+
+          vendorId: vendorId, 
+      
+        
       }
     );
 
@@ -445,8 +445,14 @@ const loadMyOrders = async () => {
   {
     _id: p._id,
     name: p.name,
-    vendorProductCode: p.vendorProductCode,
-    vendor: p.vendor,
+    vendorProductCode:
+  p.vendorProductCode ||
+  p.productCode ||
+  `AUTO-${p._id}`,
+
+    vendorId: p.vendor._id,   // 🔥 SINGLE SOURCE OF TRUTH
+
+
 
     productType: p.productType,
 

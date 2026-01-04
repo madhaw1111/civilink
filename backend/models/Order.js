@@ -1,66 +1,181 @@
 const mongoose = require("mongoose");
 
+/* =====================
+   ORDER ITEM SCHEMA
+===================== */
+const orderItemSchema = new mongoose.Schema({
+  vendorProductCode: {
+    type: String,
+    required: true
+  },
+
+  name: {
+    type: String,
+    required: true
+  },
+
+  productType: {
+    type: String,
+    enum: ["SALE", "RENTAL"],
+    required: true
+  },
+
+  /* SALE */
+  price: {
+    type: Number,
+    required: function () {
+      return this.productType === "SALE";
+    }
+  },
+
+  /* RENTAL */
+  dailyPrice: {
+    type: Number,
+    required: function () {
+      return this.productType === "RENTAL";
+    }
+  },
+
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+
+  days: {
+    type: Number,
+    required: function () {
+      return this.productType === "RENTAL";
+    },
+    min: 1
+  },
+
+  unit: String,
+  size: String,
+
+  /* CALCULATED */
+  itemTotal: {
+    type: Number,
+    required: true
+  }
+});
+
+/* =====================
+   MAIN ORDER SCHEMA
+===================== */
 const orderSchema = new mongoose.Schema(
   {
+    /* DELIVERY CUSTOMER */
     customer: {
-      name: String,
-      phone: String,
+      name: {
+        type: String,
+        required: true
+      },
+      phone: {
+        type: String,
+        required: true
+      },
       email: String,
-      address: String
-    },
-
-    vendor: {
-      vendorId: mongoose.Schema.Types.ObjectId,
-      vendorCode: String,
-      name: String,
-      phone: String,
-      email: String
-    },
-
-    items: [
-      {
-        // 🔗 Product identity
-        productId: mongoose.Schema.Types.ObjectId,
-        productCode: String,          // P-0001
-        vendorProductCode: String,    // VND-CHN-0001-P-0001
-
-        name: String,
-        productType: {
-          type: String,
-          enum: ["SALE", "RENTAL"],
-          required: true
-        },
-
-        // 📦 SALE fields
-        price: Number,                // unit price
-        quantity: Number,
-
-        // 🏗️ RENTAL fields
-        size: String,                 // "5 ft"
-        dailyPrice: Number,
-        rental: {
-          startDate: Date,
-          endDate: Date,
-          days: Number
-        },
-
-        itemTotal: Number             // final calculated total
+      address: {
+        type: String,
+        required: true
+      },
+      state: {
+        type: String,
+        required: true
       }
-    ],
+    },
 
+    /* VENDOR */
+    vendor: {
+      name: {
+        type: String,
+        required: true
+      },
+      phone: {
+        type: String,
+        required: true
+      },
+      address: {                 // ✅ ADD THIS
+    type: String,
+    required: true
+  },
+      email: {
+        type: String,
+        required: true
+      },
+      state: {
+        type: String,
+        required: true
+      }
+    },
+
+    /* ITEMS */
+    items: {
+      type: [orderItemSchema],
+      required: true,
+      validate: v => Array.isArray(v) && v.length > 0
+    },
+
+    /* GST */
+    taxableAmount: {
+      type: Number,
+      required: true
+    },
+
+    cgst: {
+      type: Number,
+      default: 0
+    },
+
+    sgst: {
+      type: Number,
+      default: 0
+    },
+
+    igst: {
+      type: Number,
+      default: 0
+    },
+
+    totalTax: {
+      type: Number,
+      required: true
+    },
+
+    gstRate: {
+      type: Number,
+      default: 18
+    },
+
+    taxType: {
+      type: String,
+      enum: ["CGST_SGST", "IGST"],
+      required: true
+    },
+
+    /* TOTAL */
     total: {
       type: Number,
       required: true
     },
 
-    invoiceUrl: {
+    /* INVOICE */
+    invoiceNumber: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
 
+    invoiceUrl: {
+      type: String
+      // 🔥 NOT required at creation time
+    },
+
+    /* STATUS */
     status: {
       type: String,
-      enum: ["PLACED", "CONFIRMED", "DELIVERED", "RETURNED", "CANCELLED"],
+      enum: ["PLACED", "CONFIRMED", "DELIVERED", "CANCELLED"],
       default: "PLACED"
     }
   },

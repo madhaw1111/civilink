@@ -84,6 +84,16 @@ export default function CheckoutModal({
           }
         />
 
+        <input
+  type="text"
+  placeholder="State (e.g. Tamil Nadu)"
+  value={checkoutData.state}
+  onChange={(e) =>
+    setCheckoutData({ ...checkoutData, state: e.target.value })
+  }
+/>
+
+
         {/* ORDER ITEMS SUMMARY */}
         <div style={{ marginBottom: 16 }}>
           <h4 style={{ marginBottom: 8 }}>Order Items</h4>

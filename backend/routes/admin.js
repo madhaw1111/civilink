@@ -228,7 +228,7 @@ router.post("/products", auth, isAdmin, async (req, res) => {
 // LIST products
 router.get("/products", auth, isAdmin, async (req, res) => {
   const products = await Product.find()
-    .populate("vendor", "name city email phone")
+    .populate("vendor", "_id name city email phone")
     .sort("-createdAt");
 
   res.json(products);
