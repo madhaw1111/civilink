@@ -1,15 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 /* =====================================
-   APPLY SAVED THEME (STEP 3)
+   APPLY SAVED THEME & LANGUAGE
 ===================================== */
-
-// Priority:
-// 1️⃣ User theme from DB (stored in localStorage user)
-// 2️⃣ Theme saved locally
-// 3️⃣ Default = light
 
 try {
   const storedUser = JSON.parse(localStorage.getItem("civilink_user"));
@@ -17,7 +13,6 @@ try {
     storedUser?.theme ||
     localStorage.getItem("civilink_theme") ||
     "light";
-
   document.documentElement.setAttribute("data-theme", theme);
 } catch {
   document.documentElement.setAttribute("data-theme", "light");
@@ -29,16 +24,17 @@ try {
     storedUser?.language ||
     localStorage.getItem("civilink_lang") ||
     "en";
-
   document.documentElement.setAttribute("lang", lang);
 } catch {
   document.documentElement.setAttribute("lang", "en");
 }
 
-
 /* =====================================
    RENDER APP
 ===================================== */
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <App />
+  </GoogleOAuthProvider>
+);

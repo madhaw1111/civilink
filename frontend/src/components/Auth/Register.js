@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./auth.css";
+import logo from "../../assets/logo.png";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -13,6 +14,10 @@ export default function Register() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+
+
 
   const update = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,7 +39,7 @@ export default function Register() {
       if (!res.ok) return setError(data.message);
 
       setSuccess("Account created successfully!");
-      setStep("OTP"); // ⏸ UI gate only
+      setStep("OTP"); // UI gate only
     } catch (err) {
       setError("Network error — Try again.");
     }
@@ -47,44 +52,50 @@ export default function Register() {
     setOtp(updated);
   };
 
- const verifyOtp = async () => {
-   console.log("OTP VERIFY CLICKED"); 
-  const enteredOtp = otp.join("");
+  const verifyOtp = async () => {
+    const enteredOtp = otp.join("");
 
-  if (enteredOtp.length !== 6) {
-    return setError("Enter valid 6-digit OTP");
-  }
+    if (enteredOtp.length !== 6) {
+      return setError("Enter valid 6-digit OTP");
+    }
 
-  try {
-    const res = await fetch(
-      "http://localhost:5000/api/auth/verify-otp",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          otp: enteredOtp
-        })
-      }
-    );
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/auth/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            otp: enteredOtp
+          })
+        }
+      );
 
-    const data = await res.json();
-    if (!res.ok) return setError(data.message || "Invalid OTP");
+      const data = await res.json();
+      if (!res.ok) return setError(data.message || "Invalid OTP");
 
-    // ✅ FIRST-TIME USER → DIRECT HOME
-    window.location.replace("/home");
+      // 🔥 THIS WAS MISSING — SAVE FINAL AUTH
+      localStorage.setItem("civilink_user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
 
-  } catch (err) {
-    setError("OTP verification failed");
-  }
-};
+      // ✅ FIRST-TIME USER → HOME
+      window.location.replace("/home");
 
+    } catch (err) {
+      setError("OTP verification failed");
+    }
+  };
 
   return (
     <div className="auth-page upg">
       <div className="auth-card upg">
 
-        <h1 className="auth-logo upg">Civilink</h1>
+        <div className="auth-brand upg">
+ <img src={logo} alt="Civilink Logo" />
+ </div>
+
         <p className="auth-subtitle upg">
           Join the future of construction
         </p>
@@ -116,19 +127,29 @@ export default function Register() {
               <label>Phone (optional)</label>
             </div>
 
-            <div className="input-floating">
-              <input
-                name="password"
-                type="password"
-                required
-                onChange={update}
-              />
-              <label>Password</label>
-            </div>
+       <div className="input-floating password-field">
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    value={form.password}
+    required
+     placeholder=" "  
+    onChange={update}
+  />
 
-            <button type="button" className="auth-btn-google upg">
-              Continue with Google
-            </button>
+  <span
+    className="toggle-eye"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? "🙈" : "👁️"}
+  </span>
+
+  <label>Password</label>
+</div>
+
+
+
+            
 
             <button className="auth-btn-primary upg">
               Create Account

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./auth.css";
+import { GoogleLogin } from "@react-oauth/google";
+import logo from "../../assets/logo.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,6 +10,7 @@ export default function Login() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   /* ================= LOGIN ================= */
   const handleLogin = async (e) => {
@@ -24,28 +27,12 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || !data.success) {
         setLoading(false);
         return setError(data.message || "Login failed");
       }
 
-      if (!data?.user || !data?.token || !data?.role) {
-        setLoading(false);
-        return setError("Login failed: missing auth data");
-      }
-
-      // ✅ SAVE AUTH (UNCHANGED)
-      localStorage.setItem("civilink_user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-
-      // ✅ SEND OTP (THIS WAS MISSING)
-      await fetch("http://localhost:5000/api/otp/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
-
+      // ✅ OTP SENT SUCCESSFULLY
       setLoading(false);
       setStep("OTP");
 
@@ -71,19 +58,23 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/auth/verify-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp: enteredOtp })
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: enteredOtp })
+      });
 
       const data = await res.json();
-      if (!res.ok) return setError(data.message || "Invalid OTP");
 
-      // 🔥 STRONG REDIRECT (FIX)
+      if (!res.ok) {
+        return setError(data.message || "Invalid OTP");
+      }
+
+      // ✅ FINAL AUTH DATA
+      localStorage.setItem("civilink_user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
       window.location.replace("/home");
 
     } catch (err) {
@@ -95,7 +86,10 @@ export default function Login() {
     <div className="auth-page upg">
       <div className="auth-card upg">
 
-        <h1 className="auth-logo upg">Civilink</h1>
+        <div className="auth-brand upg">
+          <img src={logo} alt="Civilink Logo" />
+        </div>
+
         <p className="auth-subtitle upg">
           Your construction network — Reimagined
         </p>
@@ -116,19 +110,58 @@ export default function Login() {
               <label>Email address</label>
             </div>
 
-            <div className="input-floating">
+            <div className="input-floating password-field">
               <input
-                type="password"
-                required
+                type={showPassword ? "text" : "password"}
                 value={password}
+                required
+                placeholder=" "
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <span
+                className="toggle-eye"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
               <label>Password</label>
             </div>
 
-            <button type="button" className="auth-btn-google upg">
-              Continue with Google
-            </button>
+            <p className="auth-forgot">
+              <a href="/forgot-password">Forgot password?</a>
+            </p>
+
+            {/* GOOGLE LOGIN */}
+            <GoogleLogin
+              onSuccess={async (res) => {
+                try {
+                  const response = await fetch(
+                    "http://localhost:5000/api/auth/google-login",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ credential: res.credential })
+                    }
+                  );
+
+                  const data = await response.json();
+
+                  if (!response.ok) {
+                    return alert(data.message || "Google login failed");
+                  }
+
+                  localStorage.setItem("civilink_user", JSON.stringify(data.user));
+                  localStorage.setItem("token", data.token);
+                  localStorage.setItem("role", data.role);
+
+                  window.location.replace("/home");
+
+                } catch {
+                  alert("Google login network error");
+                }
+              }}
+              onError={() => alert("Google Sign-In Failed")}
+            />
 
             <button className="auth-btn-primary upg" type="submit">
               Sign In
@@ -166,8 +199,6 @@ export default function Login() {
             >
               Verify & Continue
             </button>
-
-            <span className="otp-resend">Resend OTP</span>
           </div>
         )}
 
