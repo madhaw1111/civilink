@@ -193,19 +193,34 @@ router.post("/products", auth, isAdmin, async (req, res) => {
 
     // 6️⃣ Create product
     const product = await Product.create({
-      name,
-      category,
-      productType,
-      variants: productType === "RENTAL" ? variants : [],
-      price: productType === "SALE" ? price : undefined,
-      unit: productType === "SALE" ? unit : undefined,
-      city,
-      vendor: vendorId,
-      productCode,
-      vendorProductCode,
-      imageUrl,
-      isActive: isActive ?? true
-    });
+  name,
+  category,
+  productType,
+
+  // ✅ variants allowed for BOTH SALE & RENTAL
+  variants: Array.isArray(variants) ? variants : [],
+
+  // ✅ single-price mode ONLY if no variants
+  price:
+    productType === "SALE" &&
+    (!variants || variants.length === 0)
+      ? price
+      : undefined,
+
+  unit:
+    productType === "SALE" &&
+    (!variants || variants.length === 0)
+      ? unit
+      : undefined,
+
+  city,
+  vendor: vendorId,
+  productCode,
+  vendorProductCode,
+  imageUrl,
+  isActive: isActive ?? true
+});
+
 
     // 7️⃣ Admin log
     AdminLog.create({

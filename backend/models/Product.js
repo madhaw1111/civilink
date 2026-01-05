@@ -1,8 +1,40 @@
 const mongoose = require("mongoose");
 
+/* ===========================
+   VARIANT SCHEMA
+   (Used for BOTH SALE & RENTAL)
+=========================== */
+const variantSchema = new mongoose.Schema(
+  {
+    size: {
+      type: String,
+      required: true // "20 mm", "40 mm", "5 ft", "50 kg"
+    },
+
+    // Used ONLY for SALE (raw materials)
+    price: {
+      type: Number
+    },
+
+    // Used ONLY for RENTAL (equipment)
+    dailyPrice: {
+      type: Number
+    }
+  },
+  { _id: false }
+);
+
+/* ===========================
+   PRODUCT SCHEMA
+=========================== */
 const productSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    /* BASIC INFO */
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
 
     category: {
       type: String,
@@ -16,7 +48,7 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
-    // ✅ Used ONLY when SALE has NO variants
+    /* SINGLE PRICE MODE (ONLY IF NO VARIANTS) */
     price: {
       type: Number,
       required: function () {
@@ -37,6 +69,7 @@ const productSchema = new mongoose.Schema(
       }
     },
 
+    /* RELATIONS */
     vendor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vendor",
@@ -49,10 +82,19 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
-    imageUrl: { type: String, default: "" },
+    /* MEDIA */
+    imageUrl: {
+      type: String,
+      default: ""
+    },
 
-    isActive: { type: Boolean, default: true },
+    /* STATUS */
+    isActive: {
+      type: Boolean,
+      default: true
+    },
 
+    /* IDENTIFIERS */
     productCode: {
       type: String,
       required: true
@@ -64,31 +106,34 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
-    // ✅ UNIVERSAL VARIANTS (SALE + RENTAL)
-    variants: [
-      {
-        size: {
-          type: String,
-          required: true // "20 mm", "40 mm", "5 ft"
-        },
-
-        price: {
-          type: Number,
-          required: function () {
-            return this.parent().productType === "SALE";
-          }
-        },
-
-        dailyPrice: {
-          type: Number,
-          required: function () {
-            return this.parent().productType === "RENTAL";
-          }
-        }
-      }
-    ]
+    /* VARIANTS (RAW + RENTAL) */
+    variants: {
+      type: [variantSchema],
+      default: []
+    }
   },
   { timestamps: true }
 );
+
+productSchema.pre("validate", function () {
+  // SALE → each variant must have price
+  if (this.productType === "SALE" && this.variants.length > 0) {
+    for (const v of this.variants) {
+      if (v.price == null) {
+        throw new Error("Each SALE variant must have a price");
+      }
+    }
+  }
+
+  // RENTAL → each variant must have dailyPrice
+  if (this.productType === "RENTAL" && this.variants.length > 0) {
+    for (const v of this.variants) {
+      if (v.dailyPrice == null) {
+        throw new Error("Each RENTAL variant must have a daily price");
+      }
+    }
+  }
+});
+
 
 module.exports = mongoose.model("Product", productSchema);

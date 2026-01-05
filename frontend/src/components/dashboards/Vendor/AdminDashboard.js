@@ -322,12 +322,36 @@ if (isDuplicate) {
     setActiveTab("products");
   };
 
+  //handle delete product in forms
 
-  const handleDeleteProduct = async (id) => {
-  if (!window.confirm("Delete this product?")) return;
-  await deleteProduct(vendorApi, id);
-  loadProducts(vendorApi, setProducts);
+ const EMPTY_PRODUCT_FORM = {
+  _id: null,
+  name: "",
+  category: "raw",
+  productType: "SALE",
+  price: "",
+  unit: "",
+  vendorId: "",
+  city: "Chennai",
+  imageUrl: "",
+  variants: [],
+  isActive: true
 };
+
+const handleDeleteProduct = async (id) => {
+  if (!window.confirm("Delete this product?")) return;
+
+  await deleteProduct(vendorApi, id);
+
+  // ✅ Remove from list
+  setProducts(prev => prev.filter(p => p._id !== id));
+
+  // ✅ RESET FORM IF DELETED PRODUCT WAS OPEN
+  setProductForm(prev =>
+    prev._id === id ? EMPTY_PRODUCT_FORM : prev
+  );
+};
+
 
 const uploadProductImage = async (productId, file) => {
     if (!file || !productId) return;

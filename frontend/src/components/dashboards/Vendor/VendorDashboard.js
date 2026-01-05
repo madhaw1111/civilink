@@ -4,6 +4,8 @@ import axios from "axios";
 import "./vendor.css";
 import CartModal from "./CartModal";
 import CheckoutModal from "./CheckoutModal";
+import logo from "../../../assets/logo.png";
+
 
 
 function VendorDashboard() {
@@ -16,7 +18,7 @@ function VendorDashboard() {
     { id: "rental", label: "Rental Equipment" },
   ];
 
-  const CITIES = ["All Cities", "Chennai", "Coimbatore", "Madurai", "Salem"];
+  const CITIES = ["All Cities", "Chennai", "Coimbatore", "Madurai", "karaikudi"];
 
   const [selectedCategory, setSelectedCategory] = useState("raw");
   const [selectedCity, setSelectedCity] = useState("All Cities");
@@ -25,6 +27,8 @@ function VendorDashboard() {
   const [showMenu, setShowMenu] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedVariants, setSelectedVariants] = useState({});
+
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [showAddedMsg, setShowAddedMsg] = useState(false);
@@ -194,7 +198,10 @@ const loadMyOrders = async () => {
   >
     ☰
   </button>
-  <div className="vendor-logo">Civilink Vendor</div>
+  <div className="vendor-logo">
+  <img src={logo} alt="Civilink" />
+</div>
+
 </div>
 
 
@@ -376,38 +383,50 @@ const loadMyOrders = async () => {
 </div>
 
               </div>
-              <div className="vendor-price">
-  {/* SALE PRODUCTS */}
-  {p.productType === "SALE" && (
-    <>
-      {p.variants && p.variants.length > 0 ? (
-        <>
-          ₹{Math.min(...p.variants.map(v => v.price))}{" "}
-          <span className="vendor-unit">
-            / {p.unit || "unit"} (from)
-          </span>
-        </>
-      ) : (
-        <>
-          ₹{p.price}{" "}
-          <span className="vendor-unit">
-            {p.unit}
-          </span>
-        </>
-      )}
-    </>
-  )}
+           <div className="vendor-price">
+  {/* VARIANT SELECTION */}
+  {p.variants?.length > 0 && (
+    <div className="vendor-variant-list">
+      {p.variants.map((v, i) => {
+        const isSelected =
+          selectedVariants[p._id]?.size === v.size;
 
-  {/* RENTAL PRODUCTS */}
-  {p.productType === "RENTAL" && (
-    <>
-      ₹{Math.min(...p.variants.map(v => v.dailyPrice))}{" "}
-      <span className="vendor-unit">
-        / day (from)
-      </span>
-    </>
+        return (
+          <label
+            key={i}
+            className={`vendor-variant-option ${
+              isSelected ? "selected" : ""
+            }`}
+          >
+            <input
+              type="radio"
+              name={`variant-${p._id}`}
+              checked={isSelected}
+              onChange={() =>
+                setSelectedVariants(prev => ({
+                  ...prev,
+                  [p._id]: {
+                    size: v.size,
+                    price: v.price,
+                    dailyPrice: v.dailyPrice
+                  }
+                }))
+              }
+            />
+
+            <span>
+              {v.size} – ₹
+              {p.productType === "RENTAL"
+                ? `${v.dailyPrice} / day`
+                : v.price}
+            </span>
+          </label>
+        );
+      })}
+    </div>
   )}
 </div>
+
 
 
               <div className="vendor-meta">
@@ -420,69 +439,62 @@ const loadMyOrders = async () => {
               </div>
 
               <div className="vendor-actions-row">
-                <button
-              className="btn-primary"
-               onClick={() => {
-              setCart((prev) => {
-  const existing = prev.find((item) => item._id === p._id);
+               <button
+  className="btn-primary"
+  onClick={() => {
+    const selected = selectedVariants[p._id];
 
-  if (existing) {
-    return prev.map((item) =>
-      item._id === p._id
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-  } else {
-  const basePrice =
-    p.productType === "SALE"
-      ? p.variants && p.variants.length > 0
-        ? Math.min(...p.variants.map(v => v.price))
-        : p.price
-      : Math.min(...p.variants.map(v => v.dailyPrice));
+    if (p.variants?.length > 0 && !selected) {
+      alert("Please select a size first");
+      return;
+    }
 
-  return [
-  ...prev,
-  {
-    _id: p._id,
-    name: p.name,
-    vendorProductCode:
-  p.vendorProductCode ||
-  p.productCode ||
-  `AUTO-${p._id}`,
+    setCart(prev => {
+      const existing = prev.find(
+        item => item._id === p._id && item.size === selected?.size
+      );
 
-    vendorId: p.vendor._id,   // 🔥 SINGLE SOURCE OF TRUTH
+      if (existing) {
+        return prev.map(item =>
+          item._id === p._id && item.size === selected.size
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
 
+      return [
+        ...prev,
+        {
+          _id: p._id,
+          name: p.name,
+          vendorProductCode: p.vendorProductCode,
+          vendorId: p.vendor._id,
+          productType: p.productType,
 
+          // ✅ EXACT VARIANT
+          size: selected?.size,
+          price:
+            p.productType === "SALE"
+              ? selected?.price
+              : undefined,
+          dailyPrice:
+            p.productType === "RENTAL"
+              ? selected?.dailyPrice
+              : undefined,
 
-    productType: p.productType,
+          quantity: 1,
+          days: p.productType === "RENTAL" ? 1 : undefined
+        }
+      ];
+    });
 
-    // 🔥 IMPORTANT FIX
-    price: p.productType === "SALE"
-      ? basePrice
-      : undefined,
+    setShowAddedMsg(true);
+    setTimeout(() => setShowAddedMsg(false), 1200);
+  }}
+>
+  Add to Cart
+</button>
 
-    dailyPrice: p.productType === "RENTAL"
-      ? basePrice
-      : undefined,
-
-    quantity: 1,
-    days: p.productType === "RENTAL" ? 1 : undefined,
-
-    unit: p.unit,
-    size: p.size
-  }
-];
-
-}
-
-});
-
-              setShowAddedMsg(true);
-              setTimeout(() => setShowAddedMsg(false), 1200);
-            }}
-            >
-            Add to Cart
-          </button>
 
 
                 <button

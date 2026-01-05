@@ -20,9 +20,30 @@
 }
 
 .vendor-logo {
-  font-weight: 700;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 8px;
 }
+
+.vendor-logo img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .vendor-header {
+    padding: 8px 12px;
+  }
+
+  .vendor-logo img {
+    height: 24px;
+  }
+}
+
+
 
 .vendor-search input {
   width: 280px;
@@ -217,11 +238,22 @@
 }
 
 .vendor-menu-btn {
-  font-size: 22px;
-  background: none;
-  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 42, 68, 0.2);
+
+  background: #ffffff;
+  color: #0f2a44;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
   cursor: pointer;
 }
+
 
 .vendor-menu {
   position: absolute;
@@ -521,3 +553,423 @@
   color: #888;
   font-size: 13px;
 }
+
+.vendor-variant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.vendor-variant-option {
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.vendor-variant-option.selected {
+  font-weight: 600;
+}
+
+/* ================================
+   2025 COMPACT MARKETPLACE OVERRIDES
+   (Flipkart-style density)
+================================ */
+
+/* PRODUCT GRID — MORE ITEMS */
+.vendor-products {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+/* CARD — COMPACT */
+.vendor-card {
+  padding: 10px;
+  border-radius: 14px;
+}
+
+/* IMAGE — SMALLER */
+.vendor-card-image {
+  height: 130px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+/* PRODUCT NAME */
+.vendor-product-name {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* PRODUCT ID — LESS DOMINANT */
+.vendor-product-id {
+  font-size: 11px;
+}
+
+/* VARIANT LIST — COMPACT */
+.vendor-variant-list {
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.vendor-variant-option {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+/* RADIO — TOUCH FRIENDLY BUT SMALL */
+.vendor-variant-option input {
+  transform: scale(0.9);
+}
+
+/* PRICE TEXT */
+.vendor-price {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* META */
+.vendor-meta {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* TAGS */
+.vendor-tags {
+  margin-top: 4px;
+}
+
+.tag-primary {
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+/* ACTION BUTTONS — SMALLER */
+.vendor-actions-row {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.btn-primary,
+.btn-outline {
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* ================================
+   MOBILE FIRST (Flipkart-like)
+================================ */
+
+@media (max-width: 768px) {
+  .vendor-products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 0 12px 20px;
+  }
+
+  .vendor-card {
+    padding: 8px;
+  }
+
+  .vendor-card-image {
+    height: 110px;
+  }
+
+  .vendor-product-name {
+    font-size: 13px;
+  }
+
+  .vendor-variant-option {
+    font-size: 12px;
+    padding: 5px 6px;
+  }
+
+  .vendor-actions-row {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    font-size: 12px;
+  }
+}
+
+/* ================================
+   EXTRA SMALL DEVICES
+================================ */
+
+@media (max-width: 420px) {
+  .vendor-products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vendor-card-image {
+    height: 95px;
+  }
+
+  .vendor-product-name {
+    font-size: 12px;
+  }
+}
+
+/* =====================================
+   HOME PAGE UI POLISH (2025)
+   ONLY MENU + CART + VIEW DETAILS
+===================================== */
+
+/* ===== MENU BUTTON (☰) ===== */
+.vendor-menu-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.vendor-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+/* ===== CART BUTTON ===== */
+.vendor-cart-btn {
+  background: #ffffff;
+  color: #1a3c6e;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 18px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vendor-cart-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+/* CART BADGE — CLEAR & MODERN */
+.vendor-cart-badge {
+  top: -6px;
+  right: -6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
+/* ===== VIEW DETAILS BUTTON ===== */
+.btn-outline {
+  background: #ffffff;
+  color: #1a3c6e;
+  border: 1px solid #dbe2ef;
+  font-weight: 500;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-outline:hover {
+  background: #f1f5ff;
+  border-color: #b6c4ff;
+}
+
+/* ===== MOBILE REFINEMENTS ===== */
+@media (max-width: 768px) {
+  .vendor-menu-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .vendor-cart-btn {
+    padding: 6px 12px;
+    font-size: 17px;
+  }
+
+  .btn-outline {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+/* =====================================
+   2025 ADVANCED HEADER & HOME POLISH
+===================================== */
+
+/* ===== HEADER BAR ===== */
+.vendor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #e8f1ff, #dbeafe);
+  border-bottom: 1px solid rgba(15, 42, 68, 0.12);
+
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+
+
+/* LOGO */
+.vendor-logo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.vendor-header * {
+  color: #0f2a44;
+}
+
+/* Menu button */
+.vendor-menu-btn {
+  background: rgba(15, 42, 68, 0.08);
+  color: #0f2a44;
+}
+
+/* Cart button */
+.vendor-cart-btn {
+  background: #ffffff;
+  color: #0f2a44;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+}
+
+/* Search input contrast */
+.vendor-search input {
+  background: #ffffff;
+  color: #0f2a44;
+}
+
+/* ===== MENU BUTTON ===== */
+.vendor-menu-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 42, 68, 0.15);
+  background: rgba(255, 255, 255, 0.7);
+  color: #0f2a44;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover (desktop) */
+.vendor-menu-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+}
+
+/* Active (mobile tap) */
+.vendor-menu-btn:active {
+  transform: scale(0.95);
+}
+
+
+/* ===== SEARCH BAR ===== */
+.vendor-search input {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.vendor-search input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+
+/* ===== LOCATION DROPDOWN ===== */
+.vendor-actions select {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== CART BUTTON ===== */
+.vendor-cart-btn {
+  background: #ffffff;
+  color: #1a3c6e;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vendor-cart-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* CART BADGE */
+.vendor-cart-badge {
+  background: #ef4444;
+  font-weight: 700;
+  padding: 2px 6px;
+}
+
+/* ===== CATEGORY STRIP ===== */
+.vendor-categories {
+  background: #ffffff;
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+.vendor-category {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.vendor-category.active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+/* ===== BANNER ===== */
+.vendor-banner {
+  padding: 14px 18px;
+}
+
+.vendor-banner h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.vendor-banner p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+  .vendor-search input {
+    width: 220px;
+  }
+
+  .vendor-header {
+    padding: 10px 12px;
+  }
+
+  .vendor-logo {
+    font-size: 0.95rem;
+  }
+}
+

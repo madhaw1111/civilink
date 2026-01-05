@@ -1,7 +1,6 @@
 // src/components/dashboards/Vendor/adminproducts/ProductList.js
 import React, { useState } from "react";
 
-
 export default function ProductList({
   products,
   onEdit,
@@ -9,26 +8,27 @@ export default function ProductList({
 }) {
   const [search, setSearch] = useState("");
 
-  const filteredProducts = products.filter(p => {
-  const searchText = search.toLowerCase();
+  const filteredProducts = products.filter((p) => {
+    const searchText = search.toLowerCase();
 
-  return (
-    p.name?.toLowerCase().includes(searchText) ||
-    p.productCode?.toLowerCase().includes(searchText) ||
-    p.vendorProductCode?.toLowerCase().includes(searchText)
-  );
-});
+    return (
+      p.name?.toLowerCase().includes(searchText) ||
+      p.productCode?.toLowerCase().includes(searchText) ||
+      p.vendorProductCode?.toLowerCase().includes(searchText)
+    );
+  });
 
   return (
     <section className="admin-card">
       <h3>Products</h3>
-       {/* 🔍 SEARCH */}
-  <input
-    placeholder="Search product / product ID / vendor product ID"
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    style={{ marginBottom: 12, width: "100%" }}
-  />
+
+      {/* 🔍 SEARCH */}
+      <input
+        placeholder="Search product / product ID / vendor product ID"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginBottom: 12, width: "100%" }}
+      />
 
       <table className="admin-table">
         <thead>
@@ -64,41 +64,44 @@ export default function ProductList({
                     "-"
                   )}
                 </td>
+
                 <td>{p.name}</td>
                 <td>{p.productCode}</td>
                 <td>{p.vendor?.name}</td>
                 <td>{p.vendorProductCode}</td>
                 <td>{p.city}</td>
                 <td>{p.category}</td>
-                <td>
-  {p.productType === "RENTAL"
-    ? "Rental"
-    : `₹${p.price}`}
-</td>
 
-             <td>
-  {p.productType === "SALE" && p.variants?.length === 0 && (
-    <>₹{p.price}</>
-  )}
+                {/* ✅ PRICE – DIFFERENT PER VARIANT */}
+              <td>
+  {/* SALE – single price */}
+  {p.productType === "SALE" &&
+    (!p.variants || p.variants.length === 0) &&
+    p.price && <>₹{p.price}</>}
 
-  {p.productType === "SALE" && p.variants?.length > 0 && (
-    <>
-      ₹{Math.min(...p.variants.map(v => v.price))}
-      {p.variants.length > 1 && " – "}
-      {p.variants.length > 1 &&
-        Math.max(...p.variants.map(v => v.price))}
-    </>
-  )}
+  {/* SALE – variants */}
+  {p.productType === "SALE" &&
+    p.variants?.length > 0 && (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {p.variants.map((v, i) => (
+          <span key={i}>
+            {v.size} – ₹{v.price}
+          </span>
+        ))}
+      </div>
+    )}
 
-  {p.productType === "RENTAL" && (
-    <>
-      ₹{Math.min(...p.variants.map(v => v.dailyPrice))}
-      {p.variants.length > 1 && " – "}
-      {p.variants.length > 1 &&
-        Math.max(...p.variants.map(v => v.dailyPrice))}
-      {" / day"}
-    </>
-  )}
+  {/* RENTAL – variants */}
+  {p.productType === "RENTAL" &&
+    p.variants?.length > 0 && (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {p.variants.map((v, i) => (
+          <span key={i}>
+            {v.size} – ₹{v.dailyPrice} / day
+          </span>
+        ))}
+      </div>
+    )}
 </td>
 
 

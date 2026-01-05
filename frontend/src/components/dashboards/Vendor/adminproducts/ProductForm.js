@@ -56,6 +56,42 @@ export default function ProductForm({
     }));
   };
 
+    /* ================= PAYLOAD NORMALIZER ================= */
+  const normalizeProductPayload = () => {
+    const payload = { ...productForm };
+
+    // Map vendorId → vendor (backend expects `vendor`)
+    payload.vendor = payload.vendorId;
+    delete payload.vendorId;
+
+    // Normalize variants
+    if (payload.variants && payload.variants.length > 0) {
+      payload.variants = payload.variants.map((v) => ({
+        size: v.size?.trim(),
+        price:
+          payload.productType === "SALE"
+            ? Number(v.price)
+            : undefined,
+        dailyPrice:
+          payload.productType === "RENTAL"
+            ? Number(v.dailyPrice)
+            : undefined
+      }));
+
+      // Remove single-price fields when variants exist
+      delete payload.price;
+      delete payload.unit;
+    } else {
+      // No variants → normalize single price
+      if (payload.price !== undefined) {
+        payload.price = Number(payload.price);
+      }
+    }
+
+    return payload;
+  };
+
+
   /* ================= RENDER ================= */
 
   return (
@@ -278,9 +314,13 @@ export default function ProductForm({
         )}
       </div>
 
-      <button className="admin-primary-btn" onClick={onSave}>
-        {productForm._id ? "Update Product" : "Add Product"}
-      </button>
+      <button
+  className="admin-primary-btn"
+  onClick={() => onSave(normalizeProductPayload())}
+>
+  {productForm._id ? "Update Product" : "Add Product"}
+</button>
+
     </section>
   );
 }
