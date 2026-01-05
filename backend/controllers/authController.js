@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { generateOTP, otpExpiry } = require("../utils/otp");
+const { sendOTP } = require("../utils/mailer");
+
 
 // REGISTER
 exports.register = async (req, res) => {
@@ -25,6 +28,15 @@ exports.register = async (req, res) => {
       isProfessional: false,
       role: "user" // 🔥 DEFAULT ROLE
     });
+    const otp = generateOTP();
+
+user.otp = otp;
+user.otpExpiresAt = otpExpiry();
+user.otpAttempts = 0;
+await user.save();
+
+await sendOTP(user.email, otp);
+
 
     const token = jwt.sign(
       { id: user._id, role: user.role }, // 🔥 INCLUDE ROLE
@@ -62,6 +74,14 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+    const otp = generateOTP();
+
+user.otp = otp;
+user.otpExpiresAt = otpExpiry();
+user.otpAttempts = 0;
+await user.save();
+
+await sendOTP(user.email, otp);
 
     return res.json({
       user,

@@ -6,14 +6,18 @@ export default function Register() {
     name: "",
     email: "",
     phone: "",
-    password: "",
+    password: ""
   });
 
+  const [step, setStep] = useState("FORM"); // FORM | OTP
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const update = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
+  /* ================= REGISTER ================= */
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
@@ -23,61 +27,153 @@ export default function Register() {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(form)
       });
 
       const data = await res.json();
       if (!res.ok) return setError(data.message);
 
-      setSuccess("Account created successfully! Redirecting...");
-      setTimeout(() => (window.location.href = "/"), 1500);
-
+      setSuccess("Account created successfully!");
+      setStep("OTP"); // ⏸ UI gate only
     } catch (err) {
       setError("Network error — Try again.");
     }
   };
+
+  /* ================= OTP ================= */
+  const handleOtpChange = (value, index) => {
+    const updated = [...otp];
+    updated[index] = value;
+    setOtp(updated);
+  };
+
+ const verifyOtp = async () => {
+   console.log("OTP VERIFY CLICKED"); 
+  const enteredOtp = otp.join("");
+
+  if (enteredOtp.length !== 6) {
+    return setError("Enter valid 6-digit OTP");
+  }
+
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/auth/verify-otp",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          otp: enteredOtp
+        })
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) return setError(data.message || "Invalid OTP");
+
+    // ✅ FIRST-TIME USER → DIRECT HOME
+    window.location.replace("/home");
+
+  } catch (err) {
+    setError("OTP verification failed");
+  }
+};
+
 
   return (
     <div className="auth-page upg">
       <div className="auth-card upg">
 
         <h1 className="auth-logo upg">Civilink</h1>
-        <p className="auth-subtitle upg">Join the future of construction</p>
+        <p className="auth-subtitle upg">
+          Join the future of construction
+        </p>
 
         {error && <div className="auth-error upg">{error}</div>}
         {success && <div className="auth-success upg">{success}</div>}
 
-        <form className="auth-form upg" onSubmit={handleRegister}>
-          
-          <div className="input-floating">
-            <input name="name" required onChange={update} />
-            <label>Full Name</label>
+        {/* ================= REGISTER FORM ================= */}
+        {step === "FORM" && (
+          <form className="auth-form upg" onSubmit={handleRegister}>
+
+            <div className="input-floating">
+              <input name="name" required onChange={update} />
+              <label>Full Name</label>
+            </div>
+
+            <div className="input-floating">
+              <input
+                name="email"
+                type="email"
+                required
+                onChange={update}
+              />
+              <label>Email Address</label>
+            </div>
+
+            <div className="input-floating">
+              <input name="phone" onChange={update} />
+              <label>Phone (optional)</label>
+            </div>
+
+            <div className="input-floating">
+              <input
+                name="password"
+                type="password"
+                required
+                onChange={update}
+              />
+              <label>Password</label>
+            </div>
+
+            <button type="button" className="auth-btn-google upg">
+              Continue with Google
+            </button>
+
+            <button className="auth-btn-primary upg">
+              Create Account
+            </button>
+          </form>
+        )}
+
+        {/* ================= OTP STEP ================= */}
+        {step === "OTP" && (
+          <div className="otp-layer upg">
+            <h2 className="otp-title">Verify Your Account</h2>
+            <p className="otp-sub">
+              Enter the 6-digit OTP sent to your email
+            </p>
+
+            <div className="otp-inputs">
+              {otp.map((v, i) => (
+                <input
+                  key={i}
+                  maxLength="1"
+                  value={v}
+                  onChange={(e) => {
+                    handleOtpChange(e.target.value, i);
+                    if (e.target.value && e.target.nextSibling)
+                      e.target.nextSibling.focus();
+                  }}
+                />
+              ))}
+            </div>
+
+            <button
+              className="auth-btn-primary upg"
+              onClick={verifyOtp}
+            >
+              Verify & Continue
+            </button>
+
+            <span className="otp-resend">
+              Resend OTP
+            </span>
           </div>
-
-          <div className="input-floating">
-            <input name="email" type="email" required onChange={update} />
-            <label>Email Address</label>
-          </div>
-
-          <div className="input-floating">
-            <input name="phone" onChange={update} />
-            <label>Phone (optional)</label>
-          </div>
-
-          <div className="input-floating">
-            <input name="password" type="password" required onChange={update} />
-            <label>Password</label>
-          </div>
-
-          <button className="auth-btn-primary upg">
-            <span>Create Account</span>
-          </button>
-
-        </form>
+        )}
 
         <p className="auth-footer upg">
-          Already have an account?{" "}
-          <a href="/">Sign in</a>
+          Already have an account? <a href="/">Sign in</a>
         </p>
 
       </div>

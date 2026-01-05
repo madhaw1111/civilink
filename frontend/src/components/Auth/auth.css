@@ -138,3 +138,105 @@
   font-weight: bold;
   text-decoration: underline;
 }
+
+/* ================= OTP UI ================= */
+
+.otp-layer.upg {
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f8fbff, #eef4ff);
+  box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
+  text-align: center;
+}
+
+.otp-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0b2c5f;
+}
+
+.otp-sub {
+  font-size: 14px;
+  color: #475569;
+}
+
+.otp-inputs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.otp-inputs input {
+  height: 48px;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 12px;
+  border: 1px solid #c7d2fe;
+  outline: none;
+}
+
+.otp-inputs input:focus {
+  border-color: #2563eb;
+}
+
+/* ================= GOOGLE BUTTON ================= */
+
+.auth-btn-google.upg {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.9);
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.auth-btn-google.upg:hover {
+  background: #ffffff;
+}
+
+/* OTP Layer Fix */
+.otp-layer.upg {
+  margin-top: 20px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.otp-inputs input {
+  width: 44px;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 20px;
+  text-align: center;
+  outline: none;
+}
+
+.otp-inputs input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.otp-resend {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+

@@ -31,6 +31,8 @@ app.use("/api/config", require("./routes/adminConfig"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/admin/orders", require("./routes/adminOrders"));
 app.use("/api/customer/orders", require("./routes/customerOrders"));
+app.use("/api/otp", require("./routes/otp"));
+
 
 
 // ===== START SERVER =====

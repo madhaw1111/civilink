@@ -56,7 +56,19 @@ hiddenPosts: [
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post"
   }
-]
+],
+otp: {
+  type: String
+},
+otpExpiresAt: {
+  type: Date
+},
+otpAttempts: {
+  type: Number,
+  default: 0
+}
+
+
 
 
 
@@ -69,5 +81,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   const bcrypt = require("bcryptjs");
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+
 
 module.exports = mongoose.model("User", userSchema);
