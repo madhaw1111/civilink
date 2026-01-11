@@ -105,6 +105,8 @@ const contactOwner = async (ownerId, rentId) => {
     setMaxRent("");
     fetchRentHouses();
   };
+  
+ 
 
   return (
     <div className="rent-page">
@@ -154,66 +156,71 @@ const contactOwner = async (ownerId, rentId) => {
         </div>
       ) : (
         <div className="rent-list">
-          {houses.map((h) => (
-            <div key={h._id} className="rent-card">
-              {h.imageUrl && (
-                <img
-                  src={h.imageUrl}
-                  alt="Rent House"
-                  className="rent-image"
-                />
-              )}
+  {houses.map((h) => {
+    const ownerId =
+      typeof h.postedBy === "object"
+        ? h.postedBy?._id
+        : h.postedBy;
 
-              <div className="rent-info">
-                <h4>{h.title}</h4>
-                <p className="rent-location">{h.location}</p>
+    return (
+      <div key={h._id} className="rent-card">
+        {h.imageUrl && (
+          <img
+            src={h.imageUrl}
+            alt="Rent House"
+            className="rent-image"
+          />
+        )}
 
-                <p className="rent-price">
-                  ₹{Number(h.rent).toLocaleString("en-IN")} / month
-                </p>
+        <div className="rent-info">
+          <h4>{h.title}</h4>
 
-                {h.deposit > 0 && (
-                  <p className="rent-deposit">
-                    Deposit: ₹{Number(h.deposit).toLocaleString("en-IN")}
-                  </p>
-                )}
+          <p className="rent-location">
+            📍 {h.location?.city}, {h.location?.state}
+          </p>
 
-                {h.availableFrom && (
-                  <p className="rent-date">
-                    Available from:{" "}
-                    {new Date(h.availableFrom).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            {user && (
-  (typeof h.postedBy === "object"
-    ? h.postedBy._id
-    : h.postedBy) === user._id ? (
+          <p className="rent-price">
+            ₹{Number(h.rent).toLocaleString("en-IN")} / month
+          </p>
 
-    <button className="rent-own-btn" disabled>
-      Your Listing
-    </button>
+          {h.deposit > 0 && (
+            <p className="rent-deposit">
+              Deposit: ₹{Number(h.deposit).toLocaleString("en-IN")}
+            </p>
+          )}
 
-  ) : (
-
-    <button
-      className="rent-contact-btn"
-      onClick={() =>
-        contactOwner(
-          typeof h.postedBy === "object" ? h.postedBy._id : h.postedBy,
-          h._id
-        )
-      }
-    >
-      Contact Owner
-    </button>
-  )
-)}
-
-              
-            </div>
-          ))}
+          {h.availableFrom && (
+            <p className="rent-date">
+              Available from:{" "}
+              {new Date(h.availableFrom).toLocaleDateString()}
+            </p>
+          )}
         </div>
+
+        {user && ownerId ? (
+          ownerId === user._id ? (
+            <button className="rent-own-btn" disabled>
+              Your Listing
+            </button>
+          ) : (
+            <button
+              className="rent-contact-btn"
+              onClick={() => contactOwner(ownerId, h._id)}
+            >
+              Contact Owner
+            </button>
+          )
+        ) : (
+          <button className="rent-contact-btn" disabled>
+            Owner unavailable
+          </button>
+        )}
+      </div>
+    );
+  })}
+</div>
+
+          
       )}
     </div>
   );

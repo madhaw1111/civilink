@@ -10,7 +10,19 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+/* ================= CORS ================= */
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+      credentials: true
+    })
+  );
+} else {
+  // local / development
+  app.use(cors());
+}
+
 app.use(express.json());
 
 // ===== ROUTES =====

@@ -164,7 +164,10 @@ function BuyHouse() {
 
               <div className="buyhouse-info">
                 <h4>{h.title}</h4>
-                <p className="location">{h.location}</p>
+                <p className="location">
+  📍 {h.location?.city}, {h.location?.state}
+</p>
+
                 <p className="price">
                   ₹{Number(h.price).toLocaleString("en-IN")}
                 </p>

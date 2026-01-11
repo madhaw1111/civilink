@@ -56,7 +56,7 @@ ${location.city}${location.state ? ", " + location.state : ""}
 
 ${description || ""}`,
         imageUrl,
-        location : house.location               // ✅ FIXED
+        location : rentHouse.location               // ✅ FIXED
       });
 
       res.status(201).json({
