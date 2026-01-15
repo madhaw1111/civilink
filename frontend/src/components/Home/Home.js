@@ -33,6 +33,11 @@ export default function Home() {
       ...prev,
     ]);
   };
+  /* ================= SEARCH ================= */
+const [searchText, setSearchText] = useState("");
+const [searchResults, setSearchResults] = useState([]);
+const [isSearching, setIsSearching] = useState(false);
+
 
   /* ================= MODALS ================= */
   const [showPostModal, setShowPostModal] = useState(false);
@@ -426,11 +431,31 @@ const formatTime = (date) => {
   return new Date(date).toLocaleDateString();
 };
 
+const handleSearch = async () => {
+  if (!searchText.trim()) {
+    setIsSearching(false);
+    setSearchResults([]);
+    return;
+  }
 
+  setIsSearching(true);
 
+  const city = user?.location?.city || "";
 
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/search/professionals?q=${searchText}&city=${city}`
+    );
 
+    const data = await res.json();
 
+    if (data.success) {
+      setSearchResults(data.results);
+    }
+  } catch (err) {
+    console.error("Search failed", err);
+  }
+};
 
   /* ================= RENDER ================= */
   return (
@@ -444,9 +469,23 @@ const formatTime = (date) => {
 
 
         <input
-          className="home-search"
-          placeholder="Search engineers, houses, vendors…"
-        />
+  className="home-search"
+  placeholder="Search plumbers, engineers, electricians in your city"
+  value={searchText}
+  onChange={(e) => {
+    setSearchText(e.target.value);
+    if (e.target.value === "") {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  }}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  }}
+/>
+
 
         <button
        className="home-message-btn"
@@ -477,6 +516,49 @@ const formatTime = (date) => {
 
       {/* ================= FEED ================= */}
       <main className="home-feed">
+  {isSearching ? (
+    searchResults.length ? (
+      searchResults.map((u) => (
+        <div
+          key={u._id}
+          className="feed-card"
+          onClick={() => navigate(`/profile/${u._id}`)}
+          style={{ cursor: "pointer" }}
+        >
+          <div className="feed-header">
+            <div className="feed-user-box">
+              <div className="feed-avatar">
+                {u.profilePhoto ? (
+                  <img src={u.profilePhoto} alt={u.name} />
+                ) : (
+                  <span>{u.name.charAt(0)}</span>
+                )}
+              </div>
+              <div>
+                <div className="feed-user">{u.name}</div>
+                <div className="feed-meta">
+                  {u.profession} • 📍 {u.location?.city}, {u.location?.state}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {u.skills?.length > 0 && (
+            <div className="feed-content">
+              <p><strong>Skills:</strong> {u.skills.join(", ")}</p>
+            </div>
+          )}
+        </div>
+      ))
+    ) : (
+      <div style={{ padding: 20, color: "#666" }}>
+        No professionals found
+      </div>
+    )
+  ) : (
+    <>
+      {/* 🔽 EXISTING FEED CODE GOES HERE (UNCHANGED) */}
+
         {feed.length ? (
           feed.filter(item => !hiddenPosts.includes(item._id))
               .map((item, index) => {
@@ -737,7 +819,9 @@ const state =
             No feed items yet.
           </div>
         )}
-      </main>
+    </>
+  )}
+</main>
 
       {/* ================= MODALS ================= */}
       {showPostModal && (
@@ -813,6 +897,17 @@ const state =
       >
         🔑 Rent / To-Let a House
       </button>
+
+      <button
+  className="sheet-btn primary"
+  onClick={() => {
+    setShowCustomerMenu(false);
+    window.location.href = "/buy-sell-land";
+  }}
+>
+  🌍 Buy / Sell Land
+</button>
+
 
       <button
         className="sheet-btn outline"

@@ -32,6 +32,7 @@ app.use("/api/admin", require("./routes/admin"));
 app.use("/api/order", require("./routes/order"));
 app.use("/api/profession", require("./routes/profession"));
 app.use("/api/house", require("./routes/houseRoutes"));
+app.use("/api/land", require("./routes/land"));
 app.use("/api/chat", require("./routes/chatRoutes"));
 app.use("/api/rent", require("./routes/rentRoutes"));
 app.use("/api/post", require("./routes/postRoutes"));
@@ -44,6 +45,8 @@ app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/admin/orders", require("./routes/adminOrders"));
 app.use("/api/customer/orders", require("./routes/customerOrders"));
 app.use("/api/otp", require("./routes/otp"));
+app.use("/api/search", require("./routes/search"));
+
 
 
 

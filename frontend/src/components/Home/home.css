@@ -417,3 +417,67 @@ body {
   background: white;
   border: 1px solid #e5e7eb;
 }
+/* =========================================
+   MOBILE UI FIXES (PRODUCTION SAFE)
+========================================= */
+@media (max-width: 768px) {
+
+  /* Feed container full width */
+  .home-feed {
+    padding: 8px;
+    max-width: 100%;
+  }
+
+  /* Feed card full width */
+  .feed-card {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+  }
+
+  /* Fix poster / land image cropping */
+  .feed-image {
+    max-height: 420px;
+    object-fit: contain;   /* 🔑 VERY IMPORTANT */
+    background: #f9fafb;
+  }
+
+  /* Header spacing */
+  .feed-user {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .feed-meta {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  /* Action buttons spacing */
+  .feed-actions {
+    gap: 6px;
+    padding-top: 10px;
+  }
+
+  .feed-action-btn {
+    font-size: 13px;
+    padding: 10px 4px;
+    border-radius: 10px;
+  }
+
+  /* Bottom bar spacing */
+  .bottom-bar {
+    padding: 8px 0;
+  }
+
+  .bottom-bar button {
+    font-size: 20px;
+  }
+
+  .add-post {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+}

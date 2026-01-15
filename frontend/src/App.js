@@ -42,7 +42,10 @@ import AdminFeedback from "./components/Admin/AdminFeedback";
 import SavedPosts from "./components/Home/Profile/SavedPosts";
 import NotificationsPage from "./components/Notifications/NotificationsPage";
 
-
+// CUSTOMER – LAND (NEW)
+import BuySellLand from "./components/dashboards/Customer/BuySellLand";
+import BuyLand from "./components/dashboards/Customer/BuyLand";
+import SellLand from "./components/dashboards/Customer/SellLand";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -96,6 +99,12 @@ export default function App() {
         <Route path="/post-rent-house" element={<PostRentHouse />} />
         <Route path="/sell-house" element={<SellHouse />} />
         <Route path="/rental-house" element={<RentalHouse />} />
+        
+        {/* CUSTOMER – LAND (NEW) */}
+        <Route path="/buy-sell-land" element={<BuySellLand />} />
+        <Route path="/buy-land" element={<BuyLand />} />
+        <Route path="/sell-land" element={<SellLand />} />
+
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />

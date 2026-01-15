@@ -24,6 +24,12 @@ function CustomerMenuModal({ onClose }) {
         >
           🔑 Rent / To-Let
         </button>
+        <button
+  className="btn-primary"
+  onClick={() => (window.location.href = "/buy-sell-land")}
+>
+  🌍 Buy / Sell Land
+</button>
 
         <button className="btn-outline" onClick={onClose}>
           Close
