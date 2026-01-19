@@ -261,6 +261,41 @@ router.delete(
 );
 
 /* =========================
+   GET SINGLE POST (SHARE)
+========================= */
+router.get(
+  "/:postId",
+  validateObjectId,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.postId)
+        .populate("user", "name profilePhoto profession");
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found"
+        });
+      }
+
+      // ✅ FIX HERE
+      res.json({
+        success: true,
+        post
+      });
+    } catch (err) {
+      console.error("GET POST ERROR:", err);
+      res.status(500).json({
+        success: false,
+        message: "Server error"
+      });
+    }
+  }
+);
+
+
+
+/* =========================
    GET ALL POSTS
    (ADMIN / FEED)
 ========================= */

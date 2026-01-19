@@ -7,7 +7,6 @@ import ProfileMenu from "./Profile/ProfileMenu";
 import PostModal from "./Modals/PostModal";
 import ProfessionSuggestionRow from "./Feed/ProfessionSuggestionRow";
 import { useNavigate } from "react-router-dom";
-import ShareModal from "./Modals/ShareModal";
 import CommentsModal from "./Modals/CommentsModal";
 import FeedMenuPopup from "./Feed/FeedMenuPopup";
 import logo from "../../assets/logo.png";
@@ -51,8 +50,7 @@ const [isSearching, setIsSearching] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [activePost, setActivePost] = useState(null);
 
-  const [showShare, setShowShare] = useState(false);
-  const [sharePost, setSharePost] = useState(null);
+  
 
   /* ================= POST MENU ================= */
   const [menuPost, setMenuPost] = useState(null);
@@ -357,6 +355,24 @@ ${post.text || post.title || "N/A"}
   } catch (err) {
     console.error("Report failed", err);
     alert("Failed to report post");
+  }
+};
+
+const sharePostDirect = async (post) => {
+  const postUrl = `${window.location.origin}/post/${post._id}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Civilink Post",
+        url: postUrl
+      });
+    } else {
+      await navigator.clipboard.writeText(postUrl);
+      alert("Post link copied");
+    }
+  } catch (err) {
+    console.error("Share failed", err);
   }
 };
 
@@ -691,14 +707,15 @@ const state =
                   </button>
 
                   <button
-                    className="feed-action-btn"
-                    onClick={() => {
-                      setSharePost(item);
-                      setShowShare(true);
-                    }}
-                  >
-                    🔗 Share
-                  </button>
+  className="feed-action-btn"
+  onClick={(e) => {
+    e.stopPropagation(); // 🔑 important
+    sharePostDirect(item);
+  }}
+>
+  🔗 Share
+</button>
+
 
                 <button
   className="feed-action-btn"
@@ -831,15 +848,7 @@ const state =
         />
       )}
 
-      {showShare && (
-  <ShareModal
-    post={sharePost}
-    onClose={() => {
-      setShowShare(false);
-      setSharePost(null);
-    }}
-  />
-)}
+      
 
 {showComments && (
   <CommentsModal

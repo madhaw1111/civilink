@@ -8,23 +8,20 @@ function FeedList({
   menuRef,
   setActivePost,
   setShowComments,
-  setSharePost,
-  setShowShare
+  onLike   // ✅ receive from parent
 }) {
   return (
     <main className="home-feed">
       {feed?.map((item) => (
         <FeedCard
-          key={item._id}          // 🔑 FIXED
+          key={item._id}
           item={item}
           menuPost={menuPost}
           setMenuPost={setMenuPost}
           menuRef={menuRef}
           setActivePost={setActivePost}
           setShowComments={setShowComments}
-          setSharePost={setSharePost}
-          setShowShare={setShowShare}
-           onLike={handleLike}  
+          onLike={onLike}   // ✅ pass correctly
         />
       ))}
     </main>

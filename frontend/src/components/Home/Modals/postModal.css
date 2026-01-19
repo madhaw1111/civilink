@@ -41,3 +41,23 @@
   justify-content: space-between;
   margin-top: 14px;
 }
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.share-grid button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #f4f4f4;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.share-grid button:hover {
+  background: #e9e9e9;
+}

@@ -47,6 +47,8 @@ import BuySellLand from "./components/dashboards/Customer/BuySellLand";
 import BuyLand from "./components/dashboards/Customer/BuyLand";
 import SellLand from "./components/dashboards/Customer/SellLand";
 
+import PostView from "./components/Home/Modals/PostView";
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -104,7 +106,8 @@ export default function App() {
         <Route path="/buy-sell-land" element={<BuySellLand />} />
         <Route path="/buy-land" element={<BuyLand />} />
         <Route path="/sell-land" element={<SellLand />} />
-
+        
+        <Route path="/post/:id" element={<PostView />} />
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />

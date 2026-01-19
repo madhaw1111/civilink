@@ -10,8 +10,6 @@ function FeedCard({
   menuRef,
   setActivePost,
   setShowComments,
-  setSharePost,
-  setShowShare,
   onLike
 }) 
 
@@ -19,12 +17,31 @@ function FeedCard({
   const loggedInUser = JSON.parse(
   localStorage.getItem("civilink_user")
 );
-alert("THIS FEEDCARD IS RENDERING");
+
 
 const user =
   loggedInUser && item.user?._id === loggedInUser._id
     ? { ...item.postedBy, profilePhoto: loggedInUser.profilePhoto }
     : item.postedBy;
+
+  const sharePostDirect = async () => {
+  const postUrl = `${window.location.origin}/post/${item._id}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Civilink Post",
+        url: postUrl
+      });
+    } else {
+      await navigator.clipboard.writeText(postUrl);
+      alert("Post link copied");
+    }
+  } catch (err) {
+    console.error("Share failed", err);
+  }
+};
+
 
 
   return (
@@ -87,8 +104,7 @@ const user =
         item={item}
         setActivePost={setActivePost}
         setShowComments={setShowComments}
-        setSharePost={setSharePost}
-        setShowShare={setShowShare}
+        onShare={sharePostDirect}
         onLike={onLike}   
       />
 

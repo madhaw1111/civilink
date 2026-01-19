@@ -5,9 +5,9 @@ function FeedActions({
   item,
   setShowComments,
   setActivePost,
-  setShowShare,
-  setSharePost,
-  onLike
+  onLike,
+  onShare
+
 }) {
   const navigate = useNavigate();
 
@@ -104,14 +104,12 @@ function FeedActions({
 
       {/* 🔗 SHARE */}
       <button
-        className="feed-action-btn"
-        onClick={() => {
-          setSharePost(item);
-          setShowShare(true);
-        }}
-      >
-        🔗 <span>Share</span>
-      </button>
+  className="feed-action-btn"
+  onClick={onShare}
+>
+  🔗 <span>Share</span>
+</button>
+
 
       {/* 📞 CONSULT (FIXED) */}
       <button

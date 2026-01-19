@@ -481,3 +481,104 @@ body {
     font-size: 28px;
   }
 }
+@media (max-width: 480px) {
+
+  .feed-actions {
+    flex-wrap: wrap;
+  }
+
+  .feed-action-btn {
+    flex: 0 0 48%;
+    font-size: 13px;
+    padding: 10px 6px;
+    margin-bottom: 6px;
+  }
+}
+@media (max-width: 768px) {
+  .feed-image {
+    width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    background: #f9fafb;
+    border-radius: 12px;
+  }
+}
+@media (max-width: 480px) {
+  
+
+  .home-search {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+@media (max-width: 480px) {
+  .feed-user {
+    font-size: 14px;
+  }
+
+  .feed-meta {
+    font-size: 11px;
+  }
+}
+/* =========================================
+   MOBILE HEADER FIX (FINAL)
+========================================= */
+@media (max-width: 480px) {
+
+  /* Header spacing */
+  .home-header {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  /* Logo smaller */
+  .home-logo img {
+    height: 32px;
+  }
+
+  /* Hide messages button on mobile */
+  
+  /* Compact search bar */
+  .home-search {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  /* Profile icon slightly smaller */
+  .top-profile {
+    width: 32px;
+    height: 32px;
+  }
+
+  .top-profile-text {
+    font-size: 14px;
+  }
+}
+/* =========================================
+   MOBILE HEADER – SHOW MESSAGE BUTTON
+========================================= */
+@media (max-width: 480px) {
+
+  .home-message-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  /* Make it icon-only on mobile */
+  .home-message-btn span {
+    display: none;
+  }
+}
+/* =========================================
+   MOBILE HEADER – LOGO ONLY FIX
+========================================= */
+@media (max-width: 480px) {
+  .home-logo img {
+    height: 28px;   /* slightly reduced */
+  }
+}
