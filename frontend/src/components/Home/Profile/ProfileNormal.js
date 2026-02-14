@@ -70,6 +70,12 @@ export default function ProfileNormal({
     }
   };
 
+  const canShowPortfolio =
+  isOwnProfile ||
+  !user.isProfessional ||
+  user.professionalVerification?.status === "approved";
+
+
   return (
     <div className="profile-normal">
       {/* ================= HEADER ================= */}
@@ -176,13 +182,20 @@ export default function ProfileNormal({
       <section className="card">
         <h3>{portfolioLabel}</h3>
 
-        <AdvancedPortfolio
-  posts={posts}
-  loading={loadingPosts}
-  isOwnProfile={isOwnProfile}
-  onEditPost={onEditPost}
-  onDeletePost={onDeletePost}
-/>
+      {canShowPortfolio ? (
+  <AdvancedPortfolio
+    posts={posts}
+    loading={loadingPosts}
+    isOwnProfile={isOwnProfile}
+    onEditPost={onEditPost}
+    onDeletePost={onDeletePost}
+  />
+) : (
+  <div className="portfolio-hidden">
+    🔒 Portfolio hidden until professional verification is approved
+  </div>
+)}
+
 
       </section>
     </div>

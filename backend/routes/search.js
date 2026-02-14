@@ -10,7 +10,10 @@ router.get("/professionals", async (req, res) => {
       return res.json({ success: true, results: [] });
     }
 
-    const query = {};
+    const query = {
+      isProfessional: true,
+      "professionalVerification.status": "approved"
+    };
 
     if (city) {
       query["location.city"] = new RegExp(city, "i");
@@ -34,5 +37,6 @@ router.get("/professionals", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
 
 module.exports = router;

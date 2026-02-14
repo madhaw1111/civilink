@@ -7,6 +7,11 @@ const Vendor = require("../models/Vendor");
 const Product = require("../models/Product");
 const AdminLog = require("../models/AdminLog");
 const uploadToS3 = require("../middleware/upload");
+const Notification = require("../models/Notification");
+const { sendEmail } = require("../utils/sendEmail");
+
+
+
 
 
 /* ===========================
@@ -430,5 +435,164 @@ router.get("/logs", auth, isAdmin, async (req, res) => {
 
   res.json(logs);
 });
+
+/* ======================================================
+   PROFESSIONAL VERIFICATION (ENGINEER / ARCHITECT)
+   ⚠️ APPEND ONLY – DOES NOT TOUCH EXISTING LOGIC
+====================================================== */
+
+const User = require("../models/User");
+
+/**
+ * GET all professional verification requests
+ * Admin only
+ */
+router.get(
+  "/professional-verifications",
+  auth,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const users = await User.find({
+        "professionalVerification.applied": true
+      })
+        .select(
+          "name email profession isProfessional professionalVerification createdAt"
+        )
+        .sort({ "professionalVerification.reviewedAt": -1 });
+
+      res.json(users);
+    } catch (err) {
+      console.error("FETCH VERIFICATION ERROR:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+/**
+ * APPROVE professional verification
+ */
+router.post(
+  "/professional-verifications/:userId/approve",
+  auth,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.professionalVerification.status = "approved";
+      user.professionalVerification.rejectionReason = "";
+      user.professionalVerification.reviewedBy = req.user.id;
+      user.professionalVerification.reviewedAt = new Date();
+
+      await user.save();
+
+     await sendEmail({
+  to: user.email,
+  subject: "✅ Civilink Verification Approved",
+  html: `
+    <h2>Congratulations ${user.name}</h2>
+    <p>Your <b>${user.profession}</b> verification has been <b>APPROVED</b>.</p>
+    <p>You are now visible to customers on Civilink.</p>
+  `
+});
+
+
+      await Notification.create({
+      user: user._id,        // receiver (verified user)
+      fromUser: req.user.id, // admin
+      type: "admin",
+      message: "✅ Your professional verification has been approved"
+      });
+
+
+      // Admin log
+      AdminLog.create({
+        adminId: req.user.id,
+        action: "APPROVE",
+        entityType: "ProfessionalVerification",
+        entityId: user._id,
+        description: `Professional verification approved for ${user.email}`
+      }).catch(() => {});
+
+      res.json({ message: "Professional verification approved" });
+    } catch (err) {
+      console.error("APPROVE ERROR:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+/**
+ * REJECT professional verification (AUTO-REVERT)
+ */
+router.post(
+  "/professional-verifications/:userId/reject",
+  auth,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const { reason } = req.body;
+
+      if (!reason) {
+        return res.status(400).json({
+          message: "Rejection reason is required"
+        });
+      }
+
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.professionalVerification.status = "rejected";
+      user.professionalVerification.rejectionReason = reason;
+      user.professionalVerification.reviewedBy = req.user.id;
+      user.professionalVerification.reviewedAt = new Date();
+
+      // ⛔ Auto-revert (NO logic changed elsewhere)
+      user.isProfessional = false;
+
+      await user.save();
+
+     await sendEmail({
+  to: user.email,
+  subject: "❌ Civilink Verification Rejected",
+  html: `
+    <h2>Hello ${user.name}</h2>
+    <p>Your professional verification was <b>REJECTED</b>.</p>
+    <p><b>Reason:</b> ${reason}</p>
+    <p>You can reapply after correcting the issue.</p>
+  `
+});
+
+       
+      await Notification.create({
+      user: user._id,        // receiver
+      fromUser: req.user.id, // admin
+      type: "admin",
+      message: `❌ Verification rejected: ${reason}`
+      });
+
+      // Admin log
+      AdminLog.create({
+        adminId: req.user.id,
+        action: "REJECT",
+        entityType: "ProfessionalVerification",
+        entityId: user._id,
+        description: `Professional verification rejected for ${user.email}`
+      }).catch(() => {});
+
+      res.json({ message: "Professional verification rejected" });
+    } catch (err) {
+      console.error("REJECT ERROR:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
 
 module.exports = router;

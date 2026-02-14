@@ -69,6 +69,12 @@ export default function ProfileProfessional({
     }
   };
 
+  const canShowPortfolio =
+  isOwnProfile ||
+  !user.isProfessional ||
+  user.professionalVerification?.status === "approved";
+
+
   return (
     <div className="profile-pro">
 
@@ -230,14 +236,21 @@ export default function ProfileProfessional({
 
           {/* PORTFOLIO AT BOTTOM */}
           <section className="card">
-            <AdvancedPortfolio
-              posts={posts}
-              isOwnProfile={isOwnProfile}
-              onEditPost={onEditPost}
-              onDeletePost={onDeletePost}
-              loading={loadingPosts}
-            />
-          </section>
+  {canShowPortfolio ? (
+    <AdvancedPortfolio
+      posts={posts}
+      isOwnProfile={isOwnProfile}
+      onEditPost={onEditPost}
+      onDeletePost={onDeletePost}
+      loading={loadingPosts}
+    />
+  ) : (
+    <div className="portfolio-hidden">
+      🔒 Portfolio hidden until professional verification is approved
+    </div>
+  )}
+</section>
+
 
         </div>
       </div>

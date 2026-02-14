@@ -1,0 +1,48 @@
+.badge {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.badge.member {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge.pending {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.badge.verified {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge.rejected {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.badge.professional {
+  background: #ede7f6;
+  color: #4527a0;
+}
+
+.badge-action {
+  display: block;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.reject-reason {
+  font-size: 13px;
+  margin-top: 6px;
+}

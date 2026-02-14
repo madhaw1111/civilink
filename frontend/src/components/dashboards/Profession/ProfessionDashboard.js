@@ -130,7 +130,14 @@ export default function ProfessionDashboard() {
   onClose={() => setShowSetup(false)}
   profession={selectedProfession}
   user={user}
-  onComplete={() => window.location.href = "/profile"} 
+  onComplete={(profession) => {
+  if (["Engineer", "Architect"].includes(profession)) {
+    window.location.href = "/profile?verification=pending";
+  } else {
+    window.location.href = "/profile";
+  }
+}}
+
 />
 
 

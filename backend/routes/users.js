@@ -237,6 +237,7 @@ router.put("/profile", auth, async (req, res) => {
 
 
 
+
 /* =====================================
    GET user by ID (PUBLIC PROFILE)
    ⚠️ KEEP THIS AT THE BOTTOM
@@ -266,6 +267,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE PROFILE DETAILS
+
 
 
 

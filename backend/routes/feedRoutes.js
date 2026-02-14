@@ -9,7 +9,20 @@ const Notification = require("../models/Notification");
 router.get("/home", async (req, res) => {
   try {
     const feed = await Feed.find({reported: { $ne: true }})
-      .populate("user", "name profession profilePhoto location")
+     .populate({
+  path: "user",
+  select: "name profession profilePhoto location isProfessional professionalVerification",
+  match: {
+    $or: [
+      { isProfessional: false },
+      {
+        isProfessional: true,
+        "professionalVerification.status": "approved"
+      }
+    ]
+  }
+})
+
       .sort({ createdAt: -1 })
       .lean();
 

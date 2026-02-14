@@ -125,6 +125,8 @@ export default function ProfessionList() {
             {/* Card Body */}
             <div className="profession-body">
               <div className="profession-info">
+                <span className="verified-badge">✅ Verified</span>
+
                 <span>Experience</span>
                 <strong>{u.experienceYears} years</strong>
               </div>
@@ -142,12 +144,16 @@ export default function ProfessionList() {
 
             {/* Card Footer */}
             <div className="profession-footer">
-              <button
+            <button
   className="consult-btn"
-  onClick={() => openConsultChat(u._id, u._id)}
+  onClick={(e) => {
+    e.stopPropagation();
+    openConsultChat(u._id, u._id);
+  }}
 >
   Consult
 </button>
+
 
 
             </div>

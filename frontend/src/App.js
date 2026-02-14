@@ -49,6 +49,11 @@ import SellLand from "./components/dashboards/Customer/SellLand";
 
 import PostView from "./components/Home/Modals/PostView";
 
+import ProfessionalUpload from "./components/dashboards/Profession/ProfessionalUpload";
+import VerificationPending from "./components/dashboards/Profession/VerificationPending";
+
+
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -108,6 +113,11 @@ export default function App() {
         <Route path="/sell-land" element={<SellLand />} />
         
         <Route path="/post/:id" element={<PostView />} />
+        
+        {/* PROFESSIONAL VERIFICATION */}
+        <Route path="/professional-upload" element={isLoggedIn ? <ProfessionalUpload /> : <Navigate to="/" />}/>
+        <Route path="/verification-status" element={isLoggedIn ? <VerificationPending /> : <Navigate to="/" />}/>
+
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />

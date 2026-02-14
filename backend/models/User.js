@@ -66,9 +66,57 @@ otpExpiresAt: {
 otpAttempts: {
   type: Number,
   default: 0
-}
+},
 
 
+  /* ======================================================
+     PROFESSIONAL VERIFICATION (ADD-ON ONLY)
+     NOTE:
+     - Does NOT change existing logic
+     - Used only when isProfessional = true
+     - Applicable for Engineer & Architect (checked in routes)
+  ====================================================== */
+
+  professionalVerification: {
+  applied: {
+    type: Boolean,
+    default: false
+  },
+
+  status: {
+    type: String,
+    enum: ["not_applied", "pending", "approved", "rejected"],
+    default: "not_applied"
+  },
+
+  documents: {
+    aadhaarUrl: {
+      type: String,
+      default: ""
+    },
+
+    degreeUrl: {
+      type: String,
+      default: ""
+    }
+  },
+
+  rejectionReason: {
+    type: String,
+    default: ""
+  },
+
+  reviewedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
+
+  reviewedAt: {
+    type: Date,
+    default: null
+  }
+,}
 
 
 

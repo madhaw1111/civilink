@@ -186,7 +186,13 @@ export default function ProfileWrapper() {
   }
 
   const isProfessional =
-    !!user.profession && user.profession !== "Member";
+  user.profession &&
+  user.profession !== "Member" &&
+  (
+    !["Engineer", "Architect"].includes(user.profession) ||
+    user.professionalVerification?.status === "approved"
+  );
+
 
   const isOwnProfile =
     loggedInUser?._id === user._id;

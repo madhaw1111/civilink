@@ -9,6 +9,9 @@ import ProductList from "./adminproducts/ProductList";
 import VendorForm from "./adminvendors/VendorForm";
 import VendorList from "./adminvendors/VendorList";
 
+import ProfessionalVerificationAdmin from "./adminverification/ProfessionalVerificationAdmin";
+
+
 import {
   createVendorApi,
   loadVendors,
@@ -480,6 +483,17 @@ const handleDeletePost = async (id) => {
   Orders
 </div>
 
+<div
+  className={
+    "admin-nav-item " +
+    (activeTab === "verifications" ? "active" : "")
+  }
+  onClick={() => setActiveTab("verifications")}
+>
+  Professional Verifications
+</div>
+
+
 
 
       </aside>
@@ -729,6 +743,9 @@ const handleDeletePost = async (id) => {
   </section>
 )}
 
+{activeTab === "verifications" && (
+  <ProfessionalVerificationAdmin />
+)}
 
 
 
