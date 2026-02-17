@@ -187,9 +187,11 @@ export default function ProfessionSetupModal({
         {!requiresVerification && (
           <>
             <h2>Become a {profession}</h2>
-
+            <label>Upload Profile Photo</label>
             <input type="file" onChange={uploadPhoto} />
+            <label>Skills (comma separated)</label>
             <input value={skills} onChange={e => setSkills(e.target.value)} />
+            <label>Experience (Years)</label>
             <input
               type="number"
               value={experienceYears}

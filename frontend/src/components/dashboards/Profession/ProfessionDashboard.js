@@ -7,6 +7,7 @@ import ProfessionSetupModal from "./ProfessionSetupModal";
 
 
 
+
 export default function ProfessionDashboard() {
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState("");
@@ -16,6 +17,7 @@ export default function ProfessionDashboard() {
   const [selectedProfession, setSelectedProfession] = useState("");
   const [availableProfessions, setAvailableProfessions] = useState([]);
   
+
   
 
 
@@ -51,15 +53,19 @@ export default function ProfessionDashboard() {
   return (
     <div className="pro-dashboard-container">
 
-      <button
-  className="pro-menu-btn"
-  onClick={() => setShowMenu(true)}
->
-  ☰
-</button>
-  
+      <div className="pro-header">
 
-      <h1 className="page-title">Civilink Profession Hub</h1>
+
+  <button
+    className="pro-menu-btn"
+    onClick={() => setShowMenu(true)}
+  >
+    ☰
+  </button>
+
+  <h1 className="page-title">Civilink Profession Hub</h1>
+
+</div>
 
       <p className="subtitle">
         Build your identity — find work, connect with professionals & grow your construction career.

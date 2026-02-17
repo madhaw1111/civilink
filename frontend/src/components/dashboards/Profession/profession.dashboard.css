@@ -122,18 +122,12 @@
 
 /* menu button */
 .pro-menu-btn {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  font-size: 26px;
+  font-size: 22px;
   border: none;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: none;
   cursor: pointer;
-  z-index: 50;
 }
+
 
 /* backdrop */
 .pro-menu-backdrop {
@@ -196,3 +190,26 @@
   color: white;
   border: none;
 }
+
+.pro-header {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+.pro-menu-btn {
+  font-size: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.pro-back-btn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+
