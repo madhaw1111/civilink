@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
+// INTRO
+import IntroPage1 from "./components/Intro/IntroPage1";
+import IntroPage2 from "./components/Intro/IntroPage2";
+import IntroPage3 from "./components/Intro/IntroPage3";
+
 // AUTH
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -56,17 +61,24 @@ import VerificationPending from "./components/dashboards/Profession/Verification
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const [introSeen, setIntroSeen] = useState(
+  localStorage.getItem("civilink_intro_seen") === "true"
+);
   useEffect(() => {
-    const checkLogin = () => {
-      const user = localStorage.getItem("civilink_user");
-      setIsLoggedIn(!!user);
-    };
+  const checkLogin = () => {
+    const user = localStorage.getItem("civilink_user");
+    setIsLoggedIn(!!user);
 
-    checkLogin();
-    window.addEventListener("storage", checkLogin);
-    return () => window.removeEventListener("storage", checkLogin);
-  }, []);
+    const intro = localStorage.getItem("civilink_intro_seen") === "true";
+    setIntroSeen(intro);
+  };
+
+  checkLogin();
+
+  window.addEventListener("storage", checkLogin);
+
+  return () => window.removeEventListener("storage", checkLogin);
+}, []);
 
   return (
     <Router>
@@ -75,11 +87,34 @@ export default function App() {
       <Toaster position="top-right" />
 
       <Routes>
-        {/* AUTH */}
+        {/* INTRO SCREENS */}
+       <Route
+  path="/intro/1"
+  element={isLoggedIn || introSeen ? <Navigate to="/" /> : <IntroPage1 />}
+/>
         <Route
-          path="/"
-          element={isLoggedIn ? <Navigate to="/home" /> : <Login />}
-        />
+  path="/intro/2"
+  element={isLoggedIn || introSeen ? <Navigate to="/" /> : <IntroPage2 />}
+/>
+
+<Route
+  path="/intro/3"
+  element={isLoggedIn || introSeen ? <Navigate to="/" /> : <IntroPage3 />}
+/>
+        {/* AUTH */}
+      <Route
+  path="/"
+  element={
+    isLoggedIn ? (
+      <Navigate to="/home" />
+    ) : introSeen ? (
+      <Login />
+    ) : (
+      <Navigate to="/intro/1" />
+    )
+  }
+/>      
+        
         <Route path="/register" element={<Register />} />
 
         {/* HOME */}
