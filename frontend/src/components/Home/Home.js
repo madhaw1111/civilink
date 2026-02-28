@@ -507,7 +507,7 @@ const handleSearch = async () => {
        className="home-message-btn"
         onClick={() => navigate("/messages")}
        >
-       💬 Messages
+       💬 
       </button>
 
 
