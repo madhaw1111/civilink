@@ -9,7 +9,7 @@ export default function ProfessionalVerificationAdmin() {
   const token = localStorage.getItem("token");
 
   const api = axios.create({
-    baseURL: "http://localhost:5000/api/admin",
+    baseURL: "/api/admin",
     headers: { Authorization: `Bearer ${token}` }
   });
 

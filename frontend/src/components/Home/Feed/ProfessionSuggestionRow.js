@@ -15,7 +15,7 @@ export default function ProfessionSuggestionRow() {
   );
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/profession/suggested/home")
+    fetch("/api/profession/suggested/home")
       .then(res => res.json())
       .then(data => {
         if (data.success) setList(data.users);
@@ -31,7 +31,7 @@ export default function ProfessionSuggestionRow() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/connections/${targetUserId}/connect`,
+        `/api/connections/${targetUserId}/connect`,
         {
           method: "POST",
           headers: {

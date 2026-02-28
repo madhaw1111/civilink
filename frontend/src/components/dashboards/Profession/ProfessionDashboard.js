@@ -34,7 +34,7 @@ export default function ProfessionDashboard() {
   };
 
   useEffect(() => {
-  fetch("http://localhost:5000/api/profession/available")
+  fetch("/api/profession/available")
     .then(res => res.json())
     .then(data => {
       if (data.success) {

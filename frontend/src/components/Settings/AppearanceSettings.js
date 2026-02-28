@@ -22,7 +22,7 @@ export default function AppearanceSettings() {
     // 2️⃣ Persist to backend (silent)
     if (token) {
       try {
-        await fetch("http://localhost:5000/api/users/theme", {
+        await fetch("/api/users/theme", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

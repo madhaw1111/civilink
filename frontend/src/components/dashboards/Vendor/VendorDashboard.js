@@ -51,7 +51,7 @@ const [customerOrders, setCustomerOrders] = useState([]);
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/products/all");
+      const res = await axios.get("/api/admin/products/all");
       setProducts(res.data);
     } catch (err) {
       console.error("Error loading products", err);
@@ -120,7 +120,7 @@ const [customerOrders, setCustomerOrders] = useState([]);
 
 
     const res = await axios.post(
-      "http://localhost:5000/api/order",
+      "/api/order",
       {
         customer: checkoutData,
         cart: cart.map(item => ({
@@ -171,7 +171,7 @@ dailyPrice: item.productType === "RENTAL" ? item.dailyPrice : undefined,
 const loadMyOrders = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:5000/api/customer/orders/my",
+      "/api/customer/orders/my",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`

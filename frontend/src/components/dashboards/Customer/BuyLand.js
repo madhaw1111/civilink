@@ -34,7 +34,7 @@ function BuyLand() {
     if (sort) params.append("sort", sort);
 
     const res = await fetch(
-      `http://localhost:5000/api/land/buy?${params.toString()}`
+      `/api/land/buy?${params.toString()}`
     );
 
     const data = await res.json();
@@ -56,7 +56,7 @@ function BuyLand() {
   const contactSeller = async (sellerId, landId) => {
     if (!user) return alert("Please login to contact seller");
 
-    const res = await fetch("http://localhost:5000/api/chat/conversation", {
+    const res = await fetch("/api/chat/conversation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

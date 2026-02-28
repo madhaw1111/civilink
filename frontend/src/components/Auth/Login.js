@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./auth.css";
 import { GoogleLogin } from "@react-oauth/google";
 import logo from "../../assets/logo.png";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -58,7 +59,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: enteredOtp })
@@ -128,15 +129,15 @@ export default function Login() {
             </div>
 
             <p className="auth-forgot">
-              <a href="/forgot-password">Forgot password?</a>
-            </p>
+  <Link to="/forgot-password">Forgot password?</Link>
+</p>
 
             {/* GOOGLE LOGIN */}
             <GoogleLogin
               onSuccess={async (res) => {
                 try {
                   const response = await fetch(
-                    "http://localhost:5000/api/auth/google-login",
+                    "/api/auth/google-login",
                     {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },

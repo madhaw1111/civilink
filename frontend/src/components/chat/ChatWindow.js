@@ -15,7 +15,7 @@ function ChatWindow() {
 
   /* Fetch messages */
   useEffect(() => {
-    fetch(`http://localhost:5000/api/chat/messages/${conversationId}`)
+    fetch(`/api/chat/messages/${conversationId}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -33,7 +33,7 @@ function ChatWindow() {
   useEffect(() => {
     if (!user) return;
 
-    fetch(`http://localhost:5000/api/chat/conversations/${user._id}`)
+    fetch(`/api/chat/conversations/${user._id}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -54,7 +54,7 @@ function ChatWindow() {
   const sendMessage = async () => {
     if (!text.trim()) return;
 
-    await fetch("http://localhost:5000/api/chat/message", {
+    await fetch("/api/chat/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

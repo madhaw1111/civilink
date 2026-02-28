@@ -30,7 +30,7 @@ export default function RentHouse() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/rent/list?${params.toString()}`
+        `/api/rent/list?${params.toString()}`
       );
       const data = await res.json();
 
@@ -69,7 +69,7 @@ const contactOwner = async (ownerId, rentId) => {
   }
 
   const res = await fetch(
-    "http://localhost:5000/api/chat/conversation",
+    "/api/chat/conversation",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

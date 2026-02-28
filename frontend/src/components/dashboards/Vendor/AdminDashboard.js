@@ -89,14 +89,14 @@ const [logs, setLogs] = useState([]);
   const vendorApi = createVendorApi(token);
  
   const api = axios.create({
-  baseURL: "http://localhost:5000/api/admin",
+  baseURL: "/api/admin",
   headers: { Authorization: `Bearer ${token}` }
 });
 
 
  const loadFeedbacks = async () => {
   const res = await axios.get(
-    "http://localhost:5000/api/feedback/admin",
+    "/api/feedback/admin",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -108,7 +108,7 @@ const [logs, setLogs] = useState([]);
 
 const loadPosts = async () => {
   const res = await axios.get(
-    "http://localhost:5000/api/post",
+    "/api/post",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -120,7 +120,7 @@ const loadPosts = async () => {
 
 const loadOrders = async () => {
   const res = await axios.get(
-    "http://localhost:5000/api/admin/orders",
+    "/api/admin/orders",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -363,7 +363,7 @@ const uploadProductImage = async (productId, file) => {
     formData.append("image", file);
 
     const res = await axios.post(
-      `http://localhost:5000/api/admin/products/${productId}/image`,
+      `/api/admin/products/${productId}/image`,
       formData,
       {
         headers: {
@@ -394,7 +394,7 @@ const handleDeleteFeedback = async (id) => {
 
   try {
     await axios.delete(
-      `http://localhost:5000/api/feedback/admin/${id}`,
+      `/api/feedback/admin/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -416,7 +416,7 @@ const handleDeletePost = async (id) => {
 
   try {
     await axios.delete(
-      `http://localhost:5000/api/post/admin/${id}`,
+      `/api/post/admin/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`

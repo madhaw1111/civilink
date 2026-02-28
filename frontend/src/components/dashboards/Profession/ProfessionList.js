@@ -17,7 +17,7 @@ export default function ProfessionList() {
     setLoading(true);
     setError("");
 
-    fetch(`http://localhost:5000/api/profession/${type}`)
+    fetch(`/api/profession/${type}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -44,7 +44,7 @@ export default function ProfessionList() {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/chat/conversation", {
+    const res = await fetch("/api/chat/conversation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

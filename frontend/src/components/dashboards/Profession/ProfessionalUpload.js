@@ -35,7 +35,7 @@ export default function ProfessionalUpload() {
 
     setLoading(true);
 
-    const res = await fetch("http://localhost:5000/api/profession/update", {
+    const res = await fetch("/api/profession/update", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -62,7 +62,7 @@ function SellLand() {
         formData.append("layoutImage", layoutImage);
       }
 
-      const res = await fetch("http://localhost:5000/api/land/sell", {
+      const res = await fetch("/api/land/sell", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`

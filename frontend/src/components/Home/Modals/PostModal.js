@@ -23,7 +23,7 @@ export default function PostModal({ onClose, addToFeed }) {
         formData.append("image", imageFile); // ✅ MUST BE "image"
       }
 
-      const res = await fetch("http://localhost:5000/api/post/create", {
+      const res = await fetch("/api/post/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`

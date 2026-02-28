@@ -52,7 +52,7 @@ export default function ProfileProfessional({
   const connectUser = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/connections/${user._id}/connect`,
+        `/api/connections/${user._id}/connect`,
         {
           method: "POST",
           headers: {

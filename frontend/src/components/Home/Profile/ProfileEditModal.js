@@ -38,7 +38,7 @@ export default function ProfileEditModal({
       data.append("profilePhoto", file);
 
       const res = await axios.post(
-        "http://localhost:5000/api/users/profile-photo",
+        "/api/users/profile-photo",
         data,
         {
           headers: {

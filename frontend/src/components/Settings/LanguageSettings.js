@@ -8,7 +8,7 @@ export default function LanguageSettings() {
     // persist backend
     if (token) {
       try {
-        await fetch("http://localhost:5000/api/users/language", {
+        await fetch("/api/users/language", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

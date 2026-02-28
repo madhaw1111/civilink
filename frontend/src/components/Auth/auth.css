@@ -293,3 +293,69 @@
   border-radius: 6px;
 }
 
+/* ================= FORGOT PASSWORD ================= */
+
+.forgot-wrapper.upg {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.forgot-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b2c5f;
+  margin-bottom: 6px;
+}
+
+.forgot-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+/* Step transition animation */
+.forgot-step {
+  animation: fadeSlide 0.3s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success / Message Styling */
+.forgot-message {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.forgot-message.success {
+  color: #16a34a;
+}
+
+.forgot-message.error {
+  color: #dc2626;
+}
+
+/* Back to login link */
+.forgot-back {
+  text-align: center;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+.forgot-back a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}

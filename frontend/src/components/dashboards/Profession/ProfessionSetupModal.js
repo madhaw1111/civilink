@@ -50,7 +50,7 @@ export default function ProfessionSetupModal({
     formData.append("degree", degreeFile);
 
     const res = await fetch(
-      "http://localhost:5000/api/profession/upload-certificate",
+      "/api/profession/upload-certificate",
       {
         method: "POST",
         headers: {
@@ -81,7 +81,7 @@ export default function ProfessionSetupModal({
     }
 
     const res = await fetch(
-      "http://localhost:5000/api/profession/update",
+      "/api/profession/update",
       {
         method: "POST",
         headers: {

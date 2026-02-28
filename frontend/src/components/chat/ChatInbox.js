@@ -11,7 +11,7 @@ function ChatInbox() {
     const user = JSON.parse(localStorage.getItem("civilink_user"));
     if (!user) return;
 
-    fetch(`http://localhost:5000/api/chat/conversations/${user._id}`)
+    fetch(`/api/chat/conversations/${user._id}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {

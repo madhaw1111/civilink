@@ -67,7 +67,7 @@ useEffect(() => {
     if (!token) return;
 
     const res = await fetch(
-      "http://localhost:5000/api/users/me",
+      "/api/users/me",
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -91,7 +91,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/users/saved-posts",
+        "/api/users/saved-posts",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -136,7 +136,7 @@ useEffect(() => {
 useEffect(() => {
   const loadFeed = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/feed/home");
+      const res = await fetch("/api/feed/home");
       const data = await res.json();
 
       if (data.success) {
@@ -194,7 +194,7 @@ useEffect(() => {
   const user = JSON.parse(localStorage.getItem("civilink_user"));
   if (!user) return alert("Please login");
 
-  const res = await fetch("http://localhost:5000/api/chat/conversation", {
+  const res = await fetch("/api/chat/conversation", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -222,7 +222,7 @@ useEffect(() => {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/chat/conversation", {
+    const res = await fetch("/api/chat/conversation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -258,7 +258,7 @@ const handleLike = async (post) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/feed/${post._id}/like`,
+      `/api/feed/${post._id}/like`,
       {
         method: "POST",
         headers: {
@@ -290,7 +290,7 @@ const handleAddComment = async (text) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/feed/${activePost._id}/comment`,
+      `/api/feed/${activePost._id}/comment`,
       {
         method: "POST",
         headers: {
@@ -331,7 +331,7 @@ const handleReportPost = async (post) => {
   }
 
   try {
-    await fetch("http://localhost:5000/api/feedback", {
+    await fetch("/api/feedback", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -386,7 +386,7 @@ const handleSavePost = async (postId) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/post/save/${postId}`,
+      `/api/post/save/${postId}`,
       {
         method: "PUT",
         headers: {
@@ -417,7 +417,7 @@ const handleHidePost = async (post) => {
 
   try {
     await fetch(
-      `http://localhost:5000/api/post/hide/${post._id}`,
+      `/api/post/hide/${post._id}`,
       {
         method: "PUT",
         headers: {
@@ -460,7 +460,7 @@ const handleSearch = async () => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/search/professionals?q=${searchText}&city=${city}`
+      `/api/search/professionals?q=${searchText}&city=${city}`
     );
 
     const data = await res.json();
@@ -769,7 +769,7 @@ const state =
     if (!token) return alert("Please login");
 
     await fetch(
-      `http://localhost:5000/api/post/hide/${item._id}`,
+      `/api/post/hide/${item._id}`,
       {
         method: "PUT",
         headers: {
@@ -801,7 +801,7 @@ const state =
     if (!confirmed) return;
 
     await fetch(
-      `http://localhost:5000/api/post/${item._id}/report`,
+      `/api/post/${item._id}/report`,
       {
         method: "POST",
         headers: {

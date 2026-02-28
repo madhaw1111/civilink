@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const createVendorApi = (token) => {
   return axios.create({
-    baseURL: "http://localhost:5000/api/admin",
+    baseURL: "/api/admin",
     headers: { Authorization: `Bearer ${token}` }
   });
 };

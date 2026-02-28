@@ -35,8 +35,8 @@ export default function ProfileWrapper() {
 
       try {
         const url = userId
-          ? `http://localhost:5000/api/users/${userId}`
-          : `http://localhost:5000/api/users/me`;
+          ? `/api/users/${userId}`
+          : `/api/users/me`;
 
         const res = await fetch(url, {
           headers: token
@@ -74,7 +74,7 @@ export default function ProfileWrapper() {
 
       try {
         const res = await fetch(
-          `http://localhost:5000/api/profile/${user._id}/posts`
+          `/api/profile/${user._id}/posts`
         );
 
         const data = await res.json();
@@ -113,7 +113,7 @@ export default function ProfileWrapper() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/post/${postId}`,
+        `/api/post/${postId}`,
         {
           method: "DELETE",
           headers: {
@@ -138,7 +138,7 @@ export default function ProfileWrapper() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/post/${post._id}`,
+        `/api/post/${post._id}`,
         {
           method: "PUT",
           headers: {
@@ -256,7 +256,7 @@ export default function ProfileWrapper() {
   onSave={async (updatedUser) => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/users/profile",
+        "/api/users/profile",
         {
           method: "PUT",
           headers: {

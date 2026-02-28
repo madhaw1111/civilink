@@ -14,7 +14,7 @@ export default function ConnectionsPage() {
     const loadConnections = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/connections/${userId}`,
+          `/api/connections/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`

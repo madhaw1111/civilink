@@ -15,7 +15,7 @@ export default function FeedbackSettings() {
       setLoading(true);
 
       await axios.post(
-        "http://localhost:5000/api/feedback",
+        "/api/feedback",
         { message },
         {
           headers: {

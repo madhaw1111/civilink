@@ -34,7 +34,7 @@ function BuyHouse() {
     if (sort) params.append("sort", sort);
 
     const res = await fetch(
-      `http://localhost:5000/api/house/buy?${params.toString()}`
+      `/api/house/buy?${params.toString()}`
     );
 
     const data = await res.json();
@@ -61,7 +61,7 @@ function BuyHouse() {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/chat/conversation", {
+    const res = await fetch("/api/chat/conversation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

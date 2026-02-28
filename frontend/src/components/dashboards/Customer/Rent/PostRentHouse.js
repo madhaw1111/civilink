@@ -50,7 +50,7 @@ formData.append("location[state]", state);
       }
 
       const res = await fetch(
-        "http://localhost:5000/api/rent/post",
+        "/api/rent/post",
         {
           method: "POST",
           headers: {

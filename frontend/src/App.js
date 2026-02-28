@@ -9,6 +9,7 @@ import IntroPage3 from "./components/Intro/IntroPage3";
 // AUTH
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
+import ForgotPassword from "./components/Auth/ForgotPassword";
 
 // PROFILE
 import ProfileWrapper from "./components/Home/Profile/ProfileWrapper";
@@ -116,7 +117,7 @@ export default function App() {
 />      
         
         <Route path="/register" element={<Register />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         {/* HOME */}
         <Route
           path="/home"

@@ -17,7 +17,7 @@ export default function SavedPosts() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/users/saved-posts",
+        "/api/users/saved-posts",
         {
           headers: {
             Authorization: `Bearer ${token}`

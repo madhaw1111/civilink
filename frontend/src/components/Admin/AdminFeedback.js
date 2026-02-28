@@ -10,7 +10,7 @@ export default function AdminFeedback() {
   const loadFeedbacks = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/feedback/admin",
+        "/api/feedback/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ export default function AdminFeedback() {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/feedback/admin/${id}`,
+        `/api/feedback/admin/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

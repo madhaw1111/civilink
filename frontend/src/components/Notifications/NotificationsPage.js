@@ -16,7 +16,7 @@ export default function NotificationsPage() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/notifications",
+        "/api/notifications",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -39,7 +39,7 @@ export default function NotificationsPage() {
 
     try {
       await fetch(
-        `http://localhost:5000/api/notifications/${notif._id}/read`,
+        `/api/notifications/${notif._id}/read`,
         {
           method: "PUT",
           headers: {
