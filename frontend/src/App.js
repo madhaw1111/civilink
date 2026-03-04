@@ -58,6 +58,7 @@ import PostView from "./components/Home/Modals/PostView";
 import ProfessionalUpload from "./components/dashboards/Profession/ProfessionalUpload";
 import VerificationPending from "./components/dashboards/Profession/VerificationPending";
 
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 
 export default function App() {
@@ -192,7 +193,7 @@ export default function App() {
 />
 <Route path="/saved" element={<SavedPosts />} />
 <Route path="/notifications" element={<NotificationsPage />} />
-
+<Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
 
       </Routes>
