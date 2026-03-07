@@ -100,7 +100,7 @@ function PrivacyPolicy() {
       <p>
         Civilink Private Limited<br/>
         Tamil Nadu, India<br/>
-        Email: support@civilink.in
+        Email: civilink.official@gmail.com
       </p>
 
     </div>

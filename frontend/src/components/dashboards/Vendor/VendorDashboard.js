@@ -316,11 +316,11 @@ const loadMyOrders = async () => {
         </p>
         <p>
           <strong>whatsApp:</strong>{" "}
-          <a href="https://wa.me/919384710710?text=Hi%20I%20found%20this%20on%20Civilink"
+          <a href="https://wa.me/919344425095?text=Hi%20I%20found%20this%20on%20Civilink"
       target="_blank"
       rel="noopener noreferrer"
           
-          >+91 9384710710</a>
+          >+91 9344425095</a>
         </p>
         <p className="vendor-modal-note">
           Our admin team will guide you with construction materials,
