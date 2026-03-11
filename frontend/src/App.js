@@ -60,6 +60,7 @@ import VerificationPending from "./components/dashboards/Profession/Verification
 
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
+import DeleteAccount from "./pages/DeleteAccount";
 
 
 export default function App() {
@@ -196,6 +197,7 @@ export default function App() {
 <Route path="/notifications" element={<NotificationsPage />} />
 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 <Route path="/terms" element={<Terms />} />
+<Route path="/delete-account" element={<DeleteAccount />} />
 
 
       </Routes>
