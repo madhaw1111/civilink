@@ -42,9 +42,17 @@ module.exports = function auth(req, res, next) {
     // 7️⃣ Continue
     next();
   } catch (err) {
+
+  if (err.name === "TokenExpiredError") {
     return res.status(401).json({
       success: false,
-      message: "Token is not valid"
+      message: "Token expired"
     });
   }
+
+  return res.status(401).json({
+    success: false,
+    message: "Token is not valid"
+  });
+}
 };

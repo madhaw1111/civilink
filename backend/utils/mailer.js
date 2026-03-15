@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 exports.sendOTP = async (to, otp) => {
   await transporter.sendMail({
-    from: `"Civilink Security" <${process.env.EMAIL_USER}>`,
+    from: `"Civilink Security" <${process.env.ADMIN_EMAIL}>`,
     to,
     subject: "Your Civilink OTP",
     html: `

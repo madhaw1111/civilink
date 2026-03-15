@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/database");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 connectDB();
@@ -24,6 +25,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use(express.json());
+app.use(cookieParser());
 
 // ===== ROUTES =====
 app.use("/api/auth", require("./routes/auth"));

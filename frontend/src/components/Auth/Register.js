@@ -15,7 +15,7 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  
 
 
 
@@ -77,7 +77,7 @@ export default function Register() {
 
       // 🔥 THIS WAS MISSING — SAVE FINAL AUTH
       localStorage.setItem("civilink_user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.accessToken);
       localStorage.setItem("role", data.role);
 
       // ✅ FIRST-TIME USER → HOME
@@ -168,15 +168,17 @@ export default function Register() {
             <div className="otp-inputs">
               {otp.map((v, i) => (
                 <input
-                  key={i}
-                  maxLength="1"
-                  value={v}
-                  onChange={(e) => {
-                    handleOtpChange(e.target.value, i);
-                    if (e.target.value && e.target.nextSibling)
-                      e.target.nextSibling.focus();
-                  }}
-                />
+  key={i}
+  maxLength="1"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  value={v}
+  onChange={(e) => {
+    handleOtpChange(e.target.value, i);
+    if (e.target.value && e.target.nextSibling)
+      e.target.nextSibling.focus();
+  }}
+/>
               ))}
             </div>
 

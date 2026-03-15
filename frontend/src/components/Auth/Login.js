@@ -73,7 +73,7 @@ export default function Login() {
 
       // ✅ FINAL AUTH DATA
       localStorage.setItem("civilink_user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.accessToken);
       localStorage.setItem("role", data.role);
 
       window.location.replace("/home");
@@ -152,7 +152,7 @@ export default function Login() {
                   }
 
                   localStorage.setItem("civilink_user", JSON.stringify(data.user));
-                  localStorage.setItem("token", data.token);
+                  localStorage.setItem("token", data.accessToken);
                   localStorage.setItem("role", data.role);
 
                   window.location.replace("/home");

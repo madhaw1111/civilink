@@ -8,8 +8,29 @@ const { OAuth2Client } = require("google-auth-library");
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /* =================================================
+   TOKEN GENERATION
+================================================= */
+
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+};
+
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "30d" }
+  );
+};
+
+/* =================================================
    REGISTER (EMAIL + PASSWORD → OTP)
 ================================================= */
+
 exports.register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -35,7 +56,6 @@ exports.register = async (req, res) => {
       role: "user"
     });
 
-    // 🔐 OTP SETUP
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpiresAt = otpExpiry();
@@ -58,25 +78,29 @@ exports.register = async (req, res) => {
 /* =================================================
    LOGIN (PASSWORD → OTP)
 ================================================= */
+
 exports.login = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const match = await bcrypt.compare(password, user.password);
+
     if (!match) {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    // 🔐 OTP SETUP
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpiresAt = otpExpiry();
     user.otpAttempts = 0;
+
     await user.save();
 
     await sendOTP(user.email, otp);
@@ -95,8 +119,10 @@ exports.login = async (req, res) => {
 /* =================================================
    VERIFY OTP (FINAL AUTH STEP)
 ================================================= */
+
 exports.verifyOtp = async (req, res) => {
   try {
+
     const { email, otp } = req.body;
 
     if (!email || !otp) {
@@ -104,6 +130,7 @@ exports.verifyOtp = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+
     if (!user || !user.otp) {
       return res.status(400).json({ message: "OTP not found" });
     }
@@ -124,23 +151,29 @@ exports.verifyOtp = async (req, res) => {
       return res.status(401).json({ message: "Invalid OTP" });
     }
 
-    // ✅ OTP VERIFIED → CLEANUP
     user.otp = undefined;
     user.otpExpiresAt = undefined;
     user.otpAttempts = 0;
     await user.save();
 
-    // 🔑 FINAL JWT (THIS ENABLES HOME PAGE ACCESS)
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
+    // remove password before sending response
+    const userData = user.toObject();
+    delete userData.password;
 
     return res.json({
       success: true,
-      user,
-      token,
+      user: userData,
+      accessToken,
       role: user.role
     });
 
@@ -151,10 +184,76 @@ exports.verifyOtp = async (req, res) => {
 };
 
 /* =================================================
+   REFRESH TOKEN
+================================================= */
+
+exports.refreshToken = async (req, res) => {
+  try {
+
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(401).json({ message: "No refresh token" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    // Generate new tokens
+    const newAccessToken = generateAccessToken(user);
+    const newRefreshToken = generateRefreshToken(user);
+
+    // Replace refresh token cookie
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      accessToken: newAccessToken
+    });
+
+  } catch (err) {
+
+    console.error("REFRESH TOKEN ERROR:", err);
+    res.status(401).json({ message: "Invalid refresh token" });
+
+  }
+};
+/* =================================================
+   LOGOUT
+================================================= */
+
+exports.logout = async (req, res) => {
+
+  res.clearCookie("refreshToken", {
+  httpOnly: true,
+  sameSite: "Strict",
+  secure: process.env.NODE_ENV === "production"
+});
+
+  res.json({
+    success: true,
+    message: "Logged out successfully"
+  });
+
+};
+
+/* =================================================
    GOOGLE LOGIN
 ================================================= */
+
 exports.googleLogin = async (req, res) => {
+
   try {
+
     const { credential } = req.body;
 
     const ticket = await googleClient.verifyIdToken({
@@ -168,6 +267,7 @@ exports.googleLogin = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (!user) {
+
       user = await User.create({
         name,
         email,
@@ -175,48 +275,67 @@ exports.googleLogin = async (req, res) => {
         password: await bcrypt.hash("GOOGLE_AUTH", 10),
         role: "user"
       });
+
     }
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
+    const userData = user.toObject();
+    delete userData.password;
 
     res.json({
-      success: true,
-      user,
-      token,
-      role: user.role
+     success: true,
+     user: userData,
+     accessToken,
+     role: user.role
     });
 
   } catch (err) {
+
     console.error("GOOGLE LOGIN ERROR:", err);
     res.status(401).json({ message: "Google authentication failed" });
+
   }
+
 };
 
 /* =================================================
-   FORGOT PASSWORD (SEND OTP)
+   FORGOT PASSWORD
 ================================================= */
+
 exports.forgotPassword = async (req, res) => {
   try {
+
     const { email } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const otp = generateOTP();
+
     user.otp = otp;
     user.otpExpiresAt = otpExpiry();
     user.otpAttempts = 0;
+
     await user.save();
 
-    await sendOTP(email, otp);
+    await sendOTP(user.email, otp);
 
-    res.json({ success: true, message: "OTP sent for password reset" });
+    res.json({
+      success: true,
+      message: "OTP sent for password reset"
+    });
 
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
@@ -224,14 +343,18 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
+
 /* =================================================
-   RESET PASSWORD (OTP + NEW PASSWORD)
+   RESET PASSWORD
 ================================================= */
+
 exports.resetPassword = async (req, res) => {
   try {
+
     const { email, otp, newPassword } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user || user.otp !== otp) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
@@ -241,12 +364,17 @@ exports.resetPassword = async (req, res) => {
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
+
     user.otp = undefined;
     user.otpExpiresAt = undefined;
     user.otpAttempts = 0;
+
     await user.save();
 
-    res.json({ success: true, message: "Password reset successful" });
+    res.json({
+      success: true,
+      message: "Password reset successful"
+    });
 
   } catch (err) {
     console.error("RESET PASSWORD ERROR:", err);
