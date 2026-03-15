@@ -27,7 +27,7 @@ import RentalHouse from "./components/dashboards/Customer/Rent/RentalHouse";
 
 // VENDOR
 import VendorDashboard from "./components/dashboards/Vendor/VendorDashboard";
-
+import MyOrderPage from "./components/dashboards/Vendor/MyOrderPage";
 // ADMIN (GLOBAL ADMIN)
 import AdminDashboard from "./components/dashboards/Vendor/AdminDashboard";
 import AdminRoute from "./routes/AdminRoute";
@@ -160,7 +160,7 @@ export default function App() {
 
         {/* VENDOR */}
         <Route path="/vendor" element={<VendorDashboard />} />
-
+        <Route path="/my-orders" element={<MyOrderPage />} />
         {/* ✅ GLOBAL ADMIN (PROTECTED) */}
         <Route
           path="/admin"

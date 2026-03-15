@@ -973,3 +973,155 @@
   }
 }
 
+/* =================================
+   COMPLETE MOBILE OPTIMIZATION
+================================= */
+
+@media (max-width: 768px) {
+
+/* PAGE PADDING */
+.vendor-page{
+padding:0;
+}
+
+/* HEADER */
+.vendor-header{
+flex-wrap:wrap;
+gap:8px;
+padding:8px 10px;
+}
+
+.vendor-left{
+flex:1;
+}
+
+.vendor-search{
+order:3;
+width:100%;
+}
+
+.vendor-search input{
+width:100%;
+max-width:100%;
+}
+
+.vendor-actions{
+gap:6px;
+}
+
+/* CATEGORY STRIP */
+.vendor-categories{
+padding:8px;
+gap:6px;
+}
+
+.vendor-category{
+font-size:12px;
+padding:6px 10px;
+}
+
+/* BANNER */
+.vendor-banner{
+padding:10px 12px;
+}
+
+.vendor-banner h2{
+font-size:16px;
+}
+
+.vendor-banner p{
+font-size:12px;
+}
+
+/* PRODUCT GRID */
+.vendor-products{
+grid-template-columns:repeat(2,1fr);
+gap:8px;
+padding:0 8px 20px;
+}
+
+/* PRODUCT CARD */
+.vendor-card{
+padding:8px;
+border-radius:10px;
+}
+
+/* IMAGE */
+.vendor-card-image{
+height:100px;
+}
+
+/* NAME */
+.vendor-product-name{
+font-size:12px;
+}
+
+/* META */
+.vendor-meta{
+font-size:10px;
+}
+
+/* TAGS */
+.tag-primary{
+font-size:9px;
+}
+
+/* VARIANTS */
+.vendor-variant-option{
+font-size:11px;
+padding:4px 6px;
+}
+
+/* BUTTONS */
+.vendor-actions-row{
+flex-direction:column;
+gap:6px;
+}
+
+.btn-primary,
+.btn-outline{
+width:100%;
+font-size:11px;
+padding:7px;
+}
+
+/* MODAL */
+.vendor-modal{
+width:95%;
+max-width:none;
+padding:16px;
+}
+
+/* TOAST */
+.vendor-toast{
+bottom:12px;
+right:12px;
+font-size:12px;
+padding:8px 10px;
+}
+
+}
+
+/* EXTRA SMALL DEVICES */
+
+@media (max-width: 420px){
+
+.vendor-products{
+grid-template-columns:1fr 1fr;
+gap:6px;
+}
+
+.vendor-card-image{
+height:90px;
+}
+
+.vendor-product-name{
+font-size:11px;
+}
+
+.btn-primary,
+.btn-outline{
+font-size:10px;
+}
+
+}

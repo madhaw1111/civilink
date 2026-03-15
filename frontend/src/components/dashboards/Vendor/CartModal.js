@@ -54,11 +54,11 @@ export default function CartModal({
 
                 <div style={{ fontSize: 12 }}>
                   {item.productType === "SALE" && (
-                    <>
-                      ₹{item.price} × {item.quantity} {item.unit}
-                      {item.size && ` (${item.size})`}
-                    </>
-                  )}
+  <>
+    ₹{item.price ?? item.variantPrice ?? 0} × {item.quantity}
+    {item.size && ` (${item.size})`}
+  </>
+)}
 
                   {item.productType === "RENTAL" && (
                     <>
@@ -79,7 +79,7 @@ export default function CartModal({
                       setCart((prev) =>
                         prev
                           .map((p) =>
-                            p._id === item._id
+                            p._id === item._id && p.size === item.size
                               ? { ...p, quantity: p.quantity - 1 }
                               : p
                           )
@@ -98,7 +98,7 @@ export default function CartModal({
                     onClick={() =>
                       setCart((prev) =>
                         prev.map((p) =>
-                          p._id === item._id
+                          p._id === item._id && p.size === item.size
                             ? { ...p, quantity: p.quantity + 1 }
                             : p
                         )
@@ -116,7 +116,7 @@ export default function CartModal({
                       onClick={() =>
                         setCart((prev) =>
                           prev.map((p) =>
-                            p._id === item._id
+                            p._id === item._id && p.size === item.size
                               ? { ...p, days: Math.max(1, (p.days || 1) - 1) }
                               : p
                           )
@@ -131,18 +131,18 @@ export default function CartModal({
                     </span>
 
                     <button
-                      onClick={() =>
-                        setCart((prev) =>
-                          prev.map((p) =>
-                            p._id === item._id
-                              ? { ...p, days: (p.days || 1) + 1 }
-                              : p
-                          )
-                        )
-                      }
-                    >
-                      +
-                    </button>
+  onClick={() =>
+    setCart((prev) =>
+      prev.map((p) =>
+        p._id === item._id && p.size === item.size
+          ? { ...p, days: (p.days || 1) + 1 }
+          : p
+      )
+    )
+  }
+>
+  +
+</button>
                   </div>
                 )}
               </div>

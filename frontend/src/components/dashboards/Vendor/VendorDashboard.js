@@ -77,12 +77,13 @@ const [customerOrders, setCustomerOrders] = useState([]);
 
 
   const filteredProducts = products.filter((p) => {
-    return (
-      (selectedCity === "All Cities" || p.city === selectedCity) &&
-      p.category?.toLowerCase() === selectedCategory.toLowerCase() &&
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  return (
+    (selectedCity === "All Cities" ||
+      (p.city && p.city.toLowerCase() === selectedCity.toLowerCase())) &&
+    p.category?.toLowerCase() === selectedCategory.toLowerCase() &&
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+});
 
 
   const submitOrder = async () => {
@@ -156,6 +157,8 @@ dailyPrice: item.productType === "RENTAL" ? item.dailyPrice : undefined,
     }
 
     alert("Order placed successfully");
+
+    localStorage.setItem("customerPhone", checkoutData.phone);
 
     // ✅ Cleanup
     setCart([]);
@@ -232,7 +235,7 @@ const loadMyOrders = async () => {
            🛒
          {cart.length > 0 && (
             <span className="vendor-cart-badge">
-         {cart.reduce((sum, i) => sum + i.quantity, 0)}
+         {cart.length}
         </span>
        )}
 
@@ -265,9 +268,7 @@ const loadMyOrders = async () => {
     <button
   className="vendor-menu-item"
   onClick={() => {
-    setShowMyOrders(true);
-    loadMyOrders();
-    setShowMenu(false);
+    window.location.href = "/my-orders";
   }}
 >
   My Orders
@@ -384,6 +385,15 @@ const loadMyOrders = async () => {
 
               </div>
            <div className="vendor-price">
+  {p.productType === "SALE" ? (
+    p.variants?.length ? (
+      <>₹{Math.min(...p.variants.map(v => v.price))}</>
+    ) : (
+      <>₹{p.price}</>
+    )
+  ) : (
+    <>₹{Math.min(...p.variants.map(v => v.dailyPrice))} / day</>
+  )}
   {/* VARIANT SELECTION */}
   {p.variants?.length > 0 && (
     <div className="vendor-variant-list">
@@ -474,9 +484,9 @@ const loadMyOrders = async () => {
           // ✅ EXACT VARIANT
           size: selected?.size,
           price:
-            p.productType === "SALE"
-              ? selected?.price
-              : undefined,
+  p.productType === "SALE"
+    ? (selected?.price ?? p.price ?? p.variants?.[0]?.price)
+    : undefined,
           dailyPrice:
             p.productType === "RENTAL"
               ? selected?.dailyPrice

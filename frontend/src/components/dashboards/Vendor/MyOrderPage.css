@@ -1,0 +1,87 @@
+.myorders-page{
+max-width:1100px;
+margin:40px auto;
+padding:0 20px;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+.myorders-page h2{
+font-size:26px;
+margin-bottom:25px;
+font-weight:600;
+}
+
+.myorders-list{
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.order-card{
+background:#fff;
+border:1px solid #e5e5e5;
+border-radius:8px;
+overflow:hidden;
+box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+
+.order-top{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+padding:15px 20px;
+background:#f7f7f7;
+border-bottom:1px solid #e5e5e5;
+font-size:14px;
+}
+
+.order-top strong{
+font-size:12px;
+color:#666;
+display:block;
+margin-bottom:3px;
+}
+
+.order-items{
+padding:15px 20px;
+}
+
+.order-item{
+padding:10px 0;
+border-bottom:1px solid #f1f1f1;
+}
+
+.order-item:last-child{
+border-bottom:none;
+}
+
+.item-name{
+font-size:15px;
+font-weight:600;
+color:#222;
+}
+
+.item-meta{
+font-size:13px;
+color:#777;
+margin-top:3px;
+}
+
+.order-top a{
+color:#0066c0;
+font-size:14px;
+text-decoration:none;
+}
+
+.order-top a:hover{
+text-decoration:underline;
+}
+
+@media(max-width:768px){
+
+.order-top{
+grid-template-columns:1fr 1fr;
+row-gap:12px;
+}
+
+}

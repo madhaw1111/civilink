@@ -37,6 +37,25 @@ if (!vendorDoc) {
   });
 }
 
+// GET /api/order
+router.get("/", async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      orders
+    });
+
+  } catch (err) {
+    console.error("GET ORDERS ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to load orders"
+    });
+  }
+});
+
     /* ======================
        1️⃣ NORMALIZE ITEMS (SAFE)
     ====================== */
